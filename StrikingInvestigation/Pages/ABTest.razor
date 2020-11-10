@@ -1,0 +1,322 @@
+﻿@page "/ABTest"
+@using StrikingInvestigation.Models
+@using StrikingInvestigation.Utilities
+
+<div class="posabs" style="--leftpos: 20px; --toppos: 63px">
+    <h1>A/B Test</h1>
+</div>
+
+@if (ABTestsData == null)
+{
+    <div class="spinner"></div>
+}
+else
+{
+    <div class="form-group">
+        <EditForm Model="@ABTestsData">
+            <div class="posabs" style="--leftpos: 170px; --toppos: 73px">
+                <label>
+                    Select Test
+                </label>
+            </div>
+
+            <InputSelect Value="@SelectedTest"
+                         ValueChanged="@( (string value) => TestChanged(value) )"
+                         ValueExpression="@( () => SelectedTest )"
+                         class="form-control posabsw"
+                         style="--leftpos: 260px; --toppos: 66px; --width: 200px"
+                         disabled="@ControlsDisabled">
+                <option value="Select test">Select test...</option>
+                <option value="Random">Random</option>
+                
+                @foreach (ABTestData aBTestData in ABTestsData)
+                {
+                    <option value="@aBTestData.Id">Test @aBTestData.Id</option>
+                }
+            </InputSelect>
+        </EditForm>
+    </div>
+
+    @if (SelectedTest == "Random")
+    {
+        <div class="form-group">
+            <EditForm Model="@TestSpec">
+                <div class="posabs" style="--leftpos: 20px; --toppos: 120px">
+                    <label>
+                        Stage
+                    </label>
+                </div>
+
+                <CustomInputSelect Value="@TestSpec.Stage"
+                                   ValueChanged="@( (int value) => StageChanged(value) )"
+                                   ValueExpression="@( () => TestSpec.Stage )"
+                                   class="form-control posabsw"
+                                   style="--leftpos: 20px; --toppos: 148px; --width: 120px"
+                                   disabled="@ControlsDisabled">
+                    @for (int i = 5; i <= 12; i++)
+                    {
+                        <option value="@i">@StageConv.StageStr(i)</option>
+                    }
+                </CustomInputSelect>
+
+                <div class="posabs" style="--leftpos: 170px; --toppos: 120px">
+                    <label>
+                        Tenor weight
+                    </label>
+                </div>
+
+                <CustomInputSelect Value="@TestSpec.TenorWeight"
+                                   ValueChanged="@( (int value) => TenorWeightChanged(value) )"
+                                   ValueExpression="@( () => TestSpec.TenorWeight )"
+                                   class="form-control posabsw"
+                                   style="--leftpos: 170px; --toppos: 148px; --width: 120px"
+                                   disabled="@SelectTenorWeightDisabled">
+                    <option value="8">@TenorWeightConv.TenorWeightStr(8)</option>
+                    <option value="23">@TenorWeightConv.TenorWeightStr(23)</option>
+                </CustomInputSelect>
+
+                <div class="posabs" style="--leftpos: 320px; --toppos: 120px">
+                    <label>
+                        Type of error
+                    </label>
+                </div>
+
+                <CustomInputSelect id="errorType"
+                                   Value="@TestSpec.ErrorType"
+                                   ValueChanged="@( (int value) => ErrorTypeChanged(value) )"
+                                   ValueExpression="@( () => TestSpec.ErrorType )"
+                                   class="form-control posabsw"
+                                   style="--leftpos: 320px; --toppos: 148px; --width: 170px"
+                                   disabled="@ControlsDisabled">
+                    @for (int i = 1; i <= 2; i++)
+                    {
+                        <option value="@i">@ErrorTypeConv.ErrorTypeStr(i)</option>
+                    }
+                </CustomInputSelect>
+
+                <div class="posabs" style="--leftpos: 520px; --toppos: 120px">
+                    <label>
+                        Error size
+                    </label>
+                </div>
+
+                <CustomInputSelect id="errorSize"
+                                   Value="@TestSpec.ErrorSize"
+                                   ValueChanged="@( (int value) => ErrorSizeChanged(value) )"
+                                   ValueExpression="@( () => TestSpec.ErrorSize )"
+                                   class="form-control posabsw"
+                                   style="--leftpos: 520px; --toppos: 148px; --width: 120px"
+                                   disabled="@ControlsDisabled">
+                    @for (int i = 75; i >= 10; i -= 5)
+                    {
+                        <option value="@i">@ErrorSizeConv.ErrorSizeStr(i)</option>
+                    }
+                </CustomInputSelect>
+
+                <div class="posabs" style="--leftpos: 670px; --toppos: 148px">
+                    <button class="btn btn-primary" @onclick="CreateABTest" disabled="@ControlsDisabled">
+                        Create A/B Test
+                    </button>
+                </div>
+
+                @if (BlowSetA != null && BlowSetB != null)
+                {
+                    <div class="posabs" style="--leftpos: 840px; --toppos: 120px">
+                        <label>
+                            Save test
+                        </label>
+                    </div>
+
+                    <div class="posabs" style="--leftpos: 840px; --toppos: 148px">
+                        <button class="btn btn-primary" @onclick="Save" disabled="@ControlsDisabled">
+                            Save
+                        </button>
+                    </div>
+                }
+            </EditForm>
+        </div>
+    }
+    else if (SelectedTest != "Select test")
+    {
+        <div class="form-group">
+            <div class="posabs" style="--leftpos: 20px; --toppos: 120px">
+                <label>
+                    Stage
+                </label>
+            </div>
+
+            <div class="posabswh" style="--leftpos: 20px; --toppos: 148px; --width: 120px; --height: 38px;
+                border: 1px solid #ced4da; border-radius: 4px; padding-left: 16px; padding-top: 7px">
+                <label>
+                    @StageConv.StageStr(TestSpec.Stage)
+                </label>
+            </div>
+
+            <div class="posabs" style="--leftpos: 170px; --toppos: 120px">
+                <label>
+                    Tenor weight
+                </label>
+            </div>
+
+            <div class="posabswh" style="--leftpos: 170px; --toppos: 148px; --width: 120px; --height: 38px;
+                border: 1px solid #ced4da; border-radius: 4px; padding-left: 16px; padding-top: 7px">
+                <label>
+                    @TenorWeightConv.TenorWeightStr(TestSpec.TenorWeight)
+                </label>
+            </div>
+
+            <div class="posabs" style="--leftpos: 320px; --toppos: 120px">
+                <label>
+                    Type of error
+                </label>
+            </div>
+
+            <div class="posabswh" style="--leftpos: 320px; --toppos: 148px; --width: 170px; --height: 38px;
+                border: 1px solid #ced4da; border-radius: 4px; padding-left: 16px; padding-top: 7px">
+                <label>
+                    @ErrorTypeConv.ErrorTypeStr(TestSpec.ErrorType)
+                </label>
+            </div>
+        </div>
+    }
+}
+
+@if (BlowSetA != null)
+{
+    @foreach (Blow blow in BlowSetA.Blows)
+    {
+        // Place labels if it's the first blow of the row
+        if (blow.Place == 1)
+        {
+            <StrokeLabel Blow="@blow"
+                    Screen="@ScreenA" />
+
+            <RowStartLabel Blow="@blow"
+                    Screen="@ScreenA" />
+
+            <ChangeLabel Blow="@blow"
+                    Screen="@ScreenA" />
+        }
+
+        if (ShowGaps == true)
+        {
+            <Bell Blow="@blow"
+                    Screen="@ScreenA" />
+
+            <GapLabel Blow="@blow"
+                    Screen="@ScreenA" />
+        }
+        else
+        {
+            <AudioBox TestSpec="@TestSpec"
+                    Screen="@ScreenA"
+                    Duration="@DurationA" />
+        }
+
+        <audio id="@blow.AudioId" preload="auto">
+            <source src="@blow.BellSound" type="audio/mpeg" />
+        </audio>
+    }
+
+    <PlayBtn2 TestSpec="@TestSpec"
+            Screen="@ScreenA"
+            PlayLabel="@PlayLabelA"
+            PlayDisabled="@PlayDisabledA"
+            Callback="PlayA" />
+}
+
+@if (BlowSetB != null)
+{
+    @foreach (Blow blow in BlowSetB.Blows)
+    {
+        // Place labels if it's the first blow of the row
+        if (blow.Place == 1)
+        {
+            <StrokeLabel Blow="@blow"
+                    Screen="@ScreenB" />
+
+            <RowStartLabel Blow="@blow"
+                    Screen="@ScreenB" />
+
+            <ChangeLabel Blow="@blow"
+                    Screen="@ScreenB" />
+        }
+
+        if (ShowGaps == true)
+        {
+            <Bell Blow="@blow"
+                    Screen="@ScreenB" />
+
+            <GapLabel Blow="@blow"
+                    Screen="@ScreenB" />
+        }
+        else
+        {
+            <AudioBox TestSpec="@TestSpec"
+                    Screen="@ScreenB"
+                    Duration="@DurationB" />
+        }
+
+        <audio id="@blow.AudioId" preload="auto">
+            <source src="@blow.BellSound" type="audio/mpeg" />
+        </audio>
+    }
+
+    <PlayBtn2 TestSpec="@TestSpec"
+            Screen="@ScreenB"
+            PlayLabel="@PlayLabelB"
+            PlayDisabled="@PlayDisabledB"
+            Callback="PlayB" />
+}
+
+@if (BlowSetA != null && BlowSetB != null)
+{
+    <div class="posabs" style="--leftpos: 20px; --toppos: 1157px">
+        <label>
+            Play the two blocks above and then click one of these 3 buttons:
+        </label>
+    </div>
+
+    <div class="posabs" style="--leftpos: 500px; --toppos: 1150px">
+        <button class="btn btn-primary" @onclick="AHasErrors" disabled="@ControlsDisabled">
+            A has errors
+        </button>
+    </div>
+
+    <div class="posabs" style="--leftpos: 640px; --toppos: 1150px">
+        <button class="btn btn-primary" @onclick="BHasErrors" disabled="@ControlsDisabled">
+            B has errors
+        </button>
+    </div>
+
+    <div class="posabs" style="--leftpos: 780px; --toppos: 1150px">
+        <button class="btn btn-primary" @onclick="DontKnow" disabled="@ControlsDisabled">
+            I can't tell which has errors
+        </button>
+    </div>
+
+    @if (ResultEntered == true)
+    {
+        <div class="posabs" style="--leftpos: 1026px; --toppos: 1157px">
+            <label>
+                Show bells:
+            </label>
+        </div>
+
+        <EditForm Model="@ShowGaps">
+            <InputCheckbox Value="@ShowGaps"
+                           ValueChanged="@( (bool value) => ShowGapsChanged(value) )"
+                           ValueExpression="@( () => ShowGaps )"
+                           class="form-control posabswh"
+                           style="--leftpos: 1118px; --toppos: 1158px; --width: 20px; --height: 20px"
+                           disabled="@ControlsDisabled" />
+        </EditForm>
+    }
+
+    @if (ResultSound == true)
+    {
+        <audio id="sound" autoplay>
+            <source src="@ResultSource" />
+        </audio>
+    }
+}

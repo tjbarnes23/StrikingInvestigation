@@ -1,0 +1,126 @@
+﻿@page "/AVTest"
+@using StrikingInvestigation.Models
+
+<div class="posabs" style="--leftpos: 20px; --toppos: 63px">
+    <h1>A/V Test</h1>
+</div>
+
+<div class="posabs" style="--leftpos: 20px; --toppos: 113px">
+    <p>Adjust the test bell until it strikes at the same time that it changes color.</p>
+</div>
+
+@if (AVTestsData == null)
+{
+    <div class="spinner"></div>
+}
+else
+{
+    <div class="form-group">
+        <EditForm Model="@AVTestsData">
+            <div class="posabs" style="--leftpos: 20px; --toppos: 163px">
+                <label>
+                    Select Test
+                </label>
+            </div>
+
+            <InputSelect Value="@SelectedTest"
+                    ValueChanged="@( (string value) => TestChanged(value) )"
+                    ValueExpression="@( () => SelectedTest )"
+                    class="form-control posabsw"
+                    style="--leftpos: 110px; --toppos: 156px; --width: 200px"
+                    disabled="@ControlsDisabled">
+                <option value="Select test">Select test...</option>
+                <option value="Random">Random</option>
+
+                @foreach (AVTestData aVTestData in AVTestsData)
+                {
+                    <option value="@aVTestData.Id">Test @aVTestData.Id</option>
+                }
+            </InputSelect>
+        </EditForm>
+    </div>
+
+    @if (SelectedTest == "Random")
+    {
+        <div class="posabs" style="--leftpos: 20px; --toppos: 213px">
+            <button class="btn btn-primary" @onclick="Create" disabled="@ControlsDisabled">
+                Create A/V Test
+            </button>
+        </div>
+
+        @if (Blow != null)
+        {
+            <div class="posabs" style="--leftpos: 185px; --toppos: 220px">
+                <label>
+                    Save test:
+                </label>
+            </div>
+
+            <div class="posabs" style="--leftpos: 265px; --toppos: 213px">
+                <button class="btn btn-primary" @onclick="Save" disabled="@ControlsDisabled">
+                    Save
+                </button>
+            </div>
+        }
+    }
+}
+
+<div tabindex="0" @onkeydown="ArrowKeys" @ref="mainDiv">
+    @if (Blow != null)
+    {
+        <div @onmousedown="TestBellMouseDown" @onmousemove="TestBellMouseMove">
+            <Bell Blow="@Blow"
+                    Screen="@Screen" />
+        </div>
+
+        <audio id="@Blow.AudioId" preload="auto">
+            <source src="@Blow.BellSound" type="audio/mpeg" />
+        </audio>
+
+        <BoundaryLabel Blow="@Blow"
+                       Screen="@Screen" />
+
+        <GapMinus Blow="@Blow"
+                  Screen="@Screen"
+                  GapDisabled="@ControlsDisabled"
+                  Callback="GapChangedWithButton" />
+
+        <GapCurr Blow="@Blow"
+                 Screen="@Screen" />
+
+        <GapPlus Blow="@Blow"
+                 Screen="@Screen"
+                 GapDisabled="@ControlsDisabled"
+                 Callback="GapChangedWithButton" />
+
+        <PlayBtn Blow="@Blow"
+                 Screen="@Screen"
+                 PlayLabel="@PlayLabel"
+                 PlayDisabled="@false"
+                 Callback="Play" />
+
+        <div class="posabs" style="--leftpos: 290px; --toppos: 575px">
+            <label>
+                Show gap time:
+            </label>
+        </div>
+    
+        <EditForm Model="@ShowGaps">
+            <InputCheckbox Value="@ShowGaps"
+                               ValueChanged="@( (bool value) => ShowGapsChanged(value) )"
+                               ValueExpression="@( () => ShowGaps )"
+                               class="form-control posabswh"
+                               style="--leftpos: 410px; --toppos: 577px; --width: 20px; --height: 20px"
+                               disabled="@ControlsDisabled" />
+        </EditForm>
+
+        @if (ShowGaps == true)
+        {
+            <div class="posabs" style="--leftpos: 455px; --toppos: 575px">
+                <label>
+                    @Blow.AltGap
+                </label>
+            </div>
+        }
+    }
+</div>

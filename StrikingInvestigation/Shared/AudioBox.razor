@@ -1,0 +1,18 @@
+﻿<div class="boundarylabel" style="--leftpos: @BoundaryLeftPos; --toppos: @BoundaryTopPos;
+        --width: @BoundaryWidth; --height: @BoundaryHeight">
+</div>
+
+<div class="audiobar" style="--leftpos: @BarLeftPos; --toppos: @BarTopPos; --width: @BarWidth">
+</div>
+
+@if (Screen.RunAnimation == true)
+{
+    <div class="audiodotmove" style="--leftstartpos: @DotLeftStartPos; --leftendpos: @DotLeftEndPos;
+        --toppos: @DotTopPos; --duration: @DurationStr">
+    </div>
+}
+else
+{
+    <div class="audiodotinitial" style="--leftpos: @DotLeftStartPos; --toppos: @DotTopPos">
+    </div>
+}

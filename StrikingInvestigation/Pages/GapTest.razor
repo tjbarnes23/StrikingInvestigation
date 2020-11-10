@@ -1,0 +1,277 @@
+﻿@page "/GapTest"
+@using StrikingInvestigation.Models
+@using StrikingInvestigation.Utilities
+
+<div class="posabs" style="--leftpos: 20px; --toppos: 63px">
+    <h1>Gap Test</h1>
+</div>
+
+@if (GapTestsData == null)
+{
+    <div class="spinner"></div>
+}
+else
+{
+    <div class="form-group">
+        <EditForm Model="@GapTestsData">
+            <div class="posabs" style="--leftpos: 170px; --toppos: 73px">
+                <label>
+                    Select Test
+                </label>
+            </div>
+
+            <InputSelect Value="@SelectedTest"
+                                ValueChanged="@( (string value) => TestChanged(value) )"
+                                ValueExpression="@( () => SelectedTest )"
+                                class="form-control posabsw"
+                                style="--leftpos: 260px; --toppos: 66px; --width: 200px"
+                                disabled="@ControlsDisabled">
+                <option value="Select test">Select test...</option>
+                <option value="Random">Random</option>
+
+                @foreach (GapTestData gapTestData in GapTestsData)
+                {
+                    <option value="@gapTestData.Id">Test @gapTestData.Id</option>
+                }
+            </InputSelect>
+        </EditForm>
+    </div>
+
+    @if (SelectedTest == "Random")
+    {
+        <div class="form-group">
+            <EditForm Model="@TestSpec">
+                <div class="posabs" style="--leftpos: 20px; --toppos: 120px">
+                    <label>
+                        Stage
+                    </label>
+                </div>
+
+                <CustomInputSelect Value="@TestSpec.Stage"
+                                    ValueChanged="@( (int value) => StageChanged(value) )"
+                                    ValueExpression="@( () => TestSpec.Stage )"
+                                    class="form-control posabsw"
+                                    style="--leftpos: 20px; --toppos: 148px; --width: 120px"
+                                    disabled="@ControlsDisabled">
+                    @for (int i = 5; i <= 12; i++)
+                    {
+                        <option value="@i">@StageConv.StageStr(i)</option>
+                    }
+                </CustomInputSelect>
+
+                <div class="posabs" style="--leftpos: 170px; --toppos: 120px">
+                    <label>
+                        Tenor weight
+                    </label>
+                </div>
+
+                <CustomInputSelect Value="@TestSpec.TenorWeight"
+                                    ValueChanged="@( (int value) => TenorWeightChanged(value) )"
+                                    ValueExpression="@( () => TestSpec.TenorWeight )"
+                                    class="form-control posabsw"
+                                    style="--leftpos: 170px; --toppos: 148px; --width: 120px"
+                                    disabled="@SelectTenorWeightDisabled">
+                    <option value="8">@TenorWeightConv.TenorWeightStr(8)</option>
+                    <option value="23">@TenorWeightConv.TenorWeightStr(23)</option>
+                </CustomInputSelect>
+
+                <div class="posabs" style="--leftpos: 320px; --toppos: 120px">
+                    <label>
+                        Number of rows
+                    </label>
+                </div>
+
+                <CustomInputSelect Value="@TestSpec.NumRows"
+                                    ValueChanged="@( (int value) => NumRowsChanged(value) )"
+                                    ValueExpression="@( () => TestSpec.NumRows )"
+                                    class="form-control posabsw"
+                                    style="--leftpos: 320px; --toppos: 148px; --width: 120px"
+                                    disabled="@ControlsDisabled">
+                    @for (int i = 2; i <= 8; i++)
+                    {
+                        <option value="@i">@i</option>
+                    }
+                </CustomInputSelect>
+
+                <div class="posabs" style="--leftpos: 470px; --toppos: 120px">
+                    <label>
+                        Max error size
+                    </label>
+                </div>
+
+                <CustomInputSelect Value="@TestSpec.ErrorSize"
+                                    ValueChanged="@( (int value) => ErrorSizeChanged(value) )"
+                                    ValueExpression="@( () => TestSpec.ErrorSize )"
+                                    class="form-control posabsw"
+                                    style="--leftpos: 470px; --toppos: 148px; --width: 120px"
+                                    disabled="@ControlsDisabled">
+                    @for (int i = 100; i >= 0; i -= 10)
+                    {
+                        <option value="@i">@ErrorSizeConv.ErrorSizeStr(i)</option>
+                    }
+                </CustomInputSelect>
+
+                <div class="posabs" style="--leftpos: 620px; --toppos: 120px">
+                    <label>
+                        Test bell location
+                    </label>
+                </div>
+
+                <CustomInputSelect Value="@TestSpec.TestBellLoc"
+                        ValueChanged="@( (int value) => TestBellLocChanged(value) )"
+                        ValueExpression="@( () => TestSpec.TestBellLoc )"
+                        class="form-control posabsw"
+                        style="--leftpos: 620px; --toppos: 148px; --width: 200px"
+                        disabled="@ControlsDisabled">
+                    @for (int i = 1; i <= 2; i++)
+                    {
+                        <option value="@i">@TestBellLocConv.TestBellLocStr(i)</option>
+                    }
+                </CustomInputSelect>
+
+                <div class="posabs" style="--leftpos: 850px; --toppos: 148px">
+                    <button class="btn btn-primary" @onclick="Create" disabled="@ControlsDisabled">
+                        Create Gap Test
+                    </button>
+                </div>
+
+                @if (BlowSet != null)
+                {
+                    <div class="posabs" style="--leftpos: 1010px; --toppos: 120px">
+                        <label>
+                            Show gap times
+                        </label>
+                    </div>
+
+                    <InputCheckbox Value="@ShowGaps"
+                            ValueChanged="@( (bool value) => ShowGapsChanged(value) )"
+                            ValueExpression="@( () => ShowGaps )"
+                            class="form-control posabswh"
+                            style="--leftpos: 1060px; --toppos: 158px; --width: 20px; --height: 20px"
+                            disabled="@ControlsDisabled" />
+
+                    <div class="posabs" style="--leftpos: 1150px; --toppos: 120px">
+                        <label>
+                            Save test
+                        </label>
+                    </div>
+
+                    <div class="posabs" style="--leftpos: 1150px; --toppos: 148px">
+                        <button class="btn btn-primary" @onclick="Save" disabled="@ControlsDisabled">
+                            Save
+                        </button>
+                    </div>
+                }
+            </EditForm>
+        </div>
+    }
+    else if (SelectedTest != "Select test")
+    {
+        <div class="form-group">
+            <div class="posabs" style="--leftpos: 20px; --toppos: 120px">
+                <label>
+                    Stage
+                </label>
+            </div>
+
+            <div class="posabswh" style="--leftpos: 20px; --toppos: 148px; --width: 120px; --height: 38px;
+                border: 1px solid #ced4da; border-radius: 4px; padding-left: 16px; padding-top: 7px">
+                <label>
+                    @StageConv.StageStr(TestSpec.Stage)
+                </label>
+            </div>
+
+            <div class="posabs" style="--leftpos: 170px; --toppos: 120px">
+                <label>
+                    Tenor weight
+                </label>
+            </div>
+
+            <div class="posabswh" style="--leftpos: 170px; --toppos: 148px; --width: 120px; --height: 38px;
+                border: 1px solid #ced4da; border-radius: 4px; padding-left: 16px; padding-top: 7px">
+                <label>
+                    @TenorWeightConv.TenorWeightStr(TestSpec.TenorWeight)
+                </label>
+            </div>
+
+            <div class="posabs" style="--leftpos: 320px; --toppos: 120px">
+                <label>
+                    Number of rows
+                </label>
+            </div>
+
+            <div class="posabswh" style="--leftpos: 320px; --toppos: 148px; --width: 120px; --height: 38px;
+                border: 1px solid #ced4da; border-radius: 4px; padding-left: 16px; padding-top: 7px">
+                <label>
+                    @TestSpec.NumRows
+                </label>
+            </div>
+        </div>
+    }
+}
+
+<div tabindex="0" @onkeydown="ArrowKeys" @ref="mainDiv">
+    @if (BlowSet != null)
+    {
+        @foreach (Blow blow in BlowSet.Blows)
+        {
+            // Place labels if it's the first blow of the row
+            if (blow.Place == 1)
+            {
+                <StrokeLabel Blow="@blow"
+                        Screen="@Screen" />
+
+                <RowStartLabel Blow="@blow"
+                        Screen="@Screen" />
+
+                <ChangeLabel Blow="@blow"
+                        Screen="@Screen" />
+            }
+
+            if (blow != BlowSet.Blows.Last())
+            {
+                <Bell Blow="@blow"
+                        Screen="@Screen" />
+
+                if (ShowGaps == true)
+                {
+                    <GapLabel Blow="@blow"
+                            Screen="@Screen" />
+                }
+            }
+            else
+            {
+                <div @onmousedown="TestBellMouseDown" @onmousemove="TestBellMouseMove">
+                    <Bell Blow="@blow"
+                            Screen="@Screen" />
+                </div>
+            }
+
+            <audio id="@blow.AudioId" preload="auto">
+                    <source src="@blow.BellSound" type="audio/mpeg" />
+            </audio>
+        }
+
+        <BoundaryLabel Blow="@BlowSet.Blows.Last()"
+                Screen="@Screen" />
+
+        <GapMinus Blow="@BlowSet.Blows.Last()"
+                Screen="@Screen"
+                GapDisabled="@ControlsDisabled"
+                Callback="GapChangedWithButton" />
+
+        <GapCurr Blow="@BlowSet.Blows.Last()"
+                Screen="@Screen" />
+
+        <GapPlus Blow="@BlowSet.Blows.Last()"
+                Screen="@Screen"
+                GapDisabled="@ControlsDisabled"
+                Callback="GapChangedWithButton" />
+
+        <PlayBtn Blow="@BlowSet.Blows.Last()"
+                Screen="@Screen"
+                PlayLabel="@PlayLabel"
+                PlayDisabled="@false"
+                Callback="Play" />
+    }
+</div>
