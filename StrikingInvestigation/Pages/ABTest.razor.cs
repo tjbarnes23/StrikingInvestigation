@@ -84,10 +84,6 @@ namespace StrikingInvestigation.Pages
 
         public string PlayLabelB { get; set; }
 
-        public bool PlayDisabledA { get; set; }
-
-        public bool PlayDisabledB { get; set; }
-
         public CancellationTokenSource CancellationTokenSource { get; set; }
 
         public CancellationToken CancellationToken { get; set; }
@@ -100,9 +96,17 @@ namespace StrikingInvestigation.Pages
 
         public bool ControlsDisabled { get; set; }
 
+        public bool PlayDisabledA { get; set; }
+
+        public bool PlayDisabledB { get; set; }
+
         public bool SelectTenorWeightDisabled { get; set; }
 
         public bool CurrentTenorWeightDisabled { get; set; }
+
+        public bool Saving { get; set; }
+
+        public bool Saved { get; set; }
 
         protected override async Task OnInitializedAsync()
         {
@@ -357,6 +361,8 @@ namespace StrikingInvestigation.Pages
 
         protected async void Save()
         {
+            Saving = true;
+
             // Push the created test to the API in JSON format
             // Start by creating a BlowSetCore object, which just has the parent data BlowSet, for each of A and B
             // Note implicit cast from child to parent
@@ -376,6 +382,18 @@ namespace StrikingInvestigation.Pages
 
             // Push the Json object to the API
             await Http.PostAsJsonAsync("api/abtests", aBTestData);
+
+            // Refresh the contents of the Select Test dropdown 
+            ABTestsData = (await Http.GetFromJsonAsync<ABTestData[]>("api/abtests")).ToList();
+
+            Saving = false;
+            Saved = true;
+            StateHasChanged();
+
+            await Task.Delay(1000);
+
+            Saved = false;
+            StateHasChanged();
         }
 
         protected async Task PlayA()
@@ -400,17 +418,30 @@ namespace StrikingInvestigation.Pages
 
                 SetState(ScreenState.StopA);
                 await StrikeA();
+
+                if (ShowGaps == false)
+                {
+                    ScreenA.RunAnimation = false;
+                }
             }
             else if (PlayLabelA == "Stop A")
             {
+                PlayDisabledA = true;
+
                 CancellationTokenSource.Cancel();
+
+                if (ShowGaps == false)
+                {
+                    ScreenA.RunAnimation = false;
+                }
+
+                // Wait for 2.6 seconds for the sound to finish
+                await Task.Delay(2600);
+
+                PlayDisabledA = false;
             }
 
-            if (ShowGaps == false)
-            {
-                ScreenA.RunAnimation = false;
-            }
-            else
+            if (ShowGaps == true)
             {
                 BlowSetA.SetUnstruck();
             }
@@ -440,17 +471,30 @@ namespace StrikingInvestigation.Pages
 
                 SetState(ScreenState.StopB);
                 await StrikeB();
+
+                if (ShowGaps == false)
+                {
+                    ScreenB.RunAnimation = false;
+                }
             }
             else if (PlayLabelB == "Stop B")
             {
+                PlayDisabledB = true;
+
                 CancellationTokenSource.Cancel();
+
+                if (ShowGaps == false)
+                {
+                    ScreenB.RunAnimation = false;
+                }
+
+                // Wait for 2.6 seconds for the sound to finish
+                await Task.Delay(2600);
+
+                PlayDisabledB = false;
             }
 
-            if (ShowGaps == false)
-            {
-                ScreenB.RunAnimation = false;
-            }
-            else
+            if (ShowGaps == true)
             {
                 BlowSetB.SetUnstruck();
             }

@@ -68,9 +68,15 @@ namespace StrikingInvestigation.Pages
 
         public bool ControlsDisabled { get; set; }
 
+        public bool PlayDisabled { get; set; }
+
         public bool SelectTenorWeightDisabled { get; set; }
 
         public bool CurrentTenorWeightDisabled { get; set; }
+
+        public bool Saving { get; set; }
+
+        public bool Saved { get; set; }
 
         protected override async Task OnInitializedAsync()
         {
@@ -249,6 +255,8 @@ namespace StrikingInvestigation.Pages
 
         protected async void Save()
         {
+            Saving = true;
+
             // Push the created test to the API in JSON format
             // Start by creating a BlowSetCore object, which just has the parent data BlowSet
             // Note implicit cast from child to parent
@@ -265,6 +273,18 @@ namespace StrikingInvestigation.Pages
 
             // Push the Json object to the API
             await Http.PostAsJsonAsync("api/gaptests", gapTestData);
+
+            // Refresh the contents of the Select Test dropdown 
+            GapTestsData = (await Http.GetFromJsonAsync<GapTestData[]>("api/gaptests")).ToList();
+
+            Saving = false;
+            Saved = true;
+            StateHasChanged();
+
+            await Task.Delay(1000);
+
+            Saved = false;
+            StateHasChanged();
         }
 
         protected async Task Play()
@@ -296,7 +316,14 @@ namespace StrikingInvestigation.Pages
             }
             else if (PlayLabel == "Stop")
             {
+                PlayDisabled = true;
+                
                 CancellationTokenSource.Cancel();
+
+                // Wait for 2.6 seconds for the sound to finish
+                await Task.Delay(2600);
+
+                PlayDisabled = false;
             }
 
             // Set colors to unstruck

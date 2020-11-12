@@ -55,6 +55,12 @@ namespace StrikingInvestigation.Pages
 
         public bool ControlsDisabled { get; set; }
 
+        public bool PlayDisabled { get; set; }
+
+        public bool Saving { get; set; }
+
+        public bool Saved { get; set; }
+
         protected override async Task OnInitializedAsync()
         {
             AVTestsData = (await Http.GetFromJsonAsync<AVTestData[]>("api/avtests")).ToList();
@@ -144,6 +150,8 @@ namespace StrikingInvestigation.Pages
 
         protected async void Save()
         {
+            Saving = true;
+
             // Push the created test to the API in JSON format
             // Start by creating a BlowCore object, which just has the inherited properties from Blow
             // Note implicit cast from child to parent
@@ -156,6 +164,18 @@ namespace StrikingInvestigation.Pages
 
             // Push the Json object to the API
             await Http.PostAsJsonAsync("api/avtests", aVTestData);
+
+            // Refresh the contents of the Select Test dropdown 
+            AVTestsData = (await Http.GetFromJsonAsync<AVTestData[]>("api/avtests")).ToList();
+
+            Saving = false;
+            Saved = true;
+            StateHasChanged();
+
+            await Task.Delay(1000);
+
+            Saved = false;
+            StateHasChanged();
         }
 
         protected async Task Play()
@@ -181,7 +201,14 @@ namespace StrikingInvestigation.Pages
             }
             else if (PlayLabel == "Stop")
             {
+                PlayDisabled = true;
+
                 CancellationTokenSource.Cancel();
+
+                // Wait for 2.6 seconds for the sound to finish
+                await Task.Delay(2600);
+
+                PlayDisabled = false;
             }
 
             // Set color to unstruck

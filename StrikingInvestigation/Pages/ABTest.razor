@@ -131,6 +131,22 @@ else
                         <button class="btn btn-primary" @onclick="Save" disabled="@ControlsDisabled">
                             Save
                         </button>
+
+                        @if (Saving == true)
+                        {
+                            <div class="spinnerinline" style="display: inline-block; vertical-align: top;
+                                    margin-left: 12px; margin-top: 7px;
+                                    --borderwidth: 5px; --width: 24px; --height: 24px">
+                            </div>
+                        }
+
+                        @if (Saved == true)
+                        {
+                            <div style="display: inline-block; vertical-align: top; margin-left: 12px;
+                                    margin-top: 7px">
+                                Saved
+                            </div>
+                        }
                     </div>
                 }
             </EditForm>
