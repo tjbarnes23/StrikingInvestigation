@@ -161,7 +161,7 @@ else
                             Save
                         </button>
 
-                        @if (Saving == true)
+                        @if (Spinner1 == true)
                         {
                             <div class="spinnerinline" style="display: inline-block; vertical-align: top;
                                     margin-left: 12px; margin-top: 7px;
@@ -289,5 +289,11 @@ else
                 PlayLabel="@PlayLabel"
                 PlayDisabled="@PlayDisabled"
                 Callback="Play" />
+
+        @if (Spinner2 == true)
+        {
+            <Spinner Blow="@BlowSet.Blows.Last()"
+                    Screen="@Screen" />
+        }
     }
 </div>

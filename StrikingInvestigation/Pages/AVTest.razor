@@ -61,7 +61,7 @@ else
                     Save
                 </button>
 
-                @if (Saving == true)
+                @if (Spinner1 == true)
                 {
                     <div class="spinnerinline" style="display: inline-block; vertical-align: top;
                             margin-left: 12px; margin-top: 7px;
@@ -115,6 +115,12 @@ else
                  PlayDisabled="@PlayDisabled"
                  Callback="Play" />
 
+        @if (Spinner2 == true)
+        {
+            <Spinner Blow="@Blow"
+                    Screen="@Screen" />
+        }
+
         <div class="posabs" style="--leftpos: 290px; --toppos: 575px">
             <label>
                 Show gap time:
@@ -123,11 +129,11 @@ else
     
         <EditForm Model="@ShowGaps">
             <InputCheckbox Value="@ShowGaps"
-                               ValueChanged="@( (bool value) => ShowGapsChanged(value) )"
-                               ValueExpression="@( () => ShowGaps )"
-                               class="form-control posabswh"
-                               style="--leftpos: 410px; --toppos: 577px; --width: 20px; --height: 20px"
-                               disabled="@ControlsDisabled" />
+                    ValueChanged="@( (bool value) => ShowGapsChanged(value) )"
+                    ValueExpression="@( () => ShowGaps )"
+                    class="form-control posabswh"
+                    style="--leftpos: 410px; --toppos: 577px; --width: 20px; --height: 20px"
+                    disabled="@ControlsDisabled" />
         </EditForm>
 
         @if (ShowGaps == true)

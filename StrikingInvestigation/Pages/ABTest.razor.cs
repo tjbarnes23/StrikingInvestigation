@@ -104,7 +104,11 @@ namespace StrikingInvestigation.Pages
 
         public bool CurrentTenorWeightDisabled { get; set; }
 
-        public bool Saving { get; set; }
+        public bool Spinner1 { get; set; }
+
+        public bool Spinner2 { get; set; }
+
+        public bool Spinner3 { get; set; }
 
         public bool Saved { get; set; }
 
@@ -361,7 +365,13 @@ namespace StrikingInvestigation.Pages
 
         protected async void Save()
         {
-            Saving = true;
+            Spinner1 = true;
+            ControlsDisabled = true;
+            PlayLabelA = "Wait";
+            PlayLabelB = "Wait";
+            PlayDisabledA = true;
+            PlayDisabledB = true;
+            StateHasChanged();
 
             // Push the created test to the API in JSON format
             // Start by creating a BlowSetCore object, which just has the parent data BlowSet, for each of A and B
@@ -386,13 +396,18 @@ namespace StrikingInvestigation.Pages
             // Refresh the contents of the Select Test dropdown 
             ABTestsData = (await Http.GetFromJsonAsync<ABTestData[]>("api/abtests")).ToList();
 
-            Saving = false;
+            Spinner1 = false;
             Saved = true;
             StateHasChanged();
 
             await Task.Delay(1000);
 
             Saved = false;
+            ControlsDisabled = false;
+            PlayLabelA = "Play";
+            PlayLabelB = "Play";
+            PlayDisabledA = false;
+            PlayDisabledB = false;
             StateHasChanged();
         }
 
@@ -427,6 +442,7 @@ namespace StrikingInvestigation.Pages
             else if (PlayLabelA == "Stop A")
             {
                 PlayDisabledA = true;
+                Spinner2 = true;
 
                 CancellationTokenSource.Cancel();
 
@@ -438,6 +454,7 @@ namespace StrikingInvestigation.Pages
                 // Wait for 2.6 seconds for the sound to finish
                 await Task.Delay(2600);
 
+                Spinner2 = false;
                 PlayDisabledA = false;
             }
 
@@ -480,6 +497,7 @@ namespace StrikingInvestigation.Pages
             else if (PlayLabelB == "Stop B")
             {
                 PlayDisabledB = true;
+                Spinner3 = true;
 
                 CancellationTokenSource.Cancel();
 
@@ -491,6 +509,7 @@ namespace StrikingInvestigation.Pages
                 // Wait for 2.6 seconds for the sound to finish
                 await Task.Delay(2600);
 
+                Spinner3 = false;
                 PlayDisabledB = false;
             }
 
@@ -556,7 +575,14 @@ namespace StrikingInvestigation.Pages
             }
 
             // Wait for 2.6 seconds for the sound to finish
-            await Task.Delay(2600, CancellationToken);
+            await Task.Delay(1000, CancellationToken);
+
+            Spinner2 = true;
+            PlayDisabledA = true;
+            StateHasChanged();
+            await Task.Delay(1600);
+            Spinner2 = false;
+            PlayDisabledA = false;
         }
 
         public async Task StrikeB()
@@ -613,7 +639,14 @@ namespace StrikingInvestigation.Pages
             }
 
             // Wait for 2.6 seconds for the sound to finish
-            await Task.Delay(2600, CancellationToken);
+            await Task.Delay(1000, CancellationToken);
+
+            Spinner3 = true;
+            PlayDisabledB = true;
+            StateHasChanged();
+            await Task.Delay(1600);
+            Spinner3 = false;
+            PlayDisabledB = false;
         }
 
         protected async Task AHasErrors()

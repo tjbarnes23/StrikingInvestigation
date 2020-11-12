@@ -57,7 +57,9 @@ namespace StrikingInvestigation.Pages
 
         public bool PlayDisabled { get; set; }
 
-        public bool Saving { get; set; }
+        public bool Spinner1 { get; set; }
+
+        public bool Spinner2 { get; set; }
 
         public bool Saved { get; set; }
 
@@ -150,7 +152,12 @@ namespace StrikingInvestigation.Pages
 
         protected async void Save()
         {
-            Saving = true;
+            Spinner1 = true;
+            ControlsDisabled = true;
+            PlayLabel = "Wait";
+            PlayDisabled = true;
+            Blow.BellColor = Constants.DisabledUnstruckTestBellColor;
+            StateHasChanged();
 
             // Push the created test to the API in JSON format
             // Start by creating a BlowCore object, which just has the inherited properties from Blow
@@ -168,13 +175,17 @@ namespace StrikingInvestigation.Pages
             // Refresh the contents of the Select Test dropdown 
             AVTestsData = (await Http.GetFromJsonAsync<AVTestData[]>("api/avtests")).ToList();
 
-            Saving = false;
+            Spinner1 = false;
             Saved = true;
             StateHasChanged();
 
             await Task.Delay(1000);
 
             Saved = false;
+            ControlsDisabled = false;
+            PlayLabel = "Play";
+            PlayDisabled = false;
+            Blow.BellColor = Constants.UnstruckTestBellColor;
             StateHasChanged();
         }
 
@@ -202,12 +213,14 @@ namespace StrikingInvestigation.Pages
             else if (PlayLabel == "Stop")
             {
                 PlayDisabled = true;
+                Spinner2 = true;
 
                 CancellationTokenSource.Cancel();
 
                 // Wait for 2.6 seconds for the sound to finish
                 await Task.Delay(2600);
 
+                Spinner2 = false;
                 PlayDisabled = false;
             }
 
@@ -298,7 +311,14 @@ namespace StrikingInvestigation.Pages
             }
 
             // Wait for 2.6 seconds for the sound to finish
-            await Task.Delay(2600, CancellationToken);
+            await Task.Delay(1000, CancellationToken);
+
+            Spinner2 = true;
+            PlayDisabled = true;
+            StateHasChanged();
+            await Task.Delay(1600);
+            Spinner2 = false;
+            PlayDisabled = false;
         }
 
         protected void GapChangedWithButton(bool clicked)

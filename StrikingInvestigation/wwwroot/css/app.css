@@ -269,11 +269,11 @@ h6 {
     border: 16px solid silver;
     border-top: 16px solid #337AB7;
     border-radius: 50%;
+    position: absolute;
     left: 550px;
     top: 450px;
     width: 80px;
     height: 80px;
-    position: absolute;
     animation: spin 700ms linear infinite;
 }
 
@@ -291,6 +291,23 @@ h6 {
     animation: spin 700ms linear infinite;
 }
 
+.spinnerabs {
+    box-sizing: border-box;
+    border-width: 5px;
+    border-style: solid;
+    border-color: silver;
+    border-top-width: 5px;
+    border-top-style: solid;
+    border-top-color: #337AB7;
+    border-radius: 50%;
+    position: absolute;
+    left: var(--leftpos);
+    top: var(--toppos);
+    width: 24px;
+    height: 24px;
+    animation: spin 700ms linear infinite;
+}
+
 @keyframes spin {
     0% {
         transform: rotate(0deg)
@@ -302,26 +319,26 @@ h6 {
 }
 
 .posabs {
+    position: absolute;
     left: var(--leftpos);
     top: var(--toppos);
-    position: absolute;
     user-select: none;
 }
 
 .posabsw {
+    position: absolute;
     left: var(--leftpos);
     top: var(--toppos);
     width: var(--width);
-    position: absolute;
     user-select: none;
 }
 
 .posabswh {
+    position: absolute;
     left: var(--leftpos);
     top: var(--toppos);
     width: var(--width);
     height: var(--height);
-    position: absolute;
     user-select: none;
 }
 
@@ -329,11 +346,11 @@ h6 {
     box-sizing: border-box;
     border: 10px solid var(--color);
     border-radius: 50%;
+    position: absolute;
     left: var(--leftpos);
     top: var(--toppos);
     width: var(--diameter);
     height: var(--diameter);
-    position: absolute;
     user-select: none;
     font-size: 14px;
     font-weight: bold;
@@ -345,80 +362,80 @@ h6 {
     font-size: 24px;
     font-weight: bold;
     color: silver;
+    position: absolute;
     left: var(--leftpos);
     top: var(--toppos);
-    position: absolute;
     user-select: none;
 }
 
 .changelabel {
+    position: absolute;
     left: var(--leftpos);
     top: var(--toppos);
-    position: absolute;
     user-select: none;
 }
 
 .rowstartlabel {
     box-sizing: content-box;
     border-left: 6px dashed silver;
+    position: absolute;
     left: var(--leftpos);
     top: var(--toppos);
     width: 0px;
     height: 60px;
-    position: absolute;
 }
 
 .boundarylabel {
     box-sizing: border-box;
     border: 3px dotted silver;
+    position: absolute;
     left: var(--leftpos);
     top: var(--toppos);
     width: var(--width);
     height: var(--height);
-    position: absolute;
     z-index: -1;
 }
 
 .gaplabel {
     font-size: small;
     background-color: var(--bgcolor);
+    position: absolute;
     left: var(--leftpos);
     top: var(--toppos);
     width: 22px;
     height: 18px;
-    position: absolute;
     user-select: none;
 }
 
 .audiobar {
     box-sizing: content-box;
     border-top: 6px solid silver;
+    position: absolute;
     left: var(--leftpos);
     top: var(--toppos);
     width: var(--width);
     height: 0px;
-    position: absolute;
 }
 
 .audiodotinitial {
     box-sizing: content-box;
     border-radius: 50%;
+    position: absolute;
     left: var(--leftpos);
     top: var(--toppos);
     width: 32px;
     height: 32px;
-    position: absolute;
     background-color: gray;
 }
 
 .audiodotmove {
     box-sizing: content-box;
     border-radius: 50%;
+    position: absolute;
     left: var(--leftendpos);
     top: var(--toppos);
     width: 32px;
     height: 32px;
-    position: absolute;
     background-color: #A00000;
     animation-name: slide;
     animation-duration: var(--duration);

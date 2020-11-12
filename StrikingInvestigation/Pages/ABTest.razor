@@ -132,7 +132,7 @@ else
                             Save
                         </button>
 
-                        @if (Saving == true)
+                        @if (Spinner1 == true)
                         {
                             <div class="spinnerinline" style="display: inline-block; vertical-align: top;
                                     margin-left: 12px; margin-top: 7px;
@@ -239,6 +239,12 @@ else
             PlayLabel="@PlayLabelA"
             PlayDisabled="@PlayDisabledA"
             Callback="PlayA" />
+
+    @if (Spinner2 == true)
+    {
+        <Spinner2 TestSpec="@TestSpec"
+            Screen="@ScreenA" />
+    }
 }
 
 @if (BlowSetB != null)
@@ -283,6 +289,12 @@ else
             PlayLabel="@PlayLabelB"
             PlayDisabled="@PlayDisabledB"
             Callback="PlayB" />
+
+    @if (Spinner3 == true)
+    {
+        <Spinner2 TestSpec="@TestSpec"
+            Screen="@ScreenB" />
+    }
 }
 
 @if (BlowSetA != null && BlowSetB != null)
