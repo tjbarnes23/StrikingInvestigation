@@ -62,7 +62,7 @@ namespace StrikingInvestigation.Pages
 
         public IEnumerable<ABTestData> ABTestsData { get; set; }
 
-        public string SelectedTest { get; set; } = "Select test";
+        public int SelectedTest { get; set; } = -1;
 
         public bool ShowGaps { get; set; }
 
@@ -110,7 +110,19 @@ namespace StrikingInvestigation.Pages
 
         public bool Spinner3 { get; set; }
 
+        public bool SpinnerSubmit1 { get; set; }
+
+        public bool SpinnerSubmit2 { get; set; }
+
+        public bool SpinnerSubmit3 { get; set; }
+
         public bool Saved { get; set; }
+
+        public bool Submitted1 { get; set; }
+
+        public bool Submitted2 { get; set; }
+
+        public bool Submitted3 { get; set; }
 
         protected override async Task OnInitializedAsync()
         {
@@ -148,13 +160,13 @@ namespace StrikingInvestigation.Pages
             }
         }
 
-        protected void TestChanged(string value)
+        protected void TestChanged(int value)
         {
             SelectedTest = value;
             BlowSetA = null;
             BlowSetB = null;
 
-            if (SelectedTest != "Random" && SelectedTest != "Select test")
+            if (SelectedTest != 0 && SelectedTest != -1)
             {
                 Load(SelectedTest);
             }
@@ -311,10 +323,10 @@ namespace StrikingInvestigation.Pages
             SetState(ScreenState.Play);
         }
 
-        protected async void Load(string id)
+        protected async void Load(int id)
         {
             // Get a test from the API
-            ABTestData aBTestData = await Http.GetFromJsonAsync<ABTestData>("api/abtests/" + id);
+            ABTestData aBTestData = await Http.GetFromJsonAsync<ABTestData>("api/abtests/" + id.ToString());
 
             // Use the Deserializer method of the JsonSerializer class (in the System.Text.Json namespace) to create
             // a BlowSetCore object for each of A and B
@@ -651,52 +663,164 @@ namespace StrikingInvestigation.Pages
 
         protected async Task AHasErrors()
         {
-            ShowGaps = true;
-            ResultEntered = true;
-
-            if (IsA == true)
+            if (SelectedTest != 0 && SelectedTest != -1)
             {
-                ResultSource = "/audio/right.mp3";
+                await Submit("A has errors");
             }
             else
             {
-                ResultSource = "/audio/wrong.mp3";
+                ShowGaps = true;
+                ResultEntered = true;
+
+                if (IsA == true)
+                {
+                    ResultSource = "/audio/right.mp3";
+                }
+                else
+                {
+                    ResultSource = "/audio/wrong.mp3";
+                }
+
+                ResultSound = true;
+
+                // Wait for 1.5 seconds for the sound to finish
+                await Task.Delay(1500);
+
+                ResultSound = false;
             }
-            
-            ResultSound = true;
-
-            // Wait for 1.5 seconds for the sound to finish
-            await Task.Delay(1500);
-
-            ResultSound = false;
         }
 
         protected async Task BHasErrors()
         {
-            ShowGaps = true;
-            ResultEntered = true;
-
-            if (IsA == true)
+            if (SelectedTest != 0 && SelectedTest != -1)
             {
-                ResultSource = "/audio/wrong.mp3";
+                await Submit("B has errors");
             }
             else
             {
-                ResultSource = "/audio/right.mp3";
+                ShowGaps = true;
+                ResultEntered = true;
+
+                if (IsA == true)
+                {
+                    ResultSource = "/audio/wrong.mp3";
+                }
+                else
+                {
+                    ResultSource = "/audio/right.mp3";
+                }
+
+                ResultSound = true;
+
+                // Wait for 1.5 seconds for the sound to finish
+                await Task.Delay(1500);
+
+                ResultSound = false;
             }
-            
-            ResultSound = true;
-
-            // Wait for 1.5 seconds for the sound to finish
-            await Task.Delay(1500);
-
-            ResultSound = false;
         }
 
-        protected void DontKnow()
+        protected async Task DontKnow()
         {
-            ShowGaps = true;
-            ResultEntered = true;
+            if (SelectedTest != 0 && SelectedTest != -1)
+            {
+                await Submit("Don't know");
+            }
+            else
+            {
+                ShowGaps = true;
+                ResultEntered = true;
+            }
+        }
+
+        protected async Task Submit(string result)
+        {
+            switch (result)
+            {
+                case "A has errors":
+                    SpinnerSubmit1 = true;
+                    break;
+
+                case "B has errors":
+                    SpinnerSubmit2 = true;
+                    break;
+
+                case "Don't know":
+                    SpinnerSubmit3 = true;
+                    break;
+
+                default:
+                    break;
+            }
+
+            ControlsDisabled = true;
+            PlayLabelA = "Wait";
+            PlayLabelB = "Wait";
+            PlayDisabledA = true;
+            PlayDisabledB = true;
+            StateHasChanged();
+
+            // Create a TestSubmission object
+            TestSubmission testSubmission = new TestSubmission()
+            {
+                UserId = string.Empty,
+                TestDate = DateTime.Now,
+                TestType = "A/B Test",
+                TestId = SelectedTest,
+                AB = result
+            };
+
+            // Push the testSubmission to the API in JSON format
+            await Http.PostAsJsonAsync("api/testsubmissions", testSubmission);
+
+            switch (result)
+            {
+                case "A has errors":
+                    SpinnerSubmit1 = false;
+                    Submitted1 = true;
+                    break;
+
+                case "B has errors":
+                    SpinnerSubmit2 = false;
+                    Submitted2 = true;
+                    break;
+
+                case "Don't know":
+                    SpinnerSubmit3 = false;
+                    Submitted3 = true;
+                    break;
+
+                default:
+                    break;
+            }
+            
+            StateHasChanged();
+
+            await Task.Delay(1000);
+
+            switch (result)
+            {
+                case "A has errors":
+                    Submitted1 = false;
+                    break;
+
+                case "B has errors":
+                    Submitted2 = false;
+                    break;
+
+                case "Don't know":
+                    Submitted3 = false;
+                    break;
+
+                default:
+                    break;
+            }
+
+            ControlsDisabled = false;
+            PlayLabelA = "Play";
+            PlayLabelB = "Play";
+            PlayDisabledA = false;
+            PlayDisabledB = false;
+            StateHasChanged();
         }
     }
 }

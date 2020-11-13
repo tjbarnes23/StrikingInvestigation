@@ -20,24 +20,24 @@ else
                 </label>
             </div>
 
-            <InputSelect Value="@SelectedTest"
-                                ValueChanged="@( (string value) => TestChanged(value) )"
+            <CustomInputSelect Value="@SelectedTest"
+                                ValueChanged="@( (int value) => TestChanged(value) )"
                                 ValueExpression="@( () => SelectedTest )"
                                 class="form-control posabsw"
                                 style="--leftpos: 260px; --toppos: 66px; --width: 200px"
                                 disabled="@ControlsDisabled">
-                <option value="Select test">Select test...</option>
-                <option value="Random">Random</option>
+                <option value="-1">Select test...</option>
+                <option value="0">Practice</option>
 
                 @foreach (GapTestData gapTestData in GapTestsData)
                 {
                     <option value="@gapTestData.Id">Test @gapTestData.Id</option>
                 }
-            </InputSelect>
+            </CustomInputSelect>
         </EditForm>
     </div>
 
-    @if (SelectedTest == "Random")
+    @if (SelectedTest == 0)
     {
         <div class="form-group">
             <EditForm Model="@TestSpec">
@@ -181,7 +181,7 @@ else
             </EditForm>
         </div>
     }
-    else if (SelectedTest != "Select test")
+    else if (SelectedTest != -1)
     {
         <div class="form-group">
             <div class="posabs" style="--leftpos: 20px; --toppos: 120px">
@@ -292,7 +292,27 @@ else
 
         @if (Spinner2 == true)
         {
-            <Spinner Blow="@BlowSet.Blows.Last()"
+            <SpinnerPlay Blow="@BlowSet.Blows.Last()"
+                    Screen="@Screen" />
+        }
+
+        @if (SelectedTest != 0 && SelectedTest != -1)
+        {
+            <SubmitBtn Blow="@BlowSet.Blows.Last()"
+                    Screen="@Screen"
+                    SubmitDisabled="@ControlsDisabled"
+                    Callback="Submit" />
+        }
+
+        @if (SpinnerSubmit == true)
+        {
+            <SpinnerSubmit Blow="@BlowSet.Blows.Last()"
+                    Screen="@Screen" />
+        }
+
+        @if (Submitted == true)
+        {
+            <SubmitLabel Blow="@BlowSet.Blows.Last()"
                     Screen="@Screen" />
         }
     }

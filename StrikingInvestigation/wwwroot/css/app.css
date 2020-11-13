@@ -407,6 +407,16 @@ h6 {
     user-select: none;
 }
 
+.gapaudiolabel {
+    font-size: small;
+    position: absolute;
+    left: var(--leftpos);
+    top: var(--toppos);
+    width: 70px;
+    height: 45px;
+    user-select: none;
+}
+
 .audiobar {
     box-sizing: content-box;
     border-top: 6px solid silver;

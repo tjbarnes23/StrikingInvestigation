@@ -39,7 +39,7 @@ namespace StrikingInvestigation.Pages
 
         public IEnumerable<AVTestData> AVTestsData { get; set; }
 
-        public string SelectedTest { get; set; } = "Select test";
+        public int SelectedTest { get; set; } = -1;
 
         public bool ShowGaps { get; set; }
 
@@ -61,7 +61,11 @@ namespace StrikingInvestigation.Pages
 
         public bool Spinner2 { get; set; }
 
+        public bool SpinnerSubmit { get; set; }
+
         public bool Saved { get; set; }
+
+        public bool Submitted { get; set; }
 
         protected override async Task OnInitializedAsync()
         {
@@ -87,12 +91,12 @@ namespace StrikingInvestigation.Pages
             }
         }
 
-        protected void TestChanged(string value)
+        protected void TestChanged(int value)
         {
             SelectedTest = value;
             Blow = null;
 
-            if (SelectedTest != "Random" && SelectedTest != "Select test")
+            if (SelectedTest != 0 && SelectedTest != -1)
             {
                 Load(SelectedTest);
             }
@@ -130,10 +134,10 @@ namespace StrikingInvestigation.Pages
             SetState(ScreenState.Play);
         }
 
-        protected async void Load(string id)
+        protected async void Load(int id)
         {
             // Get a test from the API
-            AVTestData aVTestData = await Http.GetFromJsonAsync<AVTestData>("api/avtests/" + id);
+            AVTestData aVTestData = await Http.GetFromJsonAsync<AVTestData>("api/avtests/" + id.ToString());
 
             // Use the Deserializer method of the JsonSerializer class (in the System.Text.Json namespace) to create
             // a BlowCore object
@@ -319,6 +323,43 @@ namespace StrikingInvestigation.Pages
             await Task.Delay(1600);
             Spinner2 = false;
             PlayDisabled = false;
+        }
+
+        protected async Task Submit()
+        {
+            SpinnerSubmit = true;
+            ControlsDisabled = true;
+            PlayLabel = "Wait";
+            PlayDisabled = true;
+            Blow.BellColor = Constants.DisabledUnstruckTestBellColor;
+            StateHasChanged();
+
+            // Create a TestSubmission object
+            TestSubmission testSubmission = new TestSubmission()
+            {
+                UserId = string.Empty,
+                TestDate = DateTime.Now,
+                TestType = "A/V Test",
+                TestId = SelectedTest,
+                Gap = Blow.Gap,
+                AB = string.Empty
+            };
+
+            // Push the testSubmission to the API in JSON format
+            await Http.PostAsJsonAsync("api/testsubmissions", testSubmission);
+
+            SpinnerSubmit = false;
+            Submitted = true;
+            StateHasChanged();
+
+            await Task.Delay(1000);
+
+            Submitted = false;
+            ControlsDisabled = false;
+            PlayLabel = "Play";
+            PlayDisabled = false;
+            Blow.BellColor = Constants.UnstruckTestBellColor;
+            StateHasChanged();
         }
 
         protected void GapChangedWithButton(bool clicked)

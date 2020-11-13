@@ -6,10 +6,8 @@ using StrikingInvestigation.Utilities;
 
 namespace StrikingInvestigation.Shared
 {
-    public partial class GapPlus
+    public partial class SubmitBtn
     {
-        private readonly string gapPlusStr = Constants.Rounding.ToString() + "ms";
-
         [Parameter]
         public Blow Blow { get; set; }
 
@@ -17,7 +15,7 @@ namespace StrikingInvestigation.Shared
         public Screen Screen { get; set; }
 
         [Parameter]
-        public bool GapDisabled { get; set; }
+        public bool SubmitDisabled { get; set; }
 
         [Parameter]
         public EventCallback<bool> Callback { get; set; }
@@ -45,22 +43,16 @@ namespace StrikingInvestigation.Shared
 
             double diameter = Diam.Diameter(Blow.BellActual) * Screen.DiameterScale;
 
-            double xAdj = -5;
-            double yAdj = (diameter / 2) + (13 * Screen.DiameterScale) + 5;
-            
+            double xAdj = -70;
+            double yAdj = (diameter / 2) + (13 * Screen.DiameterScale) + 58;
+
             LeftPos = Convert.ToInt32(xPos + xAdj).ToString() + "px";
             TopPos = Convert.ToInt32(yPos + yAdj).ToString() + "px";
         }
 
-        protected async Task GapPlusClick()
+        protected async Task SubmitClick()
         {
-            int newGap = Blow.Gap + Constants.Rounding;
-
-            if (newGap <= Screen.GapMax)
-            {
-                Blow.UpdateGap(newGap);
-                await Callback.InvokeAsync(true);
-            }
+            await Callback.InvokeAsync(true);
         }
     }
 }

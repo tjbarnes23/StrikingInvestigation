@@ -1,26 +1,17 @@
 ﻿using System;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Components;
 using StrikingInvestigation.Models;
 using StrikingInvestigation.Utilities;
 
 namespace StrikingInvestigation.Shared
 {
-    public partial class GapPlus
+    public partial class SubmitLabel
     {
-        private readonly string gapPlusStr = Constants.Rounding.ToString() + "ms";
-
         [Parameter]
         public Blow Blow { get; set; }
 
         [Parameter]
         public Screen Screen { get; set; }
-
-        [Parameter]
-        public bool GapDisabled { get; set; }
-
-        [Parameter]
-        public EventCallback<bool> Callback { get; set; }
 
         public string LeftPos { get; private set; }
 
@@ -45,22 +36,11 @@ namespace StrikingInvestigation.Shared
 
             double diameter = Diam.Diameter(Blow.BellActual) * Screen.DiameterScale;
 
-            double xAdj = -5;
-            double yAdj = (diameter / 2) + (13 * Screen.DiameterScale) + 5;
-            
+            double xAdj = 17;
+            double yAdj = (diameter / 2) + (13 * Screen.DiameterScale) + 65;
+
             LeftPos = Convert.ToInt32(xPos + xAdj).ToString() + "px";
             TopPos = Convert.ToInt32(yPos + yAdj).ToString() + "px";
-        }
-
-        protected async Task GapPlusClick()
-        {
-            int newGap = Blow.Gap + Constants.Rounding;
-
-            if (newGap <= Screen.GapMax)
-            {
-                Blow.UpdateGap(newGap);
-                await Callback.InvokeAsync(true);
-            }
         }
     }
 }

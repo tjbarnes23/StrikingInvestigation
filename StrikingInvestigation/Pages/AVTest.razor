@@ -1,5 +1,6 @@
 ﻿@page "/AVTest"
 @using StrikingInvestigation.Models
+@using StrikingInvestigation.Utilities
 
 <div class="posabs" style="--leftpos: 20px; --toppos: 63px">
     <h1>A/V Test</h1>
@@ -23,61 +24,78 @@ else
                 </label>
             </div>
 
-            <InputSelect Value="@SelectedTest"
-                    ValueChanged="@( (string value) => TestChanged(value) )"
+            <CustomInputSelect Value="@SelectedTest"
+                    ValueChanged="@( (int value) => TestChanged(value) )"
                     ValueExpression="@( () => SelectedTest )"
                     class="form-control posabsw"
                     style="--leftpos: 110px; --toppos: 156px; --width: 200px"
                     disabled="@ControlsDisabled">
-                <option value="Select test">Select test...</option>
-                <option value="Random">Random</option>
+                <option value="-1">Select test...</option>
+                <option value="0">Practice</option>
 
                 @foreach (AVTestData aVTestData in AVTestsData)
                 {
                     <option value="@aVTestData.Id">Test @aVTestData.Id</option>
                 }
-            </InputSelect>
+            </CustomInputSelect>
         </EditForm>
     </div>
 
-    @if (SelectedTest == "Random")
+    @if (SelectedTest == 0)
     {
-        <div class="posabs" style="--leftpos: 20px; --toppos: 213px">
-            <button class="btn btn-primary" @onclick="Create" disabled="@ControlsDisabled">
-                Create A/V Test
-            </button>
+        <div class="form-group">
+            <EditForm Model="@ShowGaps">
+                <div class="posabs" style="--leftpos: 20px; --toppos: 241px">
+                    <button class="btn btn-primary" @onclick="Create" disabled="@ControlsDisabled">
+                        Create A/V Test
+                    </button>
+                </div>
+
+                @if (Blow != null)
+                {
+                    <div class="posabs" style="--leftpos: 180px; --toppos: 213px">
+                        <label>
+                            Show audio gap time
+                        </label>
+                    </div>
+
+                    <InputCheckbox Value="@ShowGaps"
+                        ValueChanged="@( (bool value) => ShowGapsChanged(value) )"
+                        ValueExpression="@( () => ShowGaps )"
+                        class="form-control posabswh"
+                        style="--leftpos: 242px; --toppos: 251px; --width: 20px; --height: 20px"
+                        disabled="@ControlsDisabled" />
+
+                    <div class="posabs" style="--leftpos: 350px; --toppos: 213px">
+                        <label>
+                            Save test
+                        </label>
+                    </div>
+
+                    <div class="posabs" style="--leftpos: 350px; --toppos: 241px">
+                        <button class="btn btn-primary" @onclick="Save" disabled="@ControlsDisabled">
+                            Save
+                        </button>
+
+                        @if (Spinner1 == true)
+                        {
+                            <div class="spinnerinline" style="display: inline-block; vertical-align: top;
+                                    margin-left: 12px; margin-top: 7px;
+                                    --borderwidth: 5px; --width: 24px; --height: 24px">
+                            </div>
+                        }
+
+                        @if (Saved == true)
+                        {
+                            <div style="display: inline-block; vertical-align: top; margin-left: 12px;
+                                    margin-top: 7px">
+                                Saved
+                            </div>
+                        }
+                    </div>
+                }
+            </EditForm>
         </div>
-
-        @if (Blow != null)
-        {
-            <div class="posabs" style="--leftpos: 185px; --toppos: 220px">
-                <label>
-                    Save test:
-                </label>
-            </div>
-
-            <div class="posabs" style="--leftpos: 265px; --toppos: 213px">
-                <button class="btn btn-primary" @onclick="Save" disabled="@ControlsDisabled">
-                    Save
-                </button>
-
-                @if (Spinner1 == true)
-                {
-                    <div class="spinnerinline" style="display: inline-block; vertical-align: top;
-                            margin-left: 12px; margin-top: 7px;
-                            --borderwidth: 5px; --width: 24px; --height: 24px">
-                    </div>
-                }
-
-                @if (Saved == true)
-                {
-                    <div style="display: inline-block; vertical-align: top; margin-left: 12px;
-                            margin-top: 7px">
-                        Saved
-                    </div>
-                }
-            </div>
-        }
     }
 }
 
@@ -88,6 +106,12 @@ else
             <Bell Blow="@Blow"
                     Screen="@Screen" />
         </div>
+
+        @if (ShowGaps == true)
+        {
+            <GapAudioLabel Blow="@Blow"
+                    Screen="@Screen" />
+        }
 
         <audio id="@Blow.AudioId" preload="auto">
             <source src="@Blow.BellSound" type="audio/mpeg" />
@@ -117,32 +141,28 @@ else
 
         @if (Spinner2 == true)
         {
-            <Spinner Blow="@Blow"
+            <SpinnerPlay Blow="@Blow"
                     Screen="@Screen" />
         }
 
-        <div class="posabs" style="--leftpos: 290px; --toppos: 575px">
-            <label>
-                Show gap time:
-            </label>
-        </div>
-    
-        <EditForm Model="@ShowGaps">
-            <InputCheckbox Value="@ShowGaps"
-                    ValueChanged="@( (bool value) => ShowGapsChanged(value) )"
-                    ValueExpression="@( () => ShowGaps )"
-                    class="form-control posabswh"
-                    style="--leftpos: 410px; --toppos: 577px; --width: 20px; --height: 20px"
-                    disabled="@ControlsDisabled" />
-        </EditForm>
-
-        @if (ShowGaps == true)
+        @if (SelectedTest != 0 && SelectedTest != -1)
         {
-            <div class="posabs" style="--leftpos: 455px; --toppos: 575px">
-                <label>
-                    @Blow.AltGap
-                </label>
-            </div>
+            <SubmitBtn Blow="@Blow"
+                    Screen="@Screen"
+                    SubmitDisabled="@ControlsDisabled"
+                    Callback="Submit" />
+        }
+
+        @if (SpinnerSubmit == true)
+        {
+            <SpinnerSubmit Blow="@Blow"
+                    Screen="@Screen" />
+        }
+
+        @if (Submitted == true)
+        {
+            <SubmitLabel Blow="@Blow"
+                    Screen="@Screen" />
         }
     }
 </div>

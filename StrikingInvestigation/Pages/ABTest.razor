@@ -20,24 +20,24 @@ else
                 </label>
             </div>
 
-            <InputSelect Value="@SelectedTest"
-                         ValueChanged="@( (string value) => TestChanged(value) )"
-                         ValueExpression="@( () => SelectedTest )"
-                         class="form-control posabsw"
-                         style="--leftpos: 260px; --toppos: 66px; --width: 200px"
-                         disabled="@ControlsDisabled">
-                <option value="Select test">Select test...</option>
-                <option value="Random">Random</option>
-                
+            <CustomInputSelect Value="@SelectedTest"
+                               ValueChanged="@( (int value) => TestChanged(value) )"
+                               ValueExpression="@( () => SelectedTest )"
+                               class="form-control posabsw"
+                               style="--leftpos: 260px; --toppos: 66px; --width: 200px"
+                               disabled="@ControlsDisabled">
+                <option value="-1">Select test...</option>
+                <option value="0">Practice</option>
+
                 @foreach (ABTestData aBTestData in ABTestsData)
                 {
                     <option value="@aBTestData.Id">Test @aBTestData.Id</option>
                 }
-            </InputSelect>
+            </CustomInputSelect>
         </EditForm>
     </div>
 
-    @if (SelectedTest == "Random")
+    @if (SelectedTest == 0)
     {
         <div class="form-group">
             <EditForm Model="@TestSpec">
@@ -152,7 +152,7 @@ else
             </EditForm>
         </div>
     }
-    else if (SelectedTest != "Select test")
+    else if (SelectedTest != -1)
     {
         <div class="form-group">
             <div class="posabs" style="--leftpos: 20px; --toppos: 120px">
@@ -205,27 +205,27 @@ else
         if (blow.Place == 1)
         {
             <StrokeLabel Blow="@blow"
-                    Screen="@ScreenA" />
+                         Screen="@ScreenA" />
 
             <RowStartLabel Blow="@blow"
-                    Screen="@ScreenA" />
+                           Screen="@ScreenA" />
 
             <ChangeLabel Blow="@blow"
-                    Screen="@ScreenA" />
+                         Screen="@ScreenA" />
         }
 
         if (ShowGaps == true)
         {
             <Bell Blow="@blow"
-                    Screen="@ScreenA" />
+                  Screen="@ScreenA" />
 
             <GapLabel Blow="@blow"
-                    Screen="@ScreenA" />
+                      Screen="@ScreenA" />
         }
         else
         {
             <AudioBox2 TestSpec="@TestSpec"
-                    Screen="@ScreenA" />
+                       Screen="@ScreenA" />
         }
 
         <audio id="@blow.AudioId" preload="auto">
@@ -234,15 +234,15 @@ else
     }
 
     <PlayBtn2 TestSpec="@TestSpec"
-            Screen="@ScreenA"
-            PlayLabel="@PlayLabelA"
-            PlayDisabled="@PlayDisabledA"
-            Callback="PlayA" />
+              Screen="@ScreenA"
+              PlayLabel="@PlayLabelA"
+              PlayDisabled="@PlayDisabledA"
+              Callback="PlayA" />
 
     @if (Spinner2 == true)
     {
-        <Spinner2 TestSpec="@TestSpec"
-            Screen="@ScreenA" />
+        <SpinnerPlay2 TestSpec="@TestSpec"
+                  Screen="@ScreenA" />
     }
 }
 
@@ -254,27 +254,27 @@ else
         if (blow.Place == 1)
         {
             <StrokeLabel Blow="@blow"
-                    Screen="@ScreenB" />
+                         Screen="@ScreenB" />
 
             <RowStartLabel Blow="@blow"
-                    Screen="@ScreenB" />
+                           Screen="@ScreenB" />
 
             <ChangeLabel Blow="@blow"
-                    Screen="@ScreenB" />
+                         Screen="@ScreenB" />
         }
 
         if (ShowGaps == true)
         {
             <Bell Blow="@blow"
-                    Screen="@ScreenB" />
+                  Screen="@ScreenB" />
 
             <GapLabel Blow="@blow"
-                    Screen="@ScreenB" />
+                      Screen="@ScreenB" />
         }
         else
         {
             <AudioBox2 TestSpec="@TestSpec"
-                    Screen="@ScreenB" />
+                       Screen="@ScreenB" />
         }
 
         <audio id="@blow.AudioId" preload="auto">
@@ -283,15 +283,15 @@ else
     }
 
     <PlayBtn2 TestSpec="@TestSpec"
-            Screen="@ScreenB"
-            PlayLabel="@PlayLabelB"
-            PlayDisabled="@PlayDisabledB"
-            Callback="PlayB" />
+              Screen="@ScreenB"
+              PlayLabel="@PlayLabelB"
+              PlayDisabled="@PlayDisabledB"
+              Callback="PlayB" />
 
     @if (Spinner3 == true)
     {
-        <Spinner2 TestSpec="@TestSpec"
-            Screen="@ScreenB" />
+        <SpinnerPlay2 TestSpec="@TestSpec"
+                  Screen="@ScreenB" />
     }
 }
 
@@ -337,6 +337,56 @@ else
                            style="--leftpos: 1118px; --toppos: 1158px; --width: 20px; --height: 20px"
                            disabled="@ControlsDisabled" />
         </EditForm>
+    }
+
+    @if (SpinnerSubmit1 == true)
+    {
+        <div class="spinnerabs"
+                style="--leftpos: 500px;
+                        --toppos: 1203px">
+        </div>
+    }
+
+    @if (Submitted1 == true)
+    {
+        <div class="posabs"
+                style="--leftpos: 500px;
+                        --toppos: 1203px">
+            Submitted
+        </div>
+    }
+
+    @if (SpinnerSubmit2 == true)
+    {
+        <div class="spinnerabs"
+                style="--leftpos: 640px;
+                        --toppos: 1203px">
+        </div>
+    }
+
+    @if (Submitted2 == true)
+    {
+        <div class="posabs"
+                style="--leftpos: 640px;
+                        --toppos: 1203px">
+            Submitted
+        </div>
+    }
+    @if (SpinnerSubmit3 == true)
+    {
+        <div class="spinnerabs"
+                style="--leftpos: 780px;
+                        --toppos: 1203px">
+        </div>
+    }
+
+    @if (Submitted3 == true)
+    {
+        <div class="posabs"
+                style="--leftpos: 780px;
+                        --toppos: 1203px">
+            Submitted
+        </div>
     }
 
     @if (ResultSound == true)
