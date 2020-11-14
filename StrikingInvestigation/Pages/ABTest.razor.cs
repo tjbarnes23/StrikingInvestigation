@@ -80,9 +80,17 @@ namespace StrikingInvestigation.Pages
 
         public int DurationB { get; set; }
 
+        public string SaveLabel { get; set; }
+
         public string PlayLabelA { get; set; }
 
         public string PlayLabelB { get; set; }
+
+        public string SubmitLabel1 { get; set; }
+
+        public string SubmitLabel2 { get; set; }
+
+        public string SubmitLabel3 { get; set; }
 
         public CancellationTokenSource CancellationTokenSource { get; set; }
 
@@ -127,6 +135,10 @@ namespace StrikingInvestigation.Pages
         protected override async Task OnInitializedAsync()
         {
             ABTestsData = (await Http.GetFromJsonAsync<ABTestData[]>("api/abtests")).ToList();
+            SaveLabel = "Save";
+            SubmitLabel1 = "A has errors";
+            SubmitLabel2 = "B has errors";
+            SubmitLabel3 = "I can't tell which has errors";
         }
 
         protected void SetState(ScreenState screenState)
@@ -378,9 +390,8 @@ namespace StrikingInvestigation.Pages
         protected async void Save()
         {
             Spinner1 = true;
+            SaveLabel = "Wait";
             ControlsDisabled = true;
-            PlayLabelA = "Wait";
-            PlayLabelB = "Wait";
             PlayDisabledA = true;
             PlayDisabledB = true;
             StateHasChanged();
@@ -415,9 +426,8 @@ namespace StrikingInvestigation.Pages
             await Task.Delay(1000);
 
             Saved = false;
+            SaveLabel = "Save";
             ControlsDisabled = false;
-            PlayLabelA = "Play";
-            PlayLabelB = "Play";
             PlayDisabledA = false;
             PlayDisabledB = false;
             StateHasChanged();
@@ -453,6 +463,7 @@ namespace StrikingInvestigation.Pages
             }
             else if (PlayLabelA == "Stop A")
             {
+                PlayLabelA = "Wait";
                 PlayDisabledA = true;
                 Spinner2 = true;
 
@@ -467,6 +478,7 @@ namespace StrikingInvestigation.Pages
                 await Task.Delay(2600);
 
                 Spinner2 = false;
+                PlayLabelA = "Play";
                 PlayDisabledA = false;
             }
 
@@ -508,6 +520,7 @@ namespace StrikingInvestigation.Pages
             }
             else if (PlayLabelB == "Stop B")
             {
+                PlayLabelB = "Wait";
                 PlayDisabledB = true;
                 Spinner3 = true;
 
@@ -522,6 +535,7 @@ namespace StrikingInvestigation.Pages
                 await Task.Delay(2600);
 
                 Spinner3 = false;
+                PlayLabelB = "Play";
                 PlayDisabledB = false;
             }
 
@@ -590,10 +604,12 @@ namespace StrikingInvestigation.Pages
             await Task.Delay(1000, CancellationToken);
 
             Spinner2 = true;
+            PlayLabelA = "Wait";
             PlayDisabledA = true;
             StateHasChanged();
             await Task.Delay(1600);
             Spinner2 = false;
+            PlayLabelA = "Play";
             PlayDisabledA = false;
         }
 
@@ -654,10 +670,12 @@ namespace StrikingInvestigation.Pages
             await Task.Delay(1000, CancellationToken);
 
             Spinner3 = true;
+            PlayLabelB = "Wait";
             PlayDisabledB = true;
             StateHasChanged();
             await Task.Delay(1600);
             Spinner3 = false;
+            PlayLabelB = "Play";
             PlayDisabledB = false;
         }
 
@@ -738,14 +756,17 @@ namespace StrikingInvestigation.Pages
             {
                 case "A has errors":
                     SpinnerSubmit1 = true;
+                    SubmitLabel1 = "Wait";
                     break;
 
                 case "B has errors":
                     SpinnerSubmit2 = true;
+                    SubmitLabel2 = "Wait";
                     break;
 
                 case "Don't know":
                     SpinnerSubmit3 = true;
+                    SubmitLabel3 = "Wait";
                     break;
 
                 default:
@@ -753,8 +774,6 @@ namespace StrikingInvestigation.Pages
             }
 
             ControlsDisabled = true;
-            PlayLabelA = "Wait";
-            PlayLabelB = "Wait";
             PlayDisabledA = true;
             PlayDisabledB = true;
             StateHasChanged();
@@ -801,14 +820,17 @@ namespace StrikingInvestigation.Pages
             {
                 case "A has errors":
                     Submitted1 = false;
+                    SubmitLabel1 = "A has errors";
                     break;
 
                 case "B has errors":
                     Submitted2 = false;
+                    SubmitLabel2 = "B has errors";
                     break;
 
                 case "Don't know":
                     Submitted3 = false;
+                    SubmitLabel3 = "I can't tell which has errors";
                     break;
 
                 default:
@@ -816,8 +838,6 @@ namespace StrikingInvestigation.Pages
             }
 
             ControlsDisabled = false;
-            PlayLabelA = "Play";
-            PlayLabelB = "Play";
             PlayDisabledA = false;
             PlayDisabledB = false;
             StateHasChanged();

@@ -129,7 +129,7 @@ else
 
                     <div class="posabs" style="--leftpos: 840px; --toppos: 148px">
                         <button class="btn btn-primary" @onclick="Save" disabled="@ControlsDisabled">
-                            Save
+                            @SaveLabel
                         </button>
 
                         @if (Spinner1 == true)
@@ -304,20 +304,20 @@ else
     </div>
 
     <div class="posabs" style="--leftpos: 500px; --toppos: 1150px">
-        <button class="btn btn-primary" @onclick="AHasErrors" disabled="@ControlsDisabled">
-            A has errors
+        <button class="btn btn-primary" @onclick="AHasErrors" style="width: 120px" disabled="@ControlsDisabled">
+            @SubmitLabel1
         </button>
     </div>
 
-    <div class="posabs" style="--leftpos: 640px; --toppos: 1150px">
-        <button class="btn btn-primary" @onclick="BHasErrors" disabled="@ControlsDisabled">
-            B has errors
+    <div class="posabs" style="--leftpos: 635px; --toppos: 1150px">
+        <button class="btn btn-primary" @onclick="BHasErrors" style="width: 120px" disabled="@ControlsDisabled">
+            @SubmitLabel2
         </button>
     </div>
 
-    <div class="posabs" style="--leftpos: 780px; --toppos: 1150px">
-        <button class="btn btn-primary" @onclick="DontKnow" disabled="@ControlsDisabled">
-            I can't tell which has errors
+    <div class="posabs" style="--leftpos: 770px; --toppos: 1150px">
+        <button class="btn btn-primary" @onclick="DontKnow" style="width: 220px" disabled="@ControlsDisabled">
+            @SubmitLabel3
         </button>
     </div>
 
@@ -359,7 +359,7 @@ else
     @if (SpinnerSubmit2 == true)
     {
         <div class="spinnerabs"
-                style="--leftpos: 640px;
+                style="--leftpos: 635px;
                         --toppos: 1203px">
         </div>
     }
@@ -367,7 +367,7 @@ else
     @if (Submitted2 == true)
     {
         <div class="posabs"
-                style="--leftpos: 640px;
+                style="--leftpos: 635px;
                         --toppos: 1203px">
             Submitted
         </div>
@@ -375,7 +375,7 @@ else
     @if (SpinnerSubmit3 == true)
     {
         <div class="spinnerabs"
-                style="--leftpos: 780px;
+                style="--leftpos: 770px;
                         --toppos: 1203px">
         </div>
     }
@@ -383,7 +383,7 @@ else
     @if (Submitted3 == true)
     {
         <div class="posabs"
-                style="--leftpos: 780px;
+                style="--leftpos: 770px;
                         --toppos: 1203px">
             Submitted
         </div>

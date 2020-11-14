@@ -15,6 +15,9 @@ namespace StrikingInvestigation.Shared
         public Screen Screen { get; set; }
 
         [Parameter]
+        public string SubmitLabel { get; set; }
+
+        [Parameter]
         public bool SubmitDisabled { get; set; }
 
         [Parameter]

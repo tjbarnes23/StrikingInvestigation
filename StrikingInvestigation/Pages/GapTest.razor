@@ -158,7 +158,7 @@ else
 
                     <div class="posabs" style="--leftpos: 1150px; --toppos: 148px">
                         <button class="btn btn-primary" @onclick="Save" disabled="@ControlsDisabled">
-                            Save
+                            @SaveLabel
                         </button>
 
                         @if (Spinner1 == true)
@@ -300,6 +300,7 @@ else
         {
             <SubmitBtn Blow="@BlowSet.Blows.Last()"
                     Screen="@Screen"
+                    SubmitLabel="@SubmitLabel"
                     SubmitDisabled="@ControlsDisabled"
                     Callback="Submit" />
         }

@@ -43,7 +43,7 @@ namespace StrikingInvestigation.Shared
             
             if (Blow.IsHighlighted == true)
             {
-                BgColor = "yellow";
+                BgColor = "lightpink";
                     
             }
             else

@@ -47,7 +47,11 @@ namespace StrikingInvestigation.Pages
 
         public Screen Screen { get; set; }
 
+        public string SaveLabel { get; set; }
+
         public string PlayLabel { get; set; }
+
+        public string SubmitLabel { get; set; }
 
         public CancellationTokenSource CancellationTokenSource { get; set; }
 
@@ -70,6 +74,8 @@ namespace StrikingInvestigation.Pages
         protected override async Task OnInitializedAsync()
         {
             AVTestsData = (await Http.GetFromJsonAsync<AVTestData[]>("api/avtests")).ToList();
+            SaveLabel = "Save";
+            SubmitLabel = "Submit";
         }
 
         protected override async void OnAfterRender(bool firstRender)
@@ -157,8 +163,8 @@ namespace StrikingInvestigation.Pages
         protected async void Save()
         {
             Spinner1 = true;
+            SaveLabel = "Wait";
             ControlsDisabled = true;
-            PlayLabel = "Wait";
             PlayDisabled = true;
             Blow.BellColor = Constants.DisabledUnstruckTestBellColor;
             StateHasChanged();
@@ -186,8 +192,8 @@ namespace StrikingInvestigation.Pages
             await Task.Delay(1000);
 
             Saved = false;
+            SaveLabel = "Save";
             ControlsDisabled = false;
-            PlayLabel = "Play";
             PlayDisabled = false;
             Blow.BellColor = Constants.UnstruckTestBellColor;
             StateHasChanged();
@@ -216,6 +222,7 @@ namespace StrikingInvestigation.Pages
             }
             else if (PlayLabel == "Stop")
             {
+                PlayLabel = "Wait";
                 PlayDisabled = true;
                 Spinner2 = true;
 
@@ -225,6 +232,7 @@ namespace StrikingInvestigation.Pages
                 await Task.Delay(2600);
 
                 Spinner2 = false;
+                PlayLabel = "Play";
                 PlayDisabled = false;
             }
 
@@ -318,18 +326,20 @@ namespace StrikingInvestigation.Pages
             await Task.Delay(1000, CancellationToken);
 
             Spinner2 = true;
+            PlayLabel = "Wait";
             PlayDisabled = true;
             StateHasChanged();
             await Task.Delay(1600);
             Spinner2 = false;
+            PlayLabel = "Play";
             PlayDisabled = false;
         }
 
         protected async Task Submit()
         {
             SpinnerSubmit = true;
+            SubmitLabel = "Wait";
             ControlsDisabled = true;
-            PlayLabel = "Wait";
             PlayDisabled = true;
             Blow.BellColor = Constants.DisabledUnstruckTestBellColor;
             StateHasChanged();
@@ -355,8 +365,8 @@ namespace StrikingInvestigation.Pages
             await Task.Delay(1000);
 
             Submitted = false;
+            SubmitLabel = "Submit";
             ControlsDisabled = false;
-            PlayLabel = "Play";
             PlayDisabled = false;
             Blow.BellColor = Constants.UnstruckTestBellColor;
             StateHasChanged();
