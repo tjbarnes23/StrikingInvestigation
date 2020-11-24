@@ -14,9 +14,9 @@ using StrikingInvestigation.Utilities;
 
 namespace StrikingInvestigation.Pages
 {
-    public partial class ABTest
+    partial class ABTest
     {
-        public ABTest()
+        internal ABTest()
         {
             TestSpec = new TestSpec();
             TestSpec.Stage = 8;
@@ -58,79 +58,79 @@ namespace StrikingInvestigation.Pages
         [Inject]
         public HttpClient Http { get; set; }
 
-        public TestSpec TestSpec { get; set; }
+        TestSpec TestSpec { get; set; }
 
-        public IEnumerable<ABTestData> ABTestsData { get; set; }
+        IEnumerable<ABTestData> ABTestsData { get; set; }
 
-        public int SelectedTest { get; set; } = -1;
+        int SelectedTest { get; set; } = -1;
 
-        public bool ShowGaps { get; set; }
+        bool ShowGaps { get; set; }
 
-        public bool IsA { get; set; }
+        bool IsA { get; set; }
 
-        public BlowSet BlowSetA { get; set; }
+        BlowSet BlowSetA { get; set; }
 
-        public BlowSet BlowSetB { get; set; }
+        BlowSet BlowSetB { get; set; }
 
-        public Screen ScreenA { get; set; }
+        Screen ScreenA { get; set; }
 
-        public Screen ScreenB { get; set; }
+        Screen ScreenB { get; set; }
 
-        public int DurationA { get; set; }
+        int DurationA { get; set; }
 
-        public int DurationB { get; set; }
+        int DurationB { get; set; }
 
-        public string SaveLabel { get; set; }
+        string SaveLabel { get; set; }
 
-        public string PlayLabelA { get; set; }
+        string PlayLabelA { get; set; }
 
-        public string PlayLabelB { get; set; }
+        string PlayLabelB { get; set; }
 
-        public string SubmitLabel1 { get; set; }
+        string SubmitLabel1 { get; set; }
 
-        public string SubmitLabel2 { get; set; }
+        string SubmitLabel2 { get; set; }
 
-        public string SubmitLabel3 { get; set; }
+        string SubmitLabel3 { get; set; }
 
-        public CancellationTokenSource CancellationTokenSource { get; set; }
+        CancellationTokenSource CancellationTokenSource { get; set; }
 
-        public CancellationToken CancellationToken { get; set; }
+        CancellationToken CancellationToken { get; set; }
 
-        public bool ResultSound { get; set; }
+        bool ResultSound { get; set; }
 
-        public string ResultSource { get; set; }
+        string ResultSource { get; set; }
 
-        public bool ResultEntered { get; set; }
+        bool ResultEntered { get; set; }
 
-        public bool ControlsDisabled { get; set; }
+        bool ControlsDisabled { get; set; }
 
-        public bool PlayDisabledA { get; set; }
+        bool PlayDisabledA { get; set; }
 
-        public bool PlayDisabledB { get; set; }
+        bool PlayDisabledB { get; set; }
 
-        public bool SelectTenorWeightDisabled { get; set; }
+        bool SelectTenorWeightDisabled { get; set; }
 
-        public bool CurrentTenorWeightDisabled { get; set; }
+        bool CurrentTenorWeightDisabled { get; set; }
 
-        public bool Spinner1 { get; set; }
+        bool Spinner1 { get; set; }
 
-        public bool Spinner2 { get; set; }
+        bool Spinner2 { get; set; }
 
-        public bool Spinner3 { get; set; }
+        bool Spinner3 { get; set; }
 
-        public bool SpinnerSubmit1 { get; set; }
+        bool SpinnerSubmit1 { get; set; }
 
-        public bool SpinnerSubmit2 { get; set; }
+        bool SpinnerSubmit2 { get; set; }
 
-        public bool SpinnerSubmit3 { get; set; }
+        bool SpinnerSubmit3 { get; set; }
 
-        public bool Saved { get; set; }
+        bool Saved { get; set; }
 
-        public bool Submitted1 { get; set; }
+        bool Submitted1 { get; set; }
 
-        public bool Submitted2 { get; set; }
+        bool Submitted2 { get; set; }
 
-        public bool Submitted3 { get; set; }
+        bool Submitted3 { get; set; }
 
         protected override async Task OnInitializedAsync()
         {
@@ -141,7 +141,7 @@ namespace StrikingInvestigation.Pages
             SubmitLabel3 = "I can't tell which has errors";
         }
 
-        protected void SetState(ScreenState screenState)
+        void SetState(ScreenState screenState)
         {
             if (screenState == ScreenState.Play)
             {
@@ -172,7 +172,7 @@ namespace StrikingInvestigation.Pages
             }
         }
 
-        protected void TestChanged(int value)
+        void TestChanged(int value)
         {
             SelectedTest = value;
             BlowSetA = null;
@@ -184,7 +184,7 @@ namespace StrikingInvestigation.Pages
             }
         }
 
-        protected void StageChanged(int value)
+        void StageChanged(int value)
         {
             TestSpec.Stage = value;
 
@@ -222,7 +222,7 @@ namespace StrikingInvestigation.Pages
             }
         }
 
-        protected void TenorWeightChanged(int value)
+        void TenorWeightChanged(int value)
         {
             TestSpec.TenorWeight = value;
 
@@ -243,7 +243,7 @@ namespace StrikingInvestigation.Pages
             }
         }
 
-        protected void ErrorTypeChanged(int value)
+        void ErrorTypeChanged(int value)
         {
             TestSpec.ErrorType = value;
 
@@ -258,7 +258,7 @@ namespace StrikingInvestigation.Pages
             }
         }
 
-        protected void ErrorSizeChanged(int value)
+        void ErrorSizeChanged(int value)
         {
             TestSpec.ErrorSize = value;
 
@@ -273,12 +273,12 @@ namespace StrikingInvestigation.Pages
             }
         }
 
-        protected void ShowGapsChanged(bool value)
+        void ShowGapsChanged(bool value)
         {
             ShowGaps = value;
         }
 
-        protected void CreateABTest()
+        void CreateABTest()
         {
             // Choose whether A or B will have the errors
             Random rand = new Random();
@@ -335,7 +335,7 @@ namespace StrikingInvestigation.Pages
             SetState(ScreenState.Play);
         }
 
-        protected async void Load(int id)
+        async void Load(int id)
         {
             // Get a test from the API
             ABTestData aBTestData = await Http.GetFromJsonAsync<ABTestData>("api/abtests/" + id.ToString());
@@ -387,7 +387,7 @@ namespace StrikingInvestigation.Pages
             StateHasChanged();
         }
 
-        protected async void Save()
+        async void Save()
         {
             Spinner1 = true;
             SaveLabel = "Wait";
@@ -433,7 +433,7 @@ namespace StrikingInvestigation.Pages
             StateHasChanged();
         }
 
-        protected async Task PlayA()
+        async Task PlayA()
         {
             if (PlayLabelA == "Play A")
             {
@@ -490,7 +490,7 @@ namespace StrikingInvestigation.Pages
             SetState(ScreenState.Play);
         }
 
-        protected async Task PlayB()
+        async Task PlayB()
         {
             if (PlayLabelB == "Play B")
             {
@@ -547,7 +547,7 @@ namespace StrikingInvestigation.Pages
             SetState(ScreenState.Play);
         }
 
-        public async Task StrikeA()
+        async Task StrikeA()
         {
             // If ShowGaps is false, start the animation
             if (ShowGaps == false)
@@ -613,7 +613,7 @@ namespace StrikingInvestigation.Pages
             PlayDisabledA = false;
         }
 
-        public async Task StrikeB()
+        async Task StrikeB()
         {
             // If ShowGaps is false, start the animation
             if (ShowGaps == false)
@@ -679,7 +679,7 @@ namespace StrikingInvestigation.Pages
             PlayDisabledB = false;
         }
 
-        protected async Task AHasErrors()
+        async Task AHasErrors()
         {
             if (SelectedTest != 0 && SelectedTest != -1)
             {
@@ -708,7 +708,7 @@ namespace StrikingInvestigation.Pages
             }
         }
 
-        protected async Task BHasErrors()
+        async Task BHasErrors()
         {
             if (SelectedTest != 0 && SelectedTest != -1)
             {
@@ -737,7 +737,7 @@ namespace StrikingInvestigation.Pages
             }
         }
 
-        protected async Task DontKnow()
+        async Task DontKnow()
         {
             if (SelectedTest != 0 && SelectedTest != -1)
             {
@@ -750,7 +750,7 @@ namespace StrikingInvestigation.Pages
             }
         }
 
-        protected async Task Submit(string result)
+        async Task Submit(string result)
         {
             switch (result)
             {

@@ -9,7 +9,7 @@ using StrikingInvestigation.Utilities;
 
 namespace StrikingInvestigation.Shared
 {
-    public partial class Bell
+    partial class Bell
     {
         // The first two fields below correspond to values in the bell CSS class
         private readonly int borderSize = 10;
@@ -22,13 +22,13 @@ namespace StrikingInvestigation.Shared
         [Parameter]
         public Screen Screen { get; set; }
 
-        public string DiameterStr { get; private set; }
+        string DiameterStr { get; set; }
 
-        public string LeftPos { get; private set; }
+        string LeftPos { get; set; }
 
-        public string TopPos { get; private set; }
+        string TopPos { get; set; }
 
-        public string Padding { get; private set; }
+        string Padding { get; set; }
 
         protected override void OnParametersSet()
         {

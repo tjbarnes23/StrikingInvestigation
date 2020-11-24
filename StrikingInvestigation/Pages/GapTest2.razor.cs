@@ -4,30 +4,49 @@ using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Json;
 using System.Text.Json;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Web;
+using Microsoft.JSInterop;
 using StrikingInvestigation.Models;
 using StrikingInvestigation.Utilities;
 
 namespace StrikingInvestigation.Pages
 {
-    partial class GapTest2
+    public partial class GapTest2
     {
-        bool controlsDisabled;
-        bool playDisabled;
+        IEnumerable<GapTestData> gapTestsData;
+        TestSpec testSpec;
+        Screen screen;
+        int selectedTest;
+
         bool selectTenorWeightDisabled;
         bool currentTenorWeightDisabled;
         bool showGaps;
+        
         BlowSet blowSet;
-        Screen screen;
-        bool spinnerSaving;
+        
+        bool controlsDisabled;
+        bool playDisabled;
+
         string saveLabel;
-        string submitLabel;
-        bool saved;
         string playLabel;
-        TestSpec testSpec;
-        IEnumerable<GapTestData> gapTestsData;
-        int selectedTest = -1;
+        string submitLabel;
+
+        bool spinnerSaving;
+        bool spinnerPlaying;
+        bool spinnerSubmitting;
+
+        bool saved;
+        bool submitted;
+
+        bool animate;
+
+        CancellationTokenSource cancellationTokenSource;
+        CancellationToken cancellationToken;
+
+        ElementReference mainDiv;
 
         public GapTest2()
         {
@@ -55,7 +74,13 @@ namespace StrikingInvestigation.Pages
                 GapMax = 700,
                 BaseGap = baseGap
             };
+
+            selectedTest = -1;
+            animate = true;
         }
+
+        [Inject]
+        protected IJSRuntime JSRuntime { get; set; }
 
         [Inject]
         HttpClient Http { get; set; }
@@ -64,7 +89,13 @@ namespace StrikingInvestigation.Pages
         {
             gapTestsData = (await Http.GetFromJsonAsync<GapTestData[]>("api/gaptests")).ToList();
             saveLabel = "Save";
+            playLabel = "Play";
             submitLabel = "Submit";
+        }
+
+        protected override async void OnAfterRender(bool firstRender)
+        {
+            await JSRuntime.InvokeVoidAsync("SetFocusToElement", mainDiv);
         }
 
         void TestChanged(int value)
@@ -263,6 +294,214 @@ namespace StrikingInvestigation.Pages
             playDisabled = false;
             blowSet.Blows.Last().BellColor = Constants.UnstruckTestBellColor;
             StateHasChanged();
+        }
+
+        async Task Play()
+        {
+            if (playLabel == "Play")
+            {
+                // Change test bell color to disabled color - can't adjust gap during play
+                blowSet.Blows.Last().BellColor = Constants.DisabledUnstruckTestBellColor;
+
+                DateTime strikeTime = DateTime.Now;
+
+                foreach (Blow blow in blowSet.Blows)
+                {
+                    // Set sound times and display times
+                    strikeTime = strikeTime.AddMilliseconds(blow.Gap);
+                    blow.StrikeTime = strikeTime;
+                }
+
+                cancellationTokenSource = new CancellationTokenSource();
+                cancellationToken = cancellationTokenSource.Token;
+
+                playLabel = "Stop";
+                controlsDisabled = true;
+                selectTenorWeightDisabled = true;
+
+                foreach (Blow blow in blowSet.Blows)
+                {
+                    TimeSpan delay;
+                    int delayMs;
+
+                    delay = blow.StrikeTime - DateTime.Now;
+                    delayMs = Convert.ToInt32(delay.TotalMilliseconds);
+
+                    if (delayMs > 0)
+                    {
+                        await Task.Delay(delayMs, cancellationToken);
+                    }
+
+                    if (cancellationToken.IsCancellationRequested)
+                    {
+                        break;
+                    }
+
+                    // Change bell color
+                    if (animate == true)
+                    {
+                        blow.BellColor = Constants.StruckBellColor;
+
+                        // Confirmed this is needed here
+                        StateHasChanged();
+                    }
+
+                    // Strike bell
+                    await JSRuntime.InvokeVoidAsync("PlayBellAudio", blow.AudioId);
+                }
+
+                // Wait for 0.6 seconds
+                await Task.Delay(600);
+
+                // Start spinner
+                spinnerPlaying = true;
+                playLabel = "Wait";
+                playDisabled = true;
+                StateHasChanged();
+
+                // Wait a further 2 seconds for the bells to finish sounding (each bell sample is 2.5 seconds)
+                await Task.Delay(2000);
+
+                // Reset play button
+                spinnerPlaying = false;
+                playLabel = "Play";
+                playDisabled = false;
+            }
+            else if (playLabel == "Stop")
+            {
+                spinnerPlaying = true;
+                playLabel = "Wait";
+                playDisabled = true;
+                
+                cancellationTokenSource.Cancel();
+
+                // Wait for 2.6 seconds for the sound to finish
+                await Task.Delay(2600);
+
+                // Reset play button
+                spinnerPlaying = false;
+                playLabel = "Play";
+                playDisabled = false;
+            }
+
+            // Reset screen
+            blowSet.SetUnstruck();
+            controlsDisabled = false;
+            selectTenorWeightDisabled = currentTenorWeightDisabled;
+        }
+
+        protected async Task Submit()
+        {
+            spinnerSubmitting = true;
+            submitLabel = "Wait";
+            controlsDisabled = true;
+            playDisabled = true;
+            blowSet.Blows.Last().BellColor = Constants.DisabledUnstruckTestBellColor;
+            StateHasChanged();
+
+            // Create a TestSubmission object
+            TestSubmission testSubmission = new TestSubmission()
+            {
+                UserId = string.Empty,
+                TestDate = DateTime.Now,
+                TestType = "Gap Test",
+                TestId = selectedTest,
+                Gap = blowSet.Blows.Last().Gap,
+                AB = string.Empty
+            };
+
+            // Push the testSubmission to the API in JSON format
+            await Http.PostAsJsonAsync("api/testsubmissions", testSubmission);
+
+            spinnerSubmitting = false;
+            submitted = true;
+            StateHasChanged();
+
+            await Task.Delay(1000);
+
+            submitted = false;
+            submitLabel = "Submit";
+            controlsDisabled = false;
+            playDisabled = false;
+            blowSet.Blows.Last().BellColor = Constants.UnstruckTestBellColor;
+            StateHasChanged();
+        }
+
+        protected void GapChangedWithButton(bool clicked)
+        {
+            if (clicked == true)
+            {
+                StateHasChanged();
+            }
+        }
+
+        protected void TestBellMouseDown(MouseEventArgs e)
+        {
+            if (e.Buttons == 1)
+            {
+                // Mouse movement only active in Play mode
+                if (playLabel == "Play")
+                {
+                    // Call TestBellMouseMove to center the bell on where the mouse is clicked
+                    TestBellMouseMove(e);
+                }
+            }
+        }
+
+        protected void TestBellMouseMove(MouseEventArgs e)
+        {
+            if (e.Buttons == 1 && playLabel == "Play")
+            {
+                int clientX = Convert.ToInt32(e.ClientX);
+
+                int newGapCumulativeRow;
+
+                if (blowSet.Blows.Last().IsHandstroke)
+                {
+                    newGapCumulativeRow = Convert.ToInt32((clientX - screen.XMargin) / screen.XScale);
+                }
+                else
+                {
+                    int baseGap = screen.BaseGap;
+                    newGapCumulativeRow = Convert.ToInt32((clientX - screen.XMargin) / screen.XScale) -
+                             baseGap;
+                }
+
+                int newGap = blowSet.Blows.Last().Gap + (newGapCumulativeRow - blowSet.Blows.Last().GapCumulativeRow);
+                int newGapRounded = Convert.ToInt32((double)newGap / Constants.Rounding) * Constants.Rounding;
+
+                if (newGapRounded >= screen.GapMin && newGapRounded <= screen.GapMax &&
+                        newGapRounded != blowSet.Blows.Last().Gap)
+                {
+                    blowSet.Blows.Last().UpdateGap(newGapRounded);
+                }
+            }
+        }
+
+        protected void ArrowKeys(KeyboardEventArgs e)
+        {
+            // Keyboard arrows only active in Play mode
+            if (playLabel == "Play")
+            {
+                if (e.Key == "ArrowLeft")
+                {
+                    int newGap = blowSet.Blows.Last().Gap - Constants.Rounding;
+
+                    if (newGap >= screen.GapMin)
+                    {
+                        blowSet.Blows.Last().UpdateGap(newGap);
+                    }
+                }
+                else if (e.Key == "ArrowRight")
+                {
+                    int newGap = blowSet.Blows.Last().Gap + Constants.Rounding;
+
+                    if (newGap <= screen.GapMax)
+                    {
+                        blowSet.Blows.Last().UpdateGap(newGap);
+                    }
+                }
+            }
         }
     }
 }

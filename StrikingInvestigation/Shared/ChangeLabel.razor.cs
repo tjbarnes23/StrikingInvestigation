@@ -8,7 +8,7 @@ using StrikingInvestigation.Utilities;
 
 namespace StrikingInvestigation.Shared
 {
-    public partial class ChangeLabel
+    partial class ChangeLabel
     {
         private readonly int changeLabelXOffset = -50;
         private readonly int changeLabelYOffset = -62;
@@ -19,9 +19,9 @@ namespace StrikingInvestigation.Shared
         [Parameter]
         public Screen Screen { get; set; }
 
-        public string LeftPos { get; private set; }
+        string LeftPos { get; set; }
 
-        public string TopPos { get; private set; }
+        string TopPos { get; set; }
 
         protected override void OnInitialized()
         {

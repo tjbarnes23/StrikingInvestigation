@@ -5,7 +5,7 @@ namespace StrikingInvestigation.Models
     public class BlowSetCore
     {
         // Constructor not used for this class because Json deserializer needs parameterless constructor
-        
+
         public int Stage { get; set; }
 
         public int NumRows { get; set; }

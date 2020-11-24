@@ -4,7 +4,7 @@ using StrikingInvestigation.Models;
 
 namespace StrikingInvestigation.Shared
 {
-    public partial class AudioBox
+    partial class AudioBox
     {
         [Parameter]
         public TestSpec TestSpec { get; set; }
@@ -15,27 +15,27 @@ namespace StrikingInvestigation.Shared
         [Parameter]
         public int Duration { get; set; }
 
-        public string BoundaryLeftPos { get; private set; }
+        string BoundaryLeftPos { get; set; }
 
-        public string BoundaryTopPos { get; private set; }
+        string BoundaryTopPos { get; set; }
 
-        public string BoundaryWidth { get; private set; }
+        string BoundaryWidth { get; set; }
 
-        public string BoundaryHeight { get; private set; }
+        string BoundaryHeight { get; set; }
 
-        public string BarLeftPos { get; private set; }
+        string BarLeftPos { get; set; }
 
-        public string BarTopPos { get; private set; }
+        string BarTopPos { get; set; }
 
-        public string BarWidth { get; private set; }
+        string BarWidth { get; set; }
 
-        public string DotLeftStartPos { get; private set; }
+        string DotLeftStartPos { get; set; }
 
-        public string DotLeftEndPos { get; private set; }
+        string DotLeftEndPos { get; set; }
 
-        public string DotTopPos { get; private set; }
+        string DotTopPos { get; set; }
 
-        public string DurationStr { get; private set; }
+        string DurationStr { get; set; }
 
         protected override void OnParametersSet()
         {

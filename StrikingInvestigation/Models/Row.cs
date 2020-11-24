@@ -5,7 +5,7 @@ namespace StrikingInvestigation.Models
 {
     public class Row
     {
-        public Row(int stage, int rowNum)
+        internal Row(int stage, int rowNum)
         {
             Stage = stage;
             RowNum = rowNum;

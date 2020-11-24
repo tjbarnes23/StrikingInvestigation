@@ -8,7 +8,7 @@ using StrikingInvestigation.Utilities;
 
 namespace StrikingInvestigation.Shared
 {
-    public partial class GapMinus
+    partial class GapMinus
     {
         private readonly string gapMinusStr = "-" + Constants.Rounding.ToString() + "ms";
 
@@ -24,9 +24,9 @@ namespace StrikingInvestigation.Shared
         [Parameter]
         public EventCallback<bool> Callback { get; set; }
 
-        public string LeftPos { get; private set; }
+        string LeftPos { get; set; }
 
-        public string TopPos { get; private set; }
+        string TopPos { get; set; }
 
         protected override void OnParametersSet()
         {
@@ -54,7 +54,7 @@ namespace StrikingInvestigation.Shared
             TopPos = Convert.ToInt32(yPos + yAdj).ToString() + "px";
         }
 
-        protected async Task GapMinusClick()
+        async Task GapMinusClick()
         {
             int newGap = Blow.Gap - Constants.Rounding;
 

@@ -14,11 +14,11 @@ using StrikingInvestigation.Utilities;
 
 namespace StrikingInvestigation.Pages
 {
-    public partial class AVTest
+    partial class AVTest
     {
-        protected ElementReference mainDiv;
+        ElementReference mainDiv;
 
-        public AVTest()
+        internal AVTest()
         {
             Screen = new Screen();
             Screen.DiameterScale = 3;
@@ -32,44 +32,44 @@ namespace StrikingInvestigation.Pages
         }
 
         [Inject]
-        protected IJSRuntime JSRuntime { get; set; }
+        IJSRuntime JSRuntime { get; set; }
 
         [Inject]
-        public HttpClient Http { get; set; }
+        HttpClient Http { get; set; }
 
-        public IEnumerable<AVTestData> AVTestsData { get; set; }
+        IEnumerable<AVTestData> AVTestsData { get; set; }
 
-        public int SelectedTest { get; set; } = -1;
+        int SelectedTest { get; set; } = -1;
 
-        public bool ShowGaps { get; set; }
+        bool ShowGaps { get; set; }
 
-        public Blow Blow { get; set; }
+        Blow Blow { get; set; }
 
-        public Screen Screen { get; set; }
+        Screen Screen { get; set; }
 
-        public string SaveLabel { get; set; }
+        string SaveLabel { get; set; }
 
-        public string PlayLabel { get; set; }
+        string PlayLabel { get; set; }
 
-        public string SubmitLabel { get; set; }
+        string SubmitLabel { get; set; }
 
-        public CancellationTokenSource CancellationTokenSource { get; set; }
+        CancellationTokenSource CancellationTokenSource { get; set; }
 
-        public CancellationToken CancellationToken { get; set; }
+        CancellationToken CancellationToken { get; set; }
 
-        public bool ControlsDisabled { get; set; }
+        bool ControlsDisabled { get; set; }
 
-        public bool PlayDisabled { get; set; }
+        bool PlayDisabled { get; set; }
 
-        public bool Spinner1 { get; set; }
+        bool Spinner1 { get; set; }
 
-        public bool Spinner2 { get; set; }
+        bool Spinner2 { get; set; }
 
-        public bool SpinnerSubmit { get; set; }
+        bool SpinnerSubmit { get; set; }
 
-        public bool Saved { get; set; }
+        bool Saved { get; set; }
 
-        public bool Submitted { get; set; }
+        bool Submitted { get; set; }
 
         protected override async Task OnInitializedAsync()
         {
@@ -83,7 +83,7 @@ namespace StrikingInvestigation.Pages
             await JSRuntime.InvokeVoidAsync("SetFocusToElement", mainDiv);
         }
 
-        protected void SetState(ScreenState screenState)
+        void SetState(ScreenState screenState)
         {
             if (screenState == ScreenState.Play)
             {
@@ -97,7 +97,7 @@ namespace StrikingInvestigation.Pages
             }
         }
 
-        protected void TestChanged(int value)
+        void TestChanged(int value)
         {
             SelectedTest = value;
             Blow = null;
@@ -108,12 +108,12 @@ namespace StrikingInvestigation.Pages
             }
         }
 
-        protected void ShowGapsChanged(bool value)
+        void ShowGapsChanged(bool value)
         {
             ShowGaps = value;
         }
 
-        protected void Create()
+        void Create()
         {
             Blow = new Blow();
             Blow.CreateRandomBlow();
@@ -140,7 +140,7 @@ namespace StrikingInvestigation.Pages
             SetState(ScreenState.Play);
         }
 
-        protected async void Load(int id)
+        async void Load(int id)
         {
             // Get a test from the API
             AVTestData aVTestData = await Http.GetFromJsonAsync<AVTestData>("api/avtests/" + id.ToString());
@@ -160,7 +160,7 @@ namespace StrikingInvestigation.Pages
             StateHasChanged();
         }
 
-        protected async void Save()
+        async void Save()
         {
             Spinner1 = true;
             SaveLabel = "Wait";
@@ -199,7 +199,7 @@ namespace StrikingInvestigation.Pages
             StateHasChanged();
         }
 
-        protected async Task Play()
+        async Task Play()
         {
             if (PlayLabel == "Play")
             {
@@ -242,7 +242,7 @@ namespace StrikingInvestigation.Pages
             SetState(ScreenState.Play);
         }
 
-        public async Task Strike()
+        async Task Strike()
         {
             TimeSpan delay;
             int delayMs;
@@ -335,7 +335,7 @@ namespace StrikingInvestigation.Pages
             PlayDisabled = false;
         }
 
-        protected async Task Submit()
+        async Task Submit()
         {
             SpinnerSubmit = true;
             SubmitLabel = "Wait";
@@ -372,7 +372,7 @@ namespace StrikingInvestigation.Pages
             StateHasChanged();
         }
 
-        protected void GapChangedWithButton(bool clicked)
+        void GapChangedWithButton(bool clicked)
         {
             if (clicked == true)
             {
@@ -380,7 +380,7 @@ namespace StrikingInvestigation.Pages
             }
         }
 
-        protected void TestBellMouseDown(MouseEventArgs e)
+        void TestBellMouseDown(MouseEventArgs e)
         {
             if (e.Buttons == 1)
             {
@@ -393,7 +393,7 @@ namespace StrikingInvestigation.Pages
             }
         }
 
-        protected void TestBellMouseMove(MouseEventArgs e)
+        void TestBellMouseMove(MouseEventArgs e)
         {
             if (e.Buttons == 1 && PlayLabel == "Play")
             {
@@ -410,7 +410,7 @@ namespace StrikingInvestigation.Pages
             }
         }
 
-        protected void ArrowKeys(KeyboardEventArgs e)
+        void ArrowKeys(KeyboardEventArgs e)
         {
             // Keyboard arrows only active in Play mode
             if (PlayLabel == "Play")

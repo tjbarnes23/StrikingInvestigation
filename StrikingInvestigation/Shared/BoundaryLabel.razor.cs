@@ -8,7 +8,7 @@ using StrikingInvestigation.Utilities;
 
 namespace StrikingInvestigation.Shared
 {
-    public partial class BoundaryLabel
+    partial class BoundaryLabel
     {
         [Parameter]
         public Blow Blow { get; set; }
@@ -16,13 +16,13 @@ namespace StrikingInvestigation.Shared
         [Parameter]
         public Screen Screen { get; set; }
 
-        public string LeftPos { get; private set; }
+        string LeftPos { get; set; }
 
-        public string TopPos { get; private set; }
+        string TopPos { get; set; }
 
-        public string Width { get; private set; }
+        string Width { get; set; }
 
-        public string Height { get; private set; }
+        string Height { get; set; }
 
         protected override void OnParametersSet()
         {

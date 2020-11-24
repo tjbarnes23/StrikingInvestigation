@@ -8,7 +8,7 @@ using StrikingInvestigation.Utilities;
 
 namespace StrikingInvestigation.Shared
 {
-    public partial class PlayBtn
+    partial class PlayBtn
     {
         [Parameter]
         public Blow Blow { get; set; }
@@ -25,9 +25,9 @@ namespace StrikingInvestigation.Shared
         [Parameter]
         public EventCallback<bool> Callback { get; set; }
 
-        public string LeftPos { get; private set; }
+        string LeftPos { get; set; }
 
-        public string TopPos { get; private set; }
+        string TopPos { get; set; }
 
         protected override void OnParametersSet()
         {
@@ -55,7 +55,7 @@ namespace StrikingInvestigation.Shared
             TopPos = Convert.ToInt32(yPos + yAdj).ToString() + "px";
         }
 
-        protected async Task PlayClick()
+        async Task PlayClick()
         {
             await Callback.InvokeAsync(true);
         }

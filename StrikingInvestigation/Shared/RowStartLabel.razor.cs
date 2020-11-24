@@ -8,11 +8,11 @@ using StrikingInvestigation.Utilities;
 
 namespace StrikingInvestigation.Shared
 {
-    public partial class RowStartLabel
+    partial class RowStartLabel
     {
         // These fields correspond to the startOfRowLabel CSS class dimensions
-        private readonly int labelWidth = 6;
-        private readonly int labelHeight = 60;
+        readonly int labelWidth = 6;
+        readonly int labelHeight = 60;
 
         [Parameter]
         public Blow Blow { get; set; }
@@ -20,9 +20,9 @@ namespace StrikingInvestigation.Shared
         [Parameter]
         public Screen Screen { get; set; }
 
-        public string LeftPos { get; private set; }
+        string LeftPos { get; set; }
 
-        public string TopPos { get; private set; }
+        string TopPos { get; set; }
 
         protected override void OnInitialized()
         {

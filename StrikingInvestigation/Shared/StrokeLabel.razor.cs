@@ -8,10 +8,10 @@ using StrikingInvestigation.Utilities;
 
 namespace StrikingInvestigation.Shared
 {
-    public partial class StrokeLabel
+    partial class StrokeLabel
     {
-        private readonly int strokeLabelXOffset = -80;
-        private readonly int strokeLabelYOffset = -18;
+        readonly int strokeLabelXOffset = -80;
+        readonly int strokeLabelYOffset = -18;
 
         [Parameter]
         public Blow Blow { get; set; }
@@ -19,9 +19,9 @@ namespace StrikingInvestigation.Shared
         [Parameter]
         public Screen Screen { get; set; }
 
-        public string LeftPos { get; private set; }
+        string LeftPos { get; set; }
 
-        public string TopPos { get; private set; }
+        string TopPos { get; set; }
 
         protected override void OnInitialized()
         {

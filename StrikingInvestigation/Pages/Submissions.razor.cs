@@ -8,12 +8,12 @@ using StrikingInvestigation.Models;
 
 namespace StrikingInvestigation.Pages
 {
-    public partial class Submissions
+    partial class Submissions
     {
         [Inject]
-        public HttpClient Http { get; set; }
+        HttpClient Http { get; set; }
 
-        public IEnumerable<TestSubmission> TestSubmissions { get; set; }
+        IEnumerable<TestSubmission> TestSubmissions { get; set; }
 
         protected override async Task OnInitializedAsync()
         {

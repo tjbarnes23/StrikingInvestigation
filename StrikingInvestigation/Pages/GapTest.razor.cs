@@ -48,17 +48,17 @@ namespace StrikingInvestigation.Pages
         [Inject]
         public HttpClient Http { get; set; }
 
-        public TestSpec TestSpec { get; set; }
+        internal TestSpec TestSpec { get; set; }
 
-        public IEnumerable<GapTestData> GapTestsData { get; set; }
+        internal IEnumerable<GapTestData> GapTestsData { get; set; }
 
         public int SelectedTest { get; set; } = -1;
 
         public bool ShowGaps { get; set; }
 
-        public BlowSet BlowSet { get; set; }
+        internal BlowSet BlowSet { get; set; }
 
-        public Screen Screen { get; set; }
+        internal Screen Screen { get; set; }
 
         public string SaveLabel { get; set; }
 

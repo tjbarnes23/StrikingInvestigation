@@ -5,7 +5,7 @@ using StrikingInvestigation.Utilities;
 
 namespace StrikingInvestigation.Shared
 {
-    public partial class GapAudioLabel
+    partial class GapAudioLabel
     {
         [Parameter]
         public Blow Blow { get; set; }
@@ -13,11 +13,11 @@ namespace StrikingInvestigation.Shared
         [Parameter]
         public Screen Screen { get; set; }
 
-        public string LeftPos { get; set; }
+        string LeftPos { get; set; }
 
-        public string TopPos { get; set; }
+        string TopPos { get; set; }
 
-        public string AltGapStr { get; set; }
+        string AltGapStr { get; set; }
 
         protected override void OnParametersSet()
         {

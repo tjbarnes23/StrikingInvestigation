@@ -5,7 +5,7 @@ using StrikingInvestigation.Utilities;
 
 namespace StrikingInvestigation.Shared
 {
-    public partial class GapLabel
+    partial class GapLabel
     {
         private readonly int xOffset = -17;
         private readonly int yOffset = 32;
@@ -16,13 +16,13 @@ namespace StrikingInvestigation.Shared
         [Parameter]
         public Screen Screen { get; set; }
 
-        public string LeftPos { get; set; }
+        string LeftPos { get; set; }
 
-        public string TopPos { get; set; }
+        string TopPos { get; set; }
 
-        public string BgColor { get; set; }
+        string BgColor { get; set; }
 
-        public string GapStr { get; set; }
+        string GapStr { get; set; }
 
         protected override void OnParametersSet()
         {
