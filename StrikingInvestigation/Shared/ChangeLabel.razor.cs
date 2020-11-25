@@ -1,17 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Components;
 using StrikingInvestigation.Models;
-using StrikingInvestigation.Utilities;
 
 namespace StrikingInvestigation.Shared
 {
-    partial class ChangeLabel
+    public partial class ChangeLabel
     {
-        private readonly int changeLabelXOffset = -50;
-        private readonly int changeLabelYOffset = -62;
+        readonly int changeLabelXOffset = -50;
+        readonly int changeLabelYOffset = -62;
 
         [Parameter]
         public Blow Blow { get; set; }

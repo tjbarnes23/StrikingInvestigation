@@ -17,8 +17,8 @@ namespace StrikingInvestigation.Pages
     public partial class GapTest2
     {
         IEnumerable<GapTestData> gapTestsData;
-        TestSpec testSpec;
-        Screen screen;
+        readonly TestSpec testSpec;
+        readonly Screen screen;
         int selectedTest;
 
         bool selectTenorWeightDisabled;
@@ -98,14 +98,14 @@ namespace StrikingInvestigation.Pages
             await JSRuntime.InvokeVoidAsync("SetFocusToElement", mainDiv);
         }
 
-        void TestChanged(int value)
+        async Task TestChanged(int value)
         {
             selectedTest = value;
             blowSet = null;
 
             if (selectedTest != 0 && selectedTest != -1)
             {
-                Load(selectedTest);
+                await Load(selectedTest);
             }
         }
 
@@ -210,14 +210,9 @@ namespace StrikingInvestigation.Pages
             blowSet.PopulateBlows(testBlock, testPlace, string.Empty);
             blowSet.CreateRandomSpacing(testSpec.ErrorSize, Constants.Rounding);
             blowSet.SetUnstruck();
-
-            showGaps = false;
-            playLabel = "Play";
-            controlsDisabled = false;
-            selectTenorWeightDisabled = currentTenorWeightDisabled;
         }
 
-        async void Load(int id)
+        async Task Load(int id)
         {
             // Get a test from the API
             GapTestData gapTestData = await Http.GetFromJsonAsync<GapTestData>("api/gaptests/" + id.ToString());
@@ -243,15 +238,11 @@ namespace StrikingInvestigation.Pages
             // to the right to make the 1st blow of each row align vertically (when no striking errors)
             int baseGap = BaseGaps.BaseGap(testSpec.Stage, testSpec.TenorWeight, 1);
             screen.BaseGap = baseGap;
-
-            showGaps = false;
-            playLabel = "Play";
-            controlsDisabled = false;
-            selectTenorWeightDisabled = currentTenorWeightDisabled;
+                        
             StateHasChanged();
         }
 
-        async void Save()
+        async Task Save()
         {
             spinnerSaving = true;
             saveLabel = "Wait";
@@ -390,7 +381,7 @@ namespace StrikingInvestigation.Pages
             selectTenorWeightDisabled = currentTenorWeightDisabled;
         }
 
-        protected async Task Submit()
+        async Task Submit()
         {
             spinnerSubmitting = true;
             submitLabel = "Wait";
@@ -427,7 +418,7 @@ namespace StrikingInvestigation.Pages
             StateHasChanged();
         }
 
-        protected void GapChangedWithButton(bool clicked)
+        void GapChangedWithButton(bool clicked)
         {
             if (clicked == true)
             {
@@ -435,7 +426,7 @@ namespace StrikingInvestigation.Pages
             }
         }
 
-        protected void TestBellMouseDown(MouseEventArgs e)
+        void TestBellMouseDown(MouseEventArgs e)
         {
             if (e.Buttons == 1)
             {
@@ -448,7 +439,7 @@ namespace StrikingInvestigation.Pages
             }
         }
 
-        protected void TestBellMouseMove(MouseEventArgs e)
+        void TestBellMouseMove(MouseEventArgs e)
         {
             if (e.Buttons == 1 && playLabel == "Play")
             {
@@ -478,7 +469,7 @@ namespace StrikingInvestigation.Pages
             }
         }
 
-        protected void ArrowKeys(KeyboardEventArgs e)
+        void ArrowKeys(KeyboardEventArgs e)
         {
             // Keyboard arrows only active in Play mode
             if (playLabel == "Play")

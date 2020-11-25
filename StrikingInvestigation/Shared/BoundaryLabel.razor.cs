@@ -1,14 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Components;
 using StrikingInvestigation.Models;
 using StrikingInvestigation.Utilities;
 
 namespace StrikingInvestigation.Shared
 {
-    partial class BoundaryLabel
+    public partial class BoundaryLabel
     {
         [Parameter]
         public Blow Blow { get; set; }

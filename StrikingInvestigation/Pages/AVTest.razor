@@ -2,168 +2,162 @@
 @using StrikingInvestigation.Models
 @using StrikingInvestigation.Utilities
 
-<div class="posabs" style="--leftpos: 20px; --toppos: 63px">
-    <h1>A/V Test</h1>
-</div>
+<h1>A/V Test</h1>
 
-<div class="posabs" style="--leftpos: 20px; --toppos: 113px">
-    <p>Adjust the test bell until it strikes at the same time that it changes color.</p>
-</div>
+<p>Adjust the test bell until it strikes at the same time that it changes color.</p>
 
-@if (AVTestsData == null)
+@if (aVTestsData == null)
 {
     <div class="spinner"></div>
 }
 else
 {
-    <div class="form-group">
-        <EditForm Model="@AVTestsData">
-            <div class="posabs" style="--leftpos: 20px; --toppos: 163px">
+    <EditForm Model="@aVTestsData">
+        <div style="display: inline-block">
+            <div class="form-group">
                 <label>
                     Select Test
                 </label>
+
+                <CustomInputSelect Value="@selectedTest"
+                                   ValueChanged="@( (int value) => TestChanged(value) )"
+                                   ValueExpression="@( () => selectedTest )"
+                                   class="form-control"
+                                   disabled="@controlsDisabled">
+                    <option value="-1">Select test...</option>
+                    <option value="0">Practice</option>
+
+                    @foreach (AVTestData aVTestData in aVTestsData)
+                    {
+                        <option value="@aVTestData.Id">Test @aVTestData.Id</option>
+                    }
+                </CustomInputSelect>
+            </div>
+        </div>
+    </EditForm>
+
+    @if (selectedTest == 0)
+    {
+        <EditForm Model="@showGaps">
+            <div style="display: inline-block">
+                <button class="btn btn-primary" @onclick="Create" disabled="@controlsDisabled">
+                    Create A/V Test
+                </button>
             </div>
 
-            <CustomInputSelect Value="@SelectedTest"
-                    ValueChanged="@( (int value) => TestChanged(value) )"
-                    ValueExpression="@( () => SelectedTest )"
-                    class="form-control posabsw"
-                    style="--leftpos: 110px; --toppos: 156px; --width: 200px"
-                    disabled="@ControlsDisabled">
-                <option value="-1">Select test...</option>
-                <option value="0">Practice</option>
-
-                @foreach (AVTestData aVTestData in AVTestsData)
-                {
-                    <option value="@aVTestData.Id">Test @aVTestData.Id</option>
-                }
-            </CustomInputSelect>
-        </EditForm>
-    </div>
-
-    @if (SelectedTest == 0)
-    {
-        <div class="form-group">
-            <EditForm Model="@ShowGaps">
-                <div class="posabs" style="--leftpos: 20px; --toppos: 241px">
-                    <button class="btn btn-primary" @onclick="Create" disabled="@ControlsDisabled">
-                        Create A/V Test
-                    </button>
-                </div>
-
-                @if (Blow != null)
-                {
-                    <div class="posabs" style="--leftpos: 180px; --toppos: 213px">
+            @if (blow != null)
+            {
+                <div style="display: inline-block">
+                    <div class="form-group">
                         <label>
                             Show audio gap time
                         </label>
+
+                        <InputCheckbox Value="@showGaps"
+                            ValueChanged="@( (bool value) => ShowGapsChanged(value) )"
+                            ValueExpression="@( () => showGaps )"
+                            class="form-control"
+                            disabled="@controlsDisabled" />
                     </div>
+                </div>
 
-                    <InputCheckbox Value="@ShowGaps"
-                        ValueChanged="@( (bool value) => ShowGapsChanged(value) )"
-                        ValueExpression="@( () => ShowGaps )"
-                        class="form-control posabswh"
-                        style="--leftpos: 242px; --toppos: 251px; --width: 20px; --height: 20px"
-                        disabled="@ControlsDisabled" />
-
-                    <div class="posabs" style="--leftpos: 350px; --toppos: 213px">
+                <div style="display: inline-block">
+                    <div class="form-group">
                         <label>
                             Save test
                         </label>
-                    </div>
-
-                    <div class="posabs" style="--leftpos: 350px; --toppos: 241px">
-                        <button class="btn btn-primary" @onclick="Save" disabled="@ControlsDisabled">
-                            @SaveLabel
+                    
+                        <button class="btn btn-primary" @onclick="Save" disabled="@controlsDisabled">
+                            @saveLabel
                         </button>
 
-                        @if (Spinner1 == true)
+                        @if (spinnerSaving == true)
                         {
                             <div class="spinnerinline" style="display: inline-block; vertical-align: top;
-                                    margin-left: 12px; margin-top: 7px;
-                                    --borderwidth: 5px; --width: 24px; --height: 24px">
+                                margin-left: 12px; margin-top: 7px;
+                                --borderwidth: 5px; --width: 24px; --height: 24px">
                             </div>
                         }
 
-                        @if (Saved == true)
+                        @if (saved == true)
                         {
                             <div style="display: inline-block; vertical-align: top; margin-left: 12px;
-                                    margin-top: 7px">
+                                margin-top: 7px">
                                 Saved
                             </div>
                         }
                     </div>
-                }
-            </EditForm>
-        </div>
+                </div>
+            }
+        </EditForm>
     }
 }
 
 <div tabindex="0" @onkeydown="ArrowKeys" @ref="mainDiv">
-    @if (Blow != null)
+    @if (blow != null)
     {
         <div @onmousedown="TestBellMouseDown" @onmousemove="TestBellMouseMove">
-            <Bell Blow="@Blow"
-                    Screen="@Screen" />
+            <Bell Blow="@blow"
+                  Screen="@screen" />
         </div>
 
-        @if (ShowGaps == true)
+        @if (showGaps == true)
         {
-            <GapAudioLabel Blow="@Blow"
-                    Screen="@Screen" />
+            <GapAudioLabel Blow="@blow"
+                           Screen="@screen" />
         }
 
-        <audio id="@Blow.AudioId" preload="auto">
-            <source src="@Blow.BellSound" type="audio/mpeg" />
+        <audio id="@blow.AudioId" preload="auto">
+            <source src="@blow.BellSound" type="audio/mpeg" />
         </audio>
 
-        <BoundaryLabel Blow="@Blow"
-                       Screen="@Screen" />
+        <BoundaryLabel Blow="@blow"
+                       Screen="@screen" />
 
-        <GapMinus Blow="@Blow"
-                  Screen="@Screen"
-                  GapDisabled="@ControlsDisabled"
+        <GapMinus Blow="@blow"
+                  Screen="@screen"
+                  GapDisabled="@controlsDisabled"
                   Callback="GapChangedWithButton" />
 
-        <GapCurr Blow="@Blow"
-                 Screen="@Screen" />
+        <GapCurr Blow="@blow"
+                 Screen="@screen" />
 
-        <GapPlus Blow="@Blow"
-                 Screen="@Screen"
-                 GapDisabled="@ControlsDisabled"
+        <GapPlus Blow="@blow"
+                 Screen="@screen"
+                 GapDisabled="@controlsDisabled"
                  Callback="GapChangedWithButton" />
 
-        <PlayBtn Blow="@Blow"
-                 Screen="@Screen"
-                 PlayLabel="@PlayLabel"
-                 PlayDisabled="@PlayDisabled"
+        <PlayBtn Blow="@blow"
+                 Screen="@screen"
+                 PlayLabel="@playLabel"
+                 PlayDisabled="@playDisabled"
                  Callback="Play" />
 
-        @if (Spinner2 == true)
+        @if (spinnerPlaying == true)
         {
-            <SpinnerPlay Blow="@Blow"
-                    Screen="@Screen" />
+            <SpinnerPlay Blow="@blow"
+                    Screen="@screen" />
         }
 
-        @if (SelectedTest != 0 && SelectedTest != -1)
+        @if (selectedTest != 0 && selectedTest != -1)
         {
-            <SubmitBtn Blow="@Blow"
-                    Screen="@Screen"
-                    SubmitLabel="@SubmitLabel"
-                    SubmitDisabled="@ControlsDisabled"
+            <SubmitBtn Blow="@blow"
+                    Screen="@screen"
+                    SubmitLabel="@submitLabel"
+                    SubmitDisabled="@controlsDisabled"
                     Callback="Submit" />
         }
 
-        @if (SpinnerSubmit == true)
+        @if (spinnerSubmitting == true)
         {
-            <SpinnerSubmit Blow="@Blow"
-                    Screen="@Screen" />
+            <SpinnerSubmit Blow="@blow"
+                    Screen="@screen" />
         }
 
-        @if (Submitted == true)
+        @if (submitted == true)
         {
-            <SubmitLabel Blow="@Blow"
-                    Screen="@Screen" />
+            <SubmitLabel Blow="@blow"
+                    Screen="@screen" />
         }
     }
 </div>

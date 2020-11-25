@@ -5,10 +5,10 @@ using StrikingInvestigation.Utilities;
 
 namespace StrikingInvestigation.Shared
 {
-    partial class GapLabel
+    public partial class GapLabel
     {
-        private readonly int xOffset = -17;
-        private readonly int yOffset = 32;
+        readonly int xOffset = -17;
+        readonly int yOffset = 32;
 
         [Parameter]
         public Blow Blow { get; set; }

@@ -1,14 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Components;
 using StrikingInvestigation.Models;
 using StrikingInvestigation.Utilities;
 
 namespace StrikingInvestigation.Shared
 {
-    partial class GapCurr
+    public partial class GapCurr
     {
         [Parameter]
         public Blow Blow { get; set; }

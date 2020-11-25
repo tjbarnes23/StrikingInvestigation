@@ -1,14 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Components;
 using StrikingInvestigation.Models;
-using StrikingInvestigation.Utilities;
 
 namespace StrikingInvestigation.Shared
 {
-    partial class PlayBtn2
+    public partial class PlayBtn2
     {
         [Parameter]
         public TestSpec TestSpec { get; set; }

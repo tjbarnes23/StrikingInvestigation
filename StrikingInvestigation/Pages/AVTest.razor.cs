@@ -14,21 +14,50 @@ using StrikingInvestigation.Utilities;
 
 namespace StrikingInvestigation.Pages
 {
-    partial class AVTest
+    public partial class AVTest
     {
+        IEnumerable<AVTestData> aVTestsData;
+        readonly Screen screen;
+        int selectedTest;
+        
+        bool showGaps;
+
+        Blow blow;
+
+        bool controlsDisabled;
+        bool playDisabled;
+
+        string saveLabel;
+        string playLabel;
+        string submitLabel;
+
+        bool spinnerSaving;
+        bool spinnerPlaying;
+        bool spinnerSubmitting;
+
+        bool saved;
+        bool submitted;
+
+        CancellationTokenSource cancellationTokenSource;
+        CancellationToken cancellationToken;
+
         ElementReference mainDiv;
 
-        internal AVTest()
+        public AVTest()
         {
-            Screen = new Screen();
-            Screen.DiameterScale = 3;
-            Screen.XScale = Constants.XScale;
-            Screen.XMargin = Constants.XMargin;
-            Screen.YScale = Constants.YScale;
-            Screen.YMargin = 300;
-            Screen.GapMin = 200;
-            Screen.GapMax = 1200;
-            Screen.BaseGap = 0;
+            screen = new Screen
+            {
+                DiameterScale = 3,
+                XScale = Constants.XScale,
+                XMargin = Constants.XMargin,
+                YScale = Constants.YScale,
+                YMargin = 300,
+                GapMin = 200,
+                GapMax = 1200,
+                BaseGap = 0
+            };
+
+            selectedTest = -1;
         }
 
         [Inject]
@@ -36,46 +65,13 @@ namespace StrikingInvestigation.Pages
 
         [Inject]
         HttpClient Http { get; set; }
-
-        IEnumerable<AVTestData> AVTestsData { get; set; }
-
-        int SelectedTest { get; set; } = -1;
-
-        bool ShowGaps { get; set; }
-
-        Blow Blow { get; set; }
-
-        Screen Screen { get; set; }
-
-        string SaveLabel { get; set; }
-
-        string PlayLabel { get; set; }
-
-        string SubmitLabel { get; set; }
-
-        CancellationTokenSource CancellationTokenSource { get; set; }
-
-        CancellationToken CancellationToken { get; set; }
-
-        bool ControlsDisabled { get; set; }
-
-        bool PlayDisabled { get; set; }
-
-        bool Spinner1 { get; set; }
-
-        bool Spinner2 { get; set; }
-
-        bool SpinnerSubmit { get; set; }
-
-        bool Saved { get; set; }
-
-        bool Submitted { get; set; }
-
+                
         protected override async Task OnInitializedAsync()
         {
-            AVTestsData = (await Http.GetFromJsonAsync<AVTestData[]>("api/avtests")).ToList();
-            SaveLabel = "Save";
-            SubmitLabel = "Submit";
+            aVTestsData = (await Http.GetFromJsonAsync<AVTestData[]>("api/avtests")).ToList();
+            saveLabel = "Save";
+            playLabel = "Play";
+            submitLabel = "Submit";
         }
 
         protected override async void OnAfterRender(bool firstRender)
@@ -83,61 +79,44 @@ namespace StrikingInvestigation.Pages
             await JSRuntime.InvokeVoidAsync("SetFocusToElement", mainDiv);
         }
 
-        void SetState(ScreenState screenState)
-        {
-            if (screenState == ScreenState.Play)
-            {
-                PlayLabel = "Play";
-                ControlsDisabled = false;
-            }
-            else if (screenState == ScreenState.Stop)
-            {
-                PlayLabel = "Stop";
-                ControlsDisabled = true;
-            }
-        }
-
         void TestChanged(int value)
         {
-            SelectedTest = value;
-            Blow = null;
+            selectedTest = value;
+            blow = null;
 
-            if (SelectedTest != 0 && SelectedTest != -1)
+            if (selectedTest != 0 && selectedTest != -1)
             {
-                Load(SelectedTest);
+                Load(selectedTest);
             }
         }
 
         void ShowGapsChanged(bool value)
         {
-            ShowGaps = value;
+            showGaps = value;
         }
 
         void Create()
         {
-            Blow = new Blow();
-            Blow.CreateRandomBlow();
+            blow = new Blow();
+            blow.CreateRandomBlow();
 
-            Blow.Gap = 700;
-            Blow.GapCumulativeRow = Blow.Gap;
-            Blow.GapCumulative = Blow.Gap;
-            Blow.GapStr = Blow.Gap.ToString();
+            blow.Gap = 700;
+            blow.GapCumulativeRow = blow.Gap;
+            blow.GapCumulative = blow.Gap;
+            blow.GapStr = blow.Gap.ToString();
 
             Random rand = new Random();
-            Blow.AltGap = rand.Next(400, 701);
+            blow.AltGap = rand.Next(400, 701);
 
-            if (Blow.AltGap > 550)
+            if (blow.AltGap > 550)
             {
-                Blow.AltGap += 300;
+                blow.AltGap += 300;
             }
 
             // Round
-            Blow.AltGap = Convert.ToInt32((double)Blow.AltGap / Constants.Rounding) * Constants.Rounding;
+            blow.AltGap = Convert.ToInt32((double)blow.AltGap / Constants.Rounding) * Constants.Rounding;
 
-            Blow.BellColor = Constants.UnstruckTestBellColor;
-
-            ShowGaps = false;
-            SetState(ScreenState.Play);
+            blow.BellColor = Constants.UnstruckTestBellColor;
         }
 
         async void Load(int id)
@@ -150,198 +129,200 @@ namespace StrikingInvestigation.Pages
             BlowCore blowCore = JsonSerializer.Deserialize<BlowCore>(aVTestData.AVTestSpec);
 
             // Now create a Blow object from the BlowCore object
-            Blow = new Blow();
-            Blow.LoadBlow(blowCore);
+            blow = new Blow();
+            blow.LoadBlow(blowCore);
             
-            Blow.BellColor = Constants.UnstruckTestBellColor;
+            blow.BellColor = Constants.UnstruckTestBellColor;
 
-            ShowGaps = false;
-            SetState(ScreenState.Play);
             StateHasChanged();
         }
 
         async void Save()
         {
-            Spinner1 = true;
-            SaveLabel = "Wait";
-            ControlsDisabled = true;
-            PlayDisabled = true;
-            Blow.BellColor = Constants.DisabledUnstruckTestBellColor;
+            spinnerSaving = true;
+            saveLabel = "Wait";
+            controlsDisabled = true;
+            playDisabled = true;
+            blow.BellColor = Constants.DisabledUnstruckTestBellColor;
             StateHasChanged();
 
             // Push the created test to the API in JSON format
             // Start by creating a BlowCore object, which just has the inherited properties from Blow
             // Note implicit cast from child to parent
-            BlowCore blowCore = Blow;
+            BlowCore blowCore = blow;
 
             // Next use the Serializer method of the JsonSerializer class (in the System.Text.Json namespace) to create
             // a Json object from the BlowCore object
-            AVTestData aVTestData = new AVTestData();
-            aVTestData.AVTestSpec = JsonSerializer.Serialize(blowCore);
+            AVTestData aVTestData = new AVTestData
+            {
+                AVTestSpec = JsonSerializer.Serialize(blowCore)
+            };
 
             // Push the Json object to the API
             await Http.PostAsJsonAsync("api/avtests", aVTestData);
 
             // Refresh the contents of the Select Test dropdown 
-            AVTestsData = (await Http.GetFromJsonAsync<AVTestData[]>("api/avtests")).ToList();
+            aVTestsData = (await Http.GetFromJsonAsync<AVTestData[]>("api/avtests")).ToList();
 
-            Spinner1 = false;
-            Saved = true;
+            spinnerSaving = false;
+            saved = true;
             StateHasChanged();
 
             await Task.Delay(1000);
 
-            Saved = false;
-            SaveLabel = "Save";
-            ControlsDisabled = false;
-            PlayDisabled = false;
-            Blow.BellColor = Constants.UnstruckTestBellColor;
+            saved = false;
+            saveLabel = "Save";
+            controlsDisabled = false;
+            playDisabled = false;
+            blow.BellColor = Constants.UnstruckTestBellColor;
             StateHasChanged();
         }
 
         async Task Play()
         {
-            if (PlayLabel == "Play")
+            if (playLabel == "Play")
             {
                 // Change test bell color to disabled color - can't adjust gap during play
-                Blow.BellColor = Constants.DisabledUnstruckTestBellColor;
+                blow.BellColor = Constants.DisabledUnstruckTestBellColor;
 
                 DateTime strikeTime = DateTime.Now;
 
                 // This is the time to display the strike on the screen
-                Blow.StrikeTime = strikeTime.AddMilliseconds(Blow.Gap);
+                blow.StrikeTime = strikeTime.AddMilliseconds(blow.Gap);
 
                 // This is the time to make the strike sound
-                Blow.AltStrikeTime = strikeTime.AddMilliseconds(Blow.AltGap);
+                blow.AltStrikeTime = strikeTime.AddMilliseconds(blow.AltGap);
 
-                CancellationTokenSource = new CancellationTokenSource();
-                CancellationToken = CancellationTokenSource.Token;
+                cancellationTokenSource = new CancellationTokenSource();
+                cancellationToken = cancellationTokenSource.Token;
 
-                SetState(ScreenState.Stop);
-                await Strike();
+                playLabel = "Stop";
+                controlsDisabled = true;
+
+                TimeSpan delay;
+                int delayMs;
+
+                if (blow.AltStrikeTime <= blow.StrikeTime)
+                {
+                    // Process sound before display
+                    delay = blow.AltStrikeTime - DateTime.Now;
+                    delayMs = Convert.ToInt32(delay.TotalMilliseconds);
+
+                    if (delayMs > 0)
+                    {
+                        await Task.Delay(delayMs, cancellationToken);
+                    }
+
+                    if (cancellationToken.IsCancellationRequested)
+                    {
+                        return;
+                    }
+
+                    // Strike bell
+                    await JSRuntime.InvokeVoidAsync("PlayBellAudio", blow.AudioId);
+
+                    // Change color of bell on screen
+                    delay = blow.StrikeTime - DateTime.Now;
+                    delayMs = Convert.ToInt32(delay.TotalMilliseconds);
+
+                    if (delayMs > 0)
+                    {
+                        await Task.Delay(delayMs, cancellationToken);
+                    }
+
+                    if (cancellationToken.IsCancellationRequested)
+                    {
+                        return;
+                    }
+
+                    // Change bell color
+                    blow.BellColor = Constants.StruckBellColor;
+                    StateHasChanged();
+                }
+                else
+                {
+                    // Process display before sound
+                    delay = blow.StrikeTime - DateTime.Now;
+                    delayMs = Convert.ToInt32(delay.TotalMilliseconds);
+
+                    if (delayMs > 0)
+                    {
+                        await Task.Delay(delayMs, cancellationToken);
+                    }
+
+                    if (cancellationToken.IsCancellationRequested)
+                    {
+                        return;
+                    }
+
+                    // Change bell color
+                    blow.BellColor = Constants.StruckBellColor;
+                    StateHasChanged();
+
+                    // Bell sound
+                    delay = blow.AltStrikeTime - DateTime.Now;
+                    delayMs = Convert.ToInt32(delay.TotalMilliseconds);
+
+                    if (delayMs > 0)
+                    {
+                        await Task.Delay(delayMs, cancellationToken);
+                    }
+
+                    if (cancellationToken.IsCancellationRequested)
+                    {
+                        return;
+                    }
+
+                    // Strike bell
+                    await JSRuntime.InvokeVoidAsync("PlayBellAudio", blow.AudioId);
+                }
+
+                // Wait for 0.6 seconds
+                await Task.Delay(600);
+
+                // Start spinner
+                spinnerPlaying = true;
+                playLabel = "Wait";
+                playDisabled = true;
+                StateHasChanged();
+
+                // Wait a further 2 seconds for the bells to finish sounding (each bell sample is 2.5 seconds)
+                await Task.Delay(2000);
+
+                // Reset play button
+                spinnerPlaying = false;
+                playLabel = "Play";
+                playDisabled = false;
             }
-            else if (PlayLabel == "Stop")
+            else if (playLabel == "Stop")
             {
-                PlayLabel = "Wait";
-                PlayDisabled = true;
-                Spinner2 = true;
+                spinnerPlaying = true;
+                playLabel = "Wait";
+                playDisabled = true;
 
-                CancellationTokenSource.Cancel();
+                cancellationTokenSource.Cancel();
 
                 // Wait for 2.6 seconds for the sound to finish
                 await Task.Delay(2600);
 
-                Spinner2 = false;
-                PlayLabel = "Play";
-                PlayDisabled = false;
+                // Reset play button
+                spinnerPlaying = false;
+                playLabel = "Play";
+                playDisabled = false;
             }
 
-            // Set color to unstruck
-            Blow.BellColor = Constants.UnstruckTestBellColor;
-
-            SetState(ScreenState.Play);
-        }
-
-        async Task Strike()
-        {
-            TimeSpan delay;
-            int delayMs;
-
-            if (Blow.AltStrikeTime <= Blow.StrikeTime)
-            {
-                // Process sound before display
-                delay = Blow.AltStrikeTime - DateTime.Now;
-                delayMs = Convert.ToInt32(delay.TotalMilliseconds);
-
-                if (delayMs > 0)
-                {
-                    await Task.Delay(delayMs, CancellationToken);
-                }
-
-                if (CancellationToken.IsCancellationRequested)
-                {
-                    return;
-                }
-
-                // Strike bell
-                await JSRuntime.InvokeVoidAsync("PlayBellAudio", Blow.AudioId);
-
-                // Change color of bell on screen
-                delay = Blow.StrikeTime - DateTime.Now;
-                delayMs = Convert.ToInt32(delay.TotalMilliseconds);
-
-                if (delayMs > 0)
-                {
-                    await Task.Delay(delayMs, CancellationToken);
-                }
-
-                if (CancellationToken.IsCancellationRequested)
-                {
-                    return;
-                }
-
-                // Change bell color
-                Blow.BellColor = Constants.StruckBellColor;
-                StateHasChanged();
-            }
-            else
-            {
-                // Process display before sound
-                delay = Blow.StrikeTime - DateTime.Now;
-                delayMs = Convert.ToInt32(delay.TotalMilliseconds);
-
-                if (delayMs > 0)
-                {
-                    await Task.Delay(delayMs, CancellationToken);
-                }
-
-                if (CancellationToken.IsCancellationRequested)
-                {
-                    return;
-                }
-
-                // Change bell color
-                Blow.BellColor = Constants.StruckBellColor;
-                StateHasChanged();
-
-                // Bell sound
-                delay = Blow.AltStrikeTime - DateTime.Now;
-                delayMs = Convert.ToInt32(delay.TotalMilliseconds);
-
-                if (delayMs > 0)
-                {
-                    await Task.Delay(delayMs, CancellationToken);
-                }
-
-                if (CancellationToken.IsCancellationRequested)
-                {
-                    return;
-                }
-
-                // Strike bell
-                await JSRuntime.InvokeVoidAsync("PlayBellAudio", Blow.AudioId);
-            }
-
-            // Wait for 2.6 seconds for the sound to finish
-            await Task.Delay(1000, CancellationToken);
-
-            Spinner2 = true;
-            PlayLabel = "Wait";
-            PlayDisabled = true;
-            StateHasChanged();
-            await Task.Delay(1600);
-            Spinner2 = false;
-            PlayLabel = "Play";
-            PlayDisabled = false;
+            // Reset screen
+            blow.BellColor = Constants.UnstruckTestBellColor;
+            controlsDisabled = false;
         }
 
         async Task Submit()
         {
-            SpinnerSubmit = true;
-            SubmitLabel = "Wait";
-            ControlsDisabled = true;
-            PlayDisabled = true;
-            Blow.BellColor = Constants.DisabledUnstruckTestBellColor;
+            spinnerSubmitting = true;
+            submitLabel = "Wait";
+            controlsDisabled = true;
+            playDisabled = true;
+            blow.BellColor = Constants.DisabledUnstruckTestBellColor;
             StateHasChanged();
 
             // Create a TestSubmission object
@@ -350,25 +331,25 @@ namespace StrikingInvestigation.Pages
                 UserId = string.Empty,
                 TestDate = DateTime.Now,
                 TestType = "A/V Test",
-                TestId = SelectedTest,
-                Gap = Blow.Gap,
+                TestId = selectedTest,
+                Gap = blow.Gap,
                 AB = string.Empty
             };
 
             // Push the testSubmission to the API in JSON format
             await Http.PostAsJsonAsync("api/testsubmissions", testSubmission);
 
-            SpinnerSubmit = false;
-            Submitted = true;
+            spinnerSubmitting = false;
+            submitted = true;
             StateHasChanged();
 
             await Task.Delay(1000);
 
-            Submitted = false;
-            SubmitLabel = "Submit";
-            ControlsDisabled = false;
-            PlayDisabled = false;
-            Blow.BellColor = Constants.UnstruckTestBellColor;
+            submitted = false;
+            submitLabel = "Submit";
+            controlsDisabled = false;
+            playDisabled = false;
+            blow.BellColor = Constants.UnstruckTestBellColor;
             StateHasChanged();
         }
 
@@ -385,7 +366,7 @@ namespace StrikingInvestigation.Pages
             if (e.Buttons == 1)
             {
                 // Mouse movement only active in Play mode
-                if (PlayLabel == "Play")
+                if (playLabel == "Play")
                 {
                     // Call TestBellMouseMove to center the bell on where the mouse is clicked
                     TestBellMouseMove(e);
@@ -395,17 +376,17 @@ namespace StrikingInvestigation.Pages
 
         void TestBellMouseMove(MouseEventArgs e)
         {
-            if (e.Buttons == 1 && PlayLabel == "Play")
+            if (e.Buttons == 1 && playLabel == "Play")
             {
                 int clientX = Convert.ToInt32(e.ClientX);
 
-                int newGap = Convert.ToInt32((clientX - Screen.XMargin) / Screen.XScale);
+                int newGap = Convert.ToInt32((clientX - screen.XMargin) / screen.XScale);
                 int newGapRounded = Convert.ToInt32((double)newGap / Constants.Rounding) * Constants.Rounding;
 
-                if (newGapRounded >= Screen.GapMin && newGapRounded <= Screen.GapMax &&
-                        newGapRounded != Blow.Gap)
+                if (newGapRounded >= screen.GapMin && newGapRounded <= screen.GapMax &&
+                        newGapRounded != blow.Gap)
                 {
-                    Blow.UpdateGap(newGapRounded);
+                    blow.UpdateGap(newGapRounded);
                 }
             }
         }
@@ -413,24 +394,24 @@ namespace StrikingInvestigation.Pages
         void ArrowKeys(KeyboardEventArgs e)
         {
             // Keyboard arrows only active in Play mode
-            if (PlayLabel == "Play")
+            if (playLabel == "Play")
             {
                 if (e.Key == "ArrowLeft")
                 {
-                    int newGap = Blow.Gap - Constants.Rounding;
+                    int newGap = blow.Gap - Constants.Rounding;
 
-                    if (newGap >= Screen.GapMin)
+                    if (newGap >= screen.GapMin)
                     {
-                        Blow.UpdateGap(newGap);
+                        blow.UpdateGap(newGap);
                     }
                 }
                 else if (e.Key == "ArrowRight")
                 {
-                    int newGap = Blow.Gap + Constants.Rounding;
+                    int newGap = blow.Gap + Constants.Rounding;
 
-                    if (newGap <= Screen.GapMax)
+                    if (newGap <= screen.GapMax)
                     {
-                        Blow.UpdateGap(newGap);
+                        blow.UpdateGap(newGap);
                     }
                 }
             }

@@ -5,7 +5,7 @@ using StrikingInvestigation.Utilities;
 
 namespace StrikingInvestigation.Shared
 {
-    partial class GapAudioLabel
+    public partial class GapAudioLabel
     {
         [Parameter]
         public Blow Blow { get; set; }

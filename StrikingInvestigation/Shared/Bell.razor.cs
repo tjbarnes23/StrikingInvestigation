@@ -1,20 +1,16 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Components;
 using StrikingInvestigation.Models;
 using StrikingInvestigation.Utilities;
 
 namespace StrikingInvestigation.Shared
 {
-    partial class Bell
+    public partial class Bell
     {
         // The first two fields below correspond to values in the bell CSS class
-        private readonly int borderSize = 10;
-        private readonly int fontSize = 14;
-        private readonly int paddingAdj = -3;
+        readonly int borderSize = 10;
+        readonly int fontSize = 14;
+        readonly int paddingAdj = -3;
 
         [Parameter]
         public Blow Blow { get; set; }

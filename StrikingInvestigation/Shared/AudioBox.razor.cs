@@ -4,7 +4,7 @@ using StrikingInvestigation.Models;
 
 namespace StrikingInvestigation.Shared
 {
-    partial class AudioBox
+    public partial class AudioBox
     {
         [Parameter]
         public TestSpec TestSpec { get; set; }

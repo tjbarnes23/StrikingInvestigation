@@ -6,7 +6,7 @@ using StrikingInvestigation.Utilities;
 
 namespace StrikingInvestigation.Shared
 {
-    partial class GapPlus
+    public partial class GapPlus
     {
         readonly string gapPlusStr = Constants.Rounding.ToString() + "ms";
 

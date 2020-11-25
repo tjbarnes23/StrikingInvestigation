@@ -1,14 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Components;
 using StrikingInvestigation.Models;
-using StrikingInvestigation.Utilities;
 
 namespace StrikingInvestigation.Shared
 {
-    partial class StrokeLabel
+    public partial class StrokeLabel
     {
         readonly int strokeLabelXOffset = -80;
         readonly int strokeLabelYOffset = -18;

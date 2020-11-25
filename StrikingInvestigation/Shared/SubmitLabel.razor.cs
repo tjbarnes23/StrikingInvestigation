@@ -5,7 +5,7 @@ using StrikingInvestigation.Utilities;
 
 namespace StrikingInvestigation.Shared
 {
-    partial class SubmitLabel
+    public partial class SubmitLabel
     {
         [Parameter]
         public Blow Blow { get; set; }

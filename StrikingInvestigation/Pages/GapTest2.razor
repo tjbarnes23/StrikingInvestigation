@@ -2,41 +2,39 @@
 @using StrikingInvestigation.Models
 @using StrikingInvestigation.Utilities
 
+<h1>Gap Test 2</h1>
+
+<p>Adjust the test bell until you think it is striking at the correct time.</p>
+
 @if (gapTestsData == null)
 {
     <div class="spinner"></div>
 }
 else
 {
-    <div>
-        <div style="display: inline-block; vertical-align: top">
-            <h1>Gap Test 2</h1>
+    <EditForm Model="@gapTestsData">
+        <div style="display: inline-block">
+            <div class="form-group">
+                <label>
+                    Select Test
+                </label>
+
+                <CustomInputSelect Value="@selectedTest"
+                                    ValueChanged="@( (int value) => TestChanged(value) )"
+                                    ValueExpression="@( () => selectedTest )"
+                                    class="form-control"
+                                    disabled="@controlsDisabled">
+                    <option value="-1">Select test...</option>
+                    <option value="0">Practice</option>
+
+                    @foreach (GapTestData gapTestData in gapTestsData)
+                    {
+                        <option value="@gapTestData.Id">Test @gapTestData.Id</option>
+                    }
+                </CustomInputSelect>
+            </div>
         </div>
-
-        <div style="display: inline-block; margin-left: 12px">
-            <EditForm Model="@gapTestsData">
-                <div class="form-group">
-                    <label>
-                        Select Test
-                    </label>
-
-                    <CustomInputSelect Value="@selectedTest"
-                                       ValueChanged="@( (int value) => TestChanged(value) )"
-                                       ValueExpression="@( () => selectedTest )"
-                                       class="form-control"
-                                       disabled="@controlsDisabled">
-                        <option value="-1">Select test...</option>
-                        <option value="0">Practice</option>
-
-                        @foreach (GapTestData gapTestData in gapTestsData)
-                        {
-                            <option value="@gapTestData.Id">Test @gapTestData.Id</option>
-                        }
-                    </CustomInputSelect>
-                </div>
-            </EditForm>
-        </div>
-    </div>
+    </EditForm>
 
     @if (selectedTest == 0)
     {

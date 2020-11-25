@@ -6,7 +6,7 @@ using StrikingInvestigation.Utilities;
 
 namespace StrikingInvestigation.Shared
 {
-    partial class SubmitBtn
+    public partial class SubmitBtn
     {
         [Parameter]
         public Blow Blow { get; set; }

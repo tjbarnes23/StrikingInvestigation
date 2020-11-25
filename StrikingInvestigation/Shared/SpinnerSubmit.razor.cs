@@ -5,7 +5,7 @@ using StrikingInvestigation.Utilities;
 
 namespace StrikingInvestigation.Shared
 {
-    partial class SpinnerSubmit
+    public partial class SpinnerSubmit
     {
         [Parameter]
         public Blow Blow { get; set; }

@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Components;
 using StrikingInvestigation.Models;
@@ -8,9 +6,9 @@ using StrikingInvestigation.Utilities;
 
 namespace StrikingInvestigation.Shared
 {
-    partial class GapMinus
+    public partial class GapMinus
     {
-        private readonly string gapMinusStr = "-" + Constants.Rounding.ToString() + "ms";
+        readonly string gapMinusStr = "-" + Constants.Rounding.ToString() + "ms";
 
         [Parameter]
         public Blow Blow { get; set; }

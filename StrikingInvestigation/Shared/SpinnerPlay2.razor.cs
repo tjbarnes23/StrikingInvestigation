@@ -1,11 +1,10 @@
 ﻿using System;
 using Microsoft.AspNetCore.Components;
 using StrikingInvestigation.Models;
-using StrikingInvestigation.Utilities;
 
 namespace StrikingInvestigation.Shared
 {
-    partial class SpinnerPlay2
+    public partial class SpinnerPlay2
     {
         [Parameter]
         public TestSpec TestSpec { get; set; }

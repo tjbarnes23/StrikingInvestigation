@@ -31,9 +31,11 @@ namespace StrikingInvestigation.Models
             {
                 for (int i = 1; i <= NumBells; i++)
                 {
-                    Blow blow = new Blow();
-                    blow.Bell = row.RowArr[i];
-                    blow.ChangeStr = row.ChangeStr;
+                    Blow blow = new Blow
+                    {
+                        Bell = row.RowArr[i],
+                        ChangeStr = row.ChangeStr
+                    };
 
                     // If this is the test place and the last row, set IsTestBell to true and IsLastBlow to true;
                     if (row.RowNum == block.NumRows && i == testPlace)
@@ -318,16 +320,17 @@ namespace StrikingInvestigation.Models
 
             foreach (BlowCore blowCore in blowSetCore.BlowsCore)
             {
-                Blow blow = new Blow();
-                blow.Bell = blowCore.Bell;
-                blow.ChangeStr = blowCore.ChangeStr;
-                blow.Gap = blowCore.Gap;
-                blow.AltGap = blowCore.AltGap;
-                blow.IsTestBell = blowCore.IsTestBell;
-                blow.IsHighlighted = blowCore.IsHighlighted;
+                Blow blow = new Blow
+                {
+                    Bell = blowCore.Bell,
+                    ChangeStr = blowCore.ChangeStr,
+                    Gap = blowCore.Gap,
+                    AltGap = blowCore.AltGap,
+                    IsTestBell = blowCore.IsTestBell,
+                    IsHighlighted = blowCore.IsHighlighted
+                };
 
                 blow.BellActual = BellAct.DeriveBellActual(Stage, TenorWeight, blow.Bell);
-                
                 blow.RowNum = rowNum;
                 blow.Place = place;
 
