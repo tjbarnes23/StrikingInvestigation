@@ -2,137 +2,138 @@
 @using StrikingInvestigation.Models
 @using StrikingInvestigation.Utilities
 
-<div class="posabs" style="--leftpos: 20px; --toppos: 63px">
-    <h1>A/B Test</h1>
-</div>
+<h1>A/B Test</h1>
 
-@if (ABTestsData == null)
+<p>Try to detect whether block A or block B below contains striking errors.</p>
+
+@if (aBTestsData == null)
 {
     <div class="spinner"></div>
 }
 else
 {
-    <div class="form-group">
-        <EditForm Model="@ABTestsData">
-            <div class="posabs" style="--leftpos: 170px; --toppos: 73px">
+    <EditForm Model="@aBTestsData">
+        <div style="display: inline-block">
+            <div class="form-group">
                 <label>
                     Select Test
                 </label>
+
+                <CustomInputSelect Value="@selectedTest"
+                                   ValueChanged="@( (int value) => TestChanged(value) )"
+                                   ValueExpression="@( () => selectedTest )"
+                                   class="form-control"
+                                   disabled="@controlsDisabled">
+                    <option value="-1">Select test...</option>
+                    <option value="0">Practice</option>
+
+                    @foreach (ABTestData aBTestData in aBTestsData)
+                    {
+                        <option value="@aBTestData.Id">Test @aBTestData.Id</option>
+                    }
+                </CustomInputSelect>
             </div>
+        </div>
+    </EditForm>
 
-            <CustomInputSelect Value="@SelectedTest"
-                               ValueChanged="@( (int value) => TestChanged(value) )"
-                               ValueExpression="@( () => SelectedTest )"
-                               class="form-control posabsw"
-                               style="--leftpos: 260px; --toppos: 66px; --width: 200px"
-                               disabled="@ControlsDisabled">
-                <option value="-1">Select test...</option>
-                <option value="0">Practice</option>
-
-                @foreach (ABTestData aBTestData in ABTestsData)
-                {
-                    <option value="@aBTestData.Id">Test @aBTestData.Id</option>
-                }
-            </CustomInputSelect>
-        </EditForm>
-    </div>
-
-    @if (SelectedTest == 0)
+    @if (selectedTest == 0)
     {
-        <div class="form-group">
-            <EditForm Model="@TestSpec">
-                <div class="posabs" style="--leftpos: 20px; --toppos: 120px">
+        <EditForm Model="@testSpec">
+            <div style="display: inline-block">
+                <div class="form-group">
                     <label>
                         Stage
                     </label>
+
+                    <CustomInputSelect Value="@testSpec.Stage"
+                                       ValueChanged="@( (int value) => StageChanged(value) )"
+                                       ValueExpression="@( () => testSpec.Stage )"
+                                       class="form-control"
+                                       disabled="@controlsDisabled">
+                        @for (int i = 5; i <= 12; i++)
+                        {
+                            <option value="@i">@StageConv.StageStr(i)</option>
+                        }
+                    </CustomInputSelect>
                 </div>
+            </div>
 
-                <CustomInputSelect Value="@TestSpec.Stage"
-                                   ValueChanged="@( (int value) => StageChanged(value) )"
-                                   ValueExpression="@( () => TestSpec.Stage )"
-                                   class="form-control posabsw"
-                                   style="--leftpos: 20px; --toppos: 148px; --width: 120px"
-                                   disabled="@ControlsDisabled">
-                    @for (int i = 5; i <= 12; i++)
-                    {
-                        <option value="@i">@StageConv.StageStr(i)</option>
-                    }
-                </CustomInputSelect>
-
-                <div class="posabs" style="--leftpos: 170px; --toppos: 120px">
+            <div style="display: inline-block">
+                <div class="form-group">
                     <label>
                         Tenor weight
                     </label>
+
+                    <CustomInputSelect Value="@testSpec.TenorWeight"
+                                       ValueChanged="@( (int value) => TenorWeightChanged(value) )"
+                                       ValueExpression="@( () => testSpec.TenorWeight )"
+                                       class="form-control"
+                                       disabled="@tenorWeightDisabled">
+                        <option value="8">@TenorWeightConv.TenorWeightStr(8)</option>
+                        <option value="23">@TenorWeightConv.TenorWeightStr(23)</option>
+                    </CustomInputSelect>
                 </div>
+            </div>
 
-                <CustomInputSelect Value="@TestSpec.TenorWeight"
-                                   ValueChanged="@( (int value) => TenorWeightChanged(value) )"
-                                   ValueExpression="@( () => TestSpec.TenorWeight )"
-                                   class="form-control posabsw"
-                                   style="--leftpos: 170px; --toppos: 148px; --width: 120px"
-                                   disabled="@SelectTenorWeightDisabled">
-                    <option value="8">@TenorWeightConv.TenorWeightStr(8)</option>
-                    <option value="23">@TenorWeightConv.TenorWeightStr(23)</option>
-                </CustomInputSelect>
-
-                <div class="posabs" style="--leftpos: 320px; --toppos: 120px">
+            <div style="display: inline-block">
+                <div class="form-group">
                     <label>
                         Type of error
                     </label>
+
+                    <CustomInputSelect id="errorType"
+                                       Value="@testSpec.ErrorType"
+                                       ValueChanged="@( (int value) => ErrorTypeChanged(value) )"
+                                       ValueExpression="@( () => testSpec.ErrorType )"
+                                       class="form-control"
+                                       disabled="@controlsDisabled">
+                        @for (int i = 1; i <= 2; i++)
+                        {
+                            <option value="@i">@ErrorTypeConv.ErrorTypeStr(i)</option>
+                        }
+                    </CustomInputSelect>
                 </div>
+            </div>
 
-                <CustomInputSelect id="errorType"
-                                   Value="@TestSpec.ErrorType"
-                                   ValueChanged="@( (int value) => ErrorTypeChanged(value) )"
-                                   ValueExpression="@( () => TestSpec.ErrorType )"
-                                   class="form-control posabsw"
-                                   style="--leftpos: 320px; --toppos: 148px; --width: 170px"
-                                   disabled="@ControlsDisabled">
-                    @for (int i = 1; i <= 2; i++)
-                    {
-                        <option value="@i">@ErrorTypeConv.ErrorTypeStr(i)</option>
-                    }
-                </CustomInputSelect>
-
-                <div class="posabs" style="--leftpos: 520px; --toppos: 120px">
+            <div style="display: inline-block">
+                <div class="form-group">
                     <label>
                         Error size
                     </label>
+
+                    <CustomInputSelect id="errorSize"
+                                       Value="@testSpec.ErrorSize"
+                                       ValueChanged="@( (int value) => ErrorSizeChanged(value) )"
+                                       ValueExpression="@( () => testSpec.ErrorSize )"
+                                       class="form-control"
+                                       disabled="@controlsDisabled">
+                        @for (int i = 75; i >= 10; i -= 5)
+                        {
+                            <option value="@i">@ErrorSizeConv.ErrorSizeStr(i)</option>
+                        }
+                    </CustomInputSelect>
                 </div>
+            </div>
 
-                <CustomInputSelect id="errorSize"
-                                   Value="@TestSpec.ErrorSize"
-                                   ValueChanged="@( (int value) => ErrorSizeChanged(value) )"
-                                   ValueExpression="@( () => TestSpec.ErrorSize )"
-                                   class="form-control posabsw"
-                                   style="--leftpos: 520px; --toppos: 148px; --width: 120px"
-                                   disabled="@ControlsDisabled">
-                    @for (int i = 75; i >= 10; i -= 5)
-                    {
-                        <option value="@i">@ErrorSizeConv.ErrorSizeStr(i)</option>
-                    }
-                </CustomInputSelect>
+            <div style="display: inline-block">
+                <button class="btn btn-primary" @onclick="CreateABTest" disabled="@controlsDisabled">
+                    Create A/B Test
+                </button>
+            </div>
 
-                <div class="posabs" style="--leftpos: 670px; --toppos: 148px">
-                    <button class="btn btn-primary" @onclick="CreateABTest" disabled="@ControlsDisabled">
-                        Create A/B Test
-                    </button>
-                </div>
-
-                @if (BlowSetA != null && BlowSetB != null)
-                {
-                    <div class="posabs" style="--leftpos: 840px; --toppos: 120px">
+            @if (blowSetA != null && blowSetB != null)
+            {
+                <div style="display: inline-block">
+                    <div class="form-group">
                         <label>
                             Save test
                         </label>
-                    </div>
 
-                    <div class="posabs" style="--leftpos: 840px; --toppos: 148px">
-                        <button class="btn btn-primary" @onclick="Save" disabled="@ControlsDisabled">
-                            @SaveLabel
+                        <button class="btn btn-primary" @onclick="Save" disabled="@controlsDisabled">
+                            @saveLabel
                         </button>
 
-                        @if (Spinner1 == true)
+                        @if (spinnerSaving == true)
                         {
                             <div class="spinnerinline" style="display: inline-block; vertical-align: top;
                                     margin-left: 12px; margin-top: 7px;
@@ -140,7 +141,7 @@ else
                             </div>
                         }
 
-                        @if (Saved == true)
+                        @if (saved == true)
                         {
                             <div style="display: inline-block; vertical-align: top; margin-left: 12px;
                                     margin-top: 7px">
@@ -148,84 +149,87 @@ else
                             </div>
                         }
                     </div>
-                }
-            </EditForm>
-        </div>
+                </div>
+            }
+        </EditForm>
     }
-    else if (SelectedTest != -1)
+    else if (selectedTest != -1)
     {
-        <div class="form-group">
-            <div class="posabs" style="--leftpos: 20px; --toppos: 120px">
-                <label>
-                    Stage
-                </label>
+        <div>
+            <div style="display: inline-block">
+                <div class="form-group">
+                    <label>
+                        Stage
+                    </label>
+
+                    <div style="border: 1px solid #ced4da; border-radius: 4px; padding-left: 16px; padding-top: 7px">
+                        <label>
+                            @StageConv.StageStr(testSpec.Stage)
+                        </label>
+                    </div>
+                </div>
             </div>
 
-            <div class="posabswh" style="--leftpos: 20px; --toppos: 148px; --width: 120px; --height: 38px;
-                border: 1px solid #ced4da; border-radius: 4px; padding-left: 16px; padding-top: 7px">
-                <label>
-                    @StageConv.StageStr(TestSpec.Stage)
-                </label>
+            <div style="display: inline-block">
+                <div class="form-group">
+                    <label>
+                        Tenor weight
+                    </label>
+
+                    <div style="border: 1px solid #ced4da; border-radius: 4px; padding-left: 16px; padding-top: 7px">
+                        <label>
+                            @TenorWeightConv.TenorWeightStr(testSpec.TenorWeight)
+                        </label>
+                    </div>
+                </div>
             </div>
 
-            <div class="posabs" style="--leftpos: 170px; --toppos: 120px">
-                <label>
-                    Tenor weight
-                </label>
-            </div>
+            <div style="display: inline-block">
+                <div class="form-group">
+                    <label>
+                        Type of error
+                    </label>
 
-            <div class="posabswh" style="--leftpos: 170px; --toppos: 148px; --width: 120px; --height: 38px;
-                border: 1px solid #ced4da; border-radius: 4px; padding-left: 16px; padding-top: 7px">
-                <label>
-                    @TenorWeightConv.TenorWeightStr(TestSpec.TenorWeight)
-                </label>
-            </div>
-
-            <div class="posabs" style="--leftpos: 320px; --toppos: 120px">
-                <label>
-                    Type of error
-                </label>
-            </div>
-
-            <div class="posabswh" style="--leftpos: 320px; --toppos: 148px; --width: 170px; --height: 38px;
-                border: 1px solid #ced4da; border-radius: 4px; padding-left: 16px; padding-top: 7px">
-                <label>
-                    @ErrorTypeConv.ErrorTypeStr(TestSpec.ErrorType)
-                </label>
+                    <div style="border: 1px solid #ced4da; border-radius: 4px; padding-left: 16px; padding-top: 7px">
+                        <label>
+                            @ErrorTypeConv.ErrorTypeStr(testSpec.ErrorType)
+                        </label>
+                    </div>
+                </div>
             </div>
         </div>
     }
 }
 
-@if (BlowSetA != null)
+@if (blowSetA != null)
 {
-    @foreach (Blow blow in BlowSetA.Blows)
+    @foreach (Blow blow in blowSetA.Blows)
     {
         // Place labels if it's the first blow of the row
         if (blow.Place == 1)
         {
             <StrokeLabel Blow="@blow"
-                         Screen="@ScreenA" />
+                         Screen="@screenA" />
 
             <RowStartLabel Blow="@blow"
-                           Screen="@ScreenA" />
+                           Screen="@screenA" />
 
             <ChangeLabel Blow="@blow"
-                         Screen="@ScreenA" />
+                         Screen="@screenA" />
         }
 
-        if (ShowGaps == true)
+        if (showGaps == true)
         {
             <Bell Blow="@blow"
-                  Screen="@ScreenA" />
+                  Screen="@screenA" />
 
             <GapLabel Blow="@blow"
-                      Screen="@ScreenA" />
+                      Screen="@screenA" />
         }
         else
         {
-            <AudioBox2 TestSpec="@TestSpec"
-                       Screen="@ScreenA" />
+            <AudioBox2 TestSpec="@testSpec"
+                       Screen="@screenA" />
         }
 
         <audio id="@blow.AudioId" preload="auto">
@@ -233,48 +237,48 @@ else
         </audio>
     }
 
-    <PlayBtn2 TestSpec="@TestSpec"
-              Screen="@ScreenA"
-              PlayLabel="@PlayLabelA"
-              PlayDisabled="@PlayDisabledA"
+    <PlayBtn2 TestSpec="@testSpec"
+              Screen="@screenA"
+              PlayLabel="@playLabelA"
+              PlayDisabled="@playDisabledA"
               Callback="PlayA" />
 
-    @if (Spinner2 == true)
+    @if (spinnerPlayingA == true)
     {
-        <SpinnerPlay2 TestSpec="@TestSpec"
-                  Screen="@ScreenA" />
+        <SpinnerPlay2 TestSpec="@testSpec"
+                      Screen="@screenA" />
     }
 }
 
-@if (BlowSetB != null)
+@if (blowSetB != null)
 {
-    @foreach (Blow blow in BlowSetB.Blows)
+    @foreach (Blow blow in blowSetB.Blows)
     {
         // Place labels if it's the first blow of the row
         if (blow.Place == 1)
         {
             <StrokeLabel Blow="@blow"
-                         Screen="@ScreenB" />
+                         Screen="@screenB" />
 
             <RowStartLabel Blow="@blow"
-                           Screen="@ScreenB" />
+                           Screen="@screenB" />
 
             <ChangeLabel Blow="@blow"
-                         Screen="@ScreenB" />
+                         Screen="@screenB" />
         }
 
-        if (ShowGaps == true)
+        if (showGaps == true)
         {
             <Bell Blow="@blow"
-                  Screen="@ScreenB" />
+                  Screen="@screenB" />
 
             <GapLabel Blow="@blow"
-                      Screen="@ScreenB" />
+                      Screen="@screenB" />
         }
         else
         {
-            <AudioBox2 TestSpec="@TestSpec"
-                       Screen="@ScreenB" />
+            <AudioBox2 TestSpec="@testSpec"
+                       Screen="@screenB" />
         }
 
         <audio id="@blow.AudioId" preload="auto">
@@ -282,20 +286,20 @@ else
         </audio>
     }
 
-    <PlayBtn2 TestSpec="@TestSpec"
-              Screen="@ScreenB"
-              PlayLabel="@PlayLabelB"
-              PlayDisabled="@PlayDisabledB"
+    <PlayBtn2 TestSpec="@testSpec"
+              Screen="@screenB"
+              PlayLabel="@playLabelB"
+              PlayDisabled="@playDisabledB"
               Callback="PlayB" />
 
-    @if (Spinner3 == true)
+    @if (spinnerPlayingB == true)
     {
-        <SpinnerPlay2 TestSpec="@TestSpec"
-                  Screen="@ScreenB" />
+        <SpinnerPlay2 TestSpec="@testSpec"
+                      Screen="@screenB" />
     }
 }
 
-@if (BlowSetA != null && BlowSetB != null)
+@if (blowSetA != null && blowSetB != null)
 {
     <div class="posabs" style="--leftpos: 20px; --toppos: 1157px">
         <label>
@@ -304,24 +308,24 @@ else
     </div>
 
     <div class="posabs" style="--leftpos: 500px; --toppos: 1150px">
-        <button class="btn btn-primary" @onclick="AHasErrors" style="width: 120px" disabled="@ControlsDisabled">
-            @SubmitLabel1
+        <button class="btn btn-primary" @onclick="AHasErrors" style="width: 120px" disabled="@controlsDisabled">
+            @submitLabel1
         </button>
     </div>
 
     <div class="posabs" style="--leftpos: 635px; --toppos: 1150px">
-        <button class="btn btn-primary" @onclick="BHasErrors" style="width: 120px" disabled="@ControlsDisabled">
-            @SubmitLabel2
+        <button class="btn btn-primary" @onclick="BHasErrors" style="width: 120px" disabled="@controlsDisabled">
+            @submitLabel2
         </button>
     </div>
 
     <div class="posabs" style="--leftpos: 770px; --toppos: 1150px">
-        <button class="btn btn-primary" @onclick="DontKnow" style="width: 220px" disabled="@ControlsDisabled">
-            @SubmitLabel3
+        <button class="btn btn-primary" @onclick="DontKnow" style="width: 220px" disabled="@controlsDisabled">
+            @submitLabel3
         </button>
     </div>
 
-    @if (ResultEntered == true)
+    @if (resultEntered == true)
     {
         <div class="posabs" style="--leftpos: 1026px; --toppos: 1157px">
             <label>
@@ -329,70 +333,70 @@ else
             </label>
         </div>
 
-        <EditForm Model="@ShowGaps">
-            <InputCheckbox Value="@ShowGaps"
+        <EditForm Model="@showGaps">
+            <InputCheckbox Value="@showGaps"
                            ValueChanged="@( (bool value) => ShowGapsChanged(value) )"
-                           ValueExpression="@( () => ShowGaps )"
+                           ValueExpression="@( () => showGaps )"
                            class="form-control posabswh"
                            style="--leftpos: 1118px; --toppos: 1158px; --width: 20px; --height: 20px"
-                           disabled="@ControlsDisabled" />
+                           disabled="@controlsDisabled" />
         </EditForm>
     }
 
-    @if (SpinnerSubmit1 == true)
+    @if (spinnerSubmitting1 == true)
     {
         <div class="spinnerabs"
-                style="--leftpos: 500px;
+             style="--leftpos: 500px;
                         --toppos: 1203px">
         </div>
     }
 
-    @if (Submitted1 == true)
+    @if (submitted1 == true)
     {
         <div class="posabs"
-                style="--leftpos: 500px;
+             style="--leftpos: 500px;
                         --toppos: 1203px">
             Submitted
         </div>
     }
 
-    @if (SpinnerSubmit2 == true)
+    @if (spinnerSubmitting2 == true)
     {
         <div class="spinnerabs"
-                style="--leftpos: 635px;
+             style="--leftpos: 635px;
                         --toppos: 1203px">
         </div>
     }
 
-    @if (Submitted2 == true)
+    @if (submitted2 == true)
     {
         <div class="posabs"
-                style="--leftpos: 635px;
+             style="--leftpos: 635px;
                         --toppos: 1203px">
             Submitted
         </div>
     }
-    @if (SpinnerSubmit3 == true)
+    @if (spinnerSubmitting3 == true)
     {
         <div class="spinnerabs"
-                style="--leftpos: 770px;
+             style="--leftpos: 770px;
                         --toppos: 1203px">
         </div>
     }
 
-    @if (Submitted3 == true)
+    @if (submitted3 == true)
     {
         <div class="posabs"
-                style="--leftpos: 770px;
+             style="--leftpos: 770px;
                         --toppos: 1203px">
             Submitted
         </div>
     }
 
-    @if (ResultSound == true)
+    @if (resultSound == true)
     {
         <audio id="sound" autoplay>
-            <source src="@ResultSource" />
+            <source src="@resultSource" />
         </audio>
     }
 }

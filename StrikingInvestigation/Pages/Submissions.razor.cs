@@ -8,16 +8,16 @@ using StrikingInvestigation.Models;
 
 namespace StrikingInvestigation.Pages
 {
-    partial class Submissions
+    public partial class Submissions
     {
+        IEnumerable<TestSubmission> testSubmissions;
+
         [Inject]
         HttpClient Http { get; set; }
 
-        IEnumerable<TestSubmission> TestSubmissions { get; set; }
-
         protected override async Task OnInitializedAsync()
         {
-            TestSubmissions = (await Http.GetFromJsonAsync<TestSubmission[]>("api/testsubmissions")).ToList();
+            testSubmissions = (await Http.GetFromJsonAsync<TestSubmission[]>("api/testsubmissions")).ToList();
         }
     }
 }

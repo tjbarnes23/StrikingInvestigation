@@ -18,7 +18,7 @@
 
     <br />
 
-    @if (TestSubmissions == null)
+    @if (testSubmissions == null)
     {
         <div class="spinner"></div>
     }
@@ -38,7 +38,7 @@
             </thead>
 
             <tbody>
-                @foreach (var testSubmission in TestSubmissions)
+                @foreach (var testSubmission in testSubmissions)
                 {
                     <tr style="font-size: small">
                         <td class="align-middle" style="padding: 6px">@testSubmission.Id</td>

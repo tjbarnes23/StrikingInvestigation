@@ -16,83 +16,80 @@ namespace StrikingInvestigation.Pages
 {
     public partial class GapTest
     {
-        protected ElementReference mainDiv;
+        IEnumerable<GapTestData> gapTestsData;
+        readonly TestSpec testSpec;
+        readonly Screen screen;
+        int selectedTest;
+        
+        bool showGaps;
+        
+        BlowSet blowSet;
+        
+        bool controlsDisabled;
+        bool tenorWeightDisabled;
+        bool playDisabled;
+
+        string saveLabel;
+        string playLabel;
+        string submitLabel;
+
+        bool spinnerSaving;
+        bool spinnerPlaying;
+        bool spinnerSubmitting;
+
+        bool saved;
+        bool submitted;
+
+        bool animate;
+
+        CancellationTokenSource cancellationTokenSource;
+        CancellationToken cancellationToken;
+
+        ElementReference mainDiv;
 
         public GapTest()
         {
-            TestSpec = new TestSpec();
-            TestSpec.Stage = 8;
-            TestSpec.TenorWeight = 23;
-            TestSpec.NumRows = 4;
-            TestSpec.ErrorType = 0;
-            TestSpec.ErrorSize = 80;
-            TestSpec.TestBellLoc = 1;
+            testSpec = new TestSpec
+            {
+                Stage = 8,
+                TenorWeight = 23,
+                NumRows = 4,
+                ErrorType = 0,
+                ErrorSize = 80,
+                TestBellLoc = 1
+            };
 
             // In a Gap Test, gaps are rounded to the nearest 10ms
-            int baseGap = BaseGaps.BaseGap(TestSpec.Stage, TestSpec.TenorWeight, Constants.Rounding);
+            int baseGap = BaseGaps.BaseGap(testSpec.Stage, testSpec.TenorWeight, Constants.Rounding);
 
-            Screen = new Screen();
-            Screen.DiameterScale = Constants.DiameterScale;
-            Screen.XScale = Constants.XScale;
-            Screen.XMargin = Constants.XMargin;
-            Screen.YScale = Constants.YScale;
-            Screen.YMargin = Constants.YMargin;
-            Screen.GapMin = 20;
-            Screen.GapMax = 700;
-            Screen.BaseGap = baseGap;
+            screen = new Screen
+            {
+                DiameterScale = Constants.DiameterScale,
+                XScale = Constants.XScale,
+                XMargin = Constants.XMargin,
+                YScale = Constants.YScale,
+                YMargin = Constants.YMargin,
+                GapMin = 20,
+                GapMax = 700,
+                BaseGap = baseGap
+            };
+
+            selectedTest = -1;
+            animate = true;
         }
 
         [Inject]
-        protected IJSRuntime JSRuntime { get; set; }
+        IJSRuntime JSRuntime { get; set; }
 
         [Inject]
-        public HttpClient Http { get; set; }
-
-        internal TestSpec TestSpec { get; set; }
-
-        internal IEnumerable<GapTestData> GapTestsData { get; set; }
-
-        public int SelectedTest { get; set; } = -1;
-
-        public bool ShowGaps { get; set; }
-
-        internal BlowSet BlowSet { get; set; }
-
-        internal Screen Screen { get; set; }
-
-        public string SaveLabel { get; set; }
-
-        public string PlayLabel { get; set; }
-
-        public string SubmitLabel { get; set; }
-
-        public CancellationTokenSource CancellationTokenSource { get; set; }
-
-        public CancellationToken CancellationToken { get; set; }
-
-        public bool ControlsDisabled { get; set; }
-
-        public bool PlayDisabled { get; set; }
-
-        public bool SelectTenorWeightDisabled { get; set; }
-
-        public bool CurrentTenorWeightDisabled { get; set; }
-
-        public bool Spinner1 { get; set; }
-
-        public bool Spinner2 { get; set; }
-
-        public bool SpinnerSubmit { get; set; }
-
-        public bool Saved { get; set; }
-
-        public bool Submitted { get; set; }
-
+        HttpClient Http { get; set; }
+        
         protected override async Task OnInitializedAsync()
         {
-            GapTestsData = (await Http.GetFromJsonAsync<GapTestData[]>("api/gaptests")).ToList();
-            SaveLabel = "Save";
-            SubmitLabel = "Submit";
+            gapTestsData = (await Http.GetFromJsonAsync<GapTestData[]>("api/gaptests")).ToList();
+            saveLabel = "Save";
+            playLabel = "Play";
+            submitLabel = "Submit";
         }
 
         protected override async void OnAfterRender(bool firstRender)
@@ -100,140 +97,115 @@ namespace StrikingInvestigation.Pages
             await JSRuntime.InvokeVoidAsync("SetFocusToElement", mainDiv);
         }
 
-        protected void SetState(ScreenState screenState)
+        async Task TestChanged(int value)
         {
-            if (screenState == ScreenState.Play)
+            selectedTest = value;
+            blowSet = null;
+
+            if (selectedTest != 0 && selectedTest != -1)
             {
-                PlayLabel = "Play";
-                ControlsDisabled = false;
-                SelectTenorWeightDisabled = CurrentTenorWeightDisabled;
-            }
-            else if (screenState == ScreenState.Stop)
-            {
-                PlayLabel = "Stop";
-                ControlsDisabled = true;
-                SelectTenorWeightDisabled = true;
+                await Load(selectedTest);
             }
         }
 
-        protected void TestChanged(int value)
+        void StageChanged(int value)
         {
-            SelectedTest = value;
-            BlowSet = null;
+            testSpec.Stage = value;
 
-            if (SelectedTest != 0 && SelectedTest != -1)
+            if (testSpec.Stage < 7)
             {
-                Load(SelectedTest);
+                testSpec.TenorWeight = 8;
             }
-        }
-
-        protected void StageChanged(int value)
-        {
-            TestSpec.Stage = value;
-
-            if (TestSpec.Stage < 7)
+            else if (testSpec.Stage > 8)
             {
-                TestSpec.TenorWeight = 8;
-                CurrentTenorWeightDisabled = true;
-            }
-            else if (TestSpec.Stage > 8)
-            {
-                TestSpec.TenorWeight = 23;
-                CurrentTenorWeightDisabled = true;
-            }
-            else
-            {
-                CurrentTenorWeightDisabled = false;
+                testSpec.TenorWeight = 23;
             }
 
-            SelectTenorWeightDisabled = CurrentTenorWeightDisabled;
+            tenorWeightDisabled = TenorWeightSelect.TenorWeightDisabled(testSpec.Stage);
 
             // Need to recalculate BaseGap on a stage change
-            int baseGap = BaseGaps.BaseGap(TestSpec.Stage, TestSpec.TenorWeight, Constants.Rounding);
-            Screen.BaseGap = baseGap;
+            int baseGap = BaseGaps.BaseGap(testSpec.Stage, testSpec.TenorWeight, Constants.Rounding);
+            screen.BaseGap = baseGap;
 
-            if (BlowSet != null)
+            if (blowSet != null)
             {
-                BlowSet = null;
+                blowSet = null;
             }
         }
 
-        protected void TenorWeightChanged(int value)
+        void TenorWeightChanged(int value)
         {
-            TestSpec.TenorWeight = value;
+            testSpec.TenorWeight = value;
 
             // Need to recalculate BaseGap on a tenor change
-            int baseGap = BaseGaps.BaseGap(TestSpec.Stage, TestSpec.TenorWeight, Constants.Rounding);
-            Screen.BaseGap = baseGap;
+            int baseGap = BaseGaps.BaseGap(testSpec.Stage, testSpec.TenorWeight, Constants.Rounding);
+            screen.BaseGap = baseGap;
 
-            if (BlowSet != null)
+            if (blowSet != null)
             {
-                BlowSet = null;
+                blowSet = null;
             }
         }
 
-        protected void NumRowsChanged(int value)
+        void NumRowsChanged(int value)
         {
-            TestSpec.NumRows = value;
+            testSpec.NumRows = value;
 
-            if (BlowSet != null)
+            if (blowSet != null)
             {
-                BlowSet = null;
+                blowSet = null;
             }
         }
 
-        protected void ErrorSizeChanged(int value)
+        void ErrorSizeChanged(int value)
         {
-            TestSpec.ErrorSize = value;
+            testSpec.ErrorSize = value;
 
-            if (BlowSet != null)
+            if (blowSet != null)
             {
-                BlowSet = null;
+                blowSet = null;
             }
         }
 
-        protected void TestBellLocChanged(int value)
+        void TestBellLocChanged(int value)
         {
-            TestSpec.TestBellLoc = value;
+            testSpec.TestBellLoc = value;
 
-            if (BlowSet != null)
+            if (blowSet != null)
             {
-                BlowSet = null;
+                blowSet = null;
             }
         }
 
-        protected void ShowGapsChanged(bool value)
+        void ShowGapsChanged(bool value)
         {
-            ShowGaps = value;
+            showGaps = value;
         }
 
-        protected void Create()
+        void Create()
         {
-            Block testBlock = new Block(TestSpec.Stage, TestSpec.NumRows);
+            Block testBlock = new Block(testSpec.Stage, testSpec.NumRows);
             testBlock.CreateRandomBlock();
 
             // Set place to be the test place
             int testPlace;
-            testPlace = TestSpec.Stage + (TestSpec.Stage % 2);
+            testPlace = testSpec.Stage + (testSpec.Stage % 2);
 
-            if (TestSpec.TestBellLoc != 1)
+            if (testSpec.TestBellLoc != 1)
             {
                 Random rand = new Random();
                 testPlace = rand.Next(1, testPlace + 1);
             }
 
-            BlowSet = new BlowSet(TestSpec.Stage, TestSpec.NumRows, TestSpec.TenorWeight, TestSpec.ErrorType, true);
+            blowSet = new BlowSet(testSpec.Stage, testSpec.NumRows, testSpec.TenorWeight, testSpec.ErrorType, true);
 
             // No need for an audio suffix in a Gap test (this is used to distinguish A and B in an A/B test)
-            BlowSet.PopulateBlows(testBlock, testPlace, string.Empty);
-            BlowSet.CreateRandomSpacing(TestSpec.ErrorSize, Constants.Rounding);
-            BlowSet.SetUnstruck();
-
-            ShowGaps = false;
-            SetState(ScreenState.Play);
+            blowSet.PopulateBlows(testBlock, testPlace, string.Empty);
+            blowSet.CreateRandomSpacing(testSpec.ErrorSize, Constants.Rounding);
+            blowSet.SetUnstruck();
         }
 
-        protected async void Load(int id)
+        async Task Load(int id)
         {
             // Get a test from the API
             GapTestData gapTestData = await Http.GetFromJsonAsync<GapTestData>("api/gaptests/" + id.ToString());
@@ -243,184 +215,175 @@ namespace StrikingInvestigation.Pages
             BlowSetCore blowSetCore = JsonSerializer.Deserialize<BlowSetCore>(gapTestData.GapTestSpec);
 
             // Now create a BlowSet object from the BlowSetCore object
-            BlowSet = new BlowSet(blowSetCore.Stage, blowSetCore.NumRows, blowSetCore.TenorWeight,
+            blowSet = new BlowSet(blowSetCore.Stage, blowSetCore.NumRows, blowSetCore.TenorWeight,
                     blowSetCore.ErrorType, true);
 
             // No need for an audio suffix in a Gap test (this is used to distinguish A and B in an A/B test)
-            BlowSet.LoadBlows(blowSetCore, string.Empty);
-            BlowSet.SetUnstruck();
+            blowSet.LoadBlows(blowSetCore, string.Empty);
+            blowSet.SetUnstruck();
 
             // Update drop down boxes on screen
-            TestSpec.Stage = BlowSet.Stage;
-            TestSpec.TenorWeight = BlowSet.TenorWeight;
-            TestSpec.NumRows = BlowSet.NumRows;
+            testSpec.Stage = blowSet.Stage;
+            testSpec.TenorWeight = blowSet.TenorWeight;
+            testSpec.NumRows = blowSet.NumRows;
 
             // Update Screen.BaseGap - this varies by stage and tenorweight, and is used to shift backstroke rows
             // to the right to make the 1st blow of each row align vertically (when no striking errors)
-            int baseGap = BaseGaps.BaseGap(TestSpec.Stage, TestSpec.TenorWeight, 1);
-            Screen.BaseGap = baseGap;
-
-            ShowGaps = false;
-            SetState(ScreenState.Play);
+            int baseGap = BaseGaps.BaseGap(testSpec.Stage, testSpec.TenorWeight, 1);
+            screen.BaseGap = baseGap;
+                        
             StateHasChanged();
         }
 
-        protected async void Save()
+        async Task Save()
         {
-            Spinner1 = true;
-            SaveLabel = "Wait";
-            ControlsDisabled = true;
-            PlayDisabled = true;
-            BlowSet.Blows.Last().BellColor = Constants.DisabledUnstruckTestBellColor;
+            spinnerSaving = true;
+            saveLabel = "Wait";
+            controlsDisabled = true;
+            tenorWeightDisabled = true;
+            playDisabled = true;
+            blowSet.Blows.Last().BellColor = Constants.DisabledUnstruckTestBellColor;
             StateHasChanged();
 
             // Push the created test to the API in JSON format
             // Start by creating a BlowSetCore object, which just has the parent data BlowSet
             // Note implicit cast from child to parent
-            BlowSetCore blowSetCore = BlowSet;
+            BlowSetCore blowSetCore = blowSet;
 
             // BlowSetCore has a BlowsCore list which is empty so far
             // Call the LoadBlowsCore method to populate it
-            blowSetCore.LoadBlowsCore(BlowSet);
+            blowSetCore.LoadBlowsCore(blowSet);
 
             // Next use the Serializer method of the JsonSerializer class (in the System.Text.Json namespace) to create
             // a Json object from the BlowSetData object
-            GapTestData gapTestData = new GapTestData();
-            gapTestData.GapTestSpec = JsonSerializer.Serialize(blowSetCore);
+            var gapTestData = new GapTestData
+            {
+                GapTestSpec = JsonSerializer.Serialize(blowSetCore)
+            };
 
             // Push the Json object to the API
             await Http.PostAsJsonAsync("api/gaptests", gapTestData);
 
             // Refresh the contents of the Select Test dropdown 
-            GapTestsData = (await Http.GetFromJsonAsync<GapTestData[]>("api/gaptests")).ToList();
+            gapTestsData = (await Http.GetFromJsonAsync<GapTestData[]>("api/gaptests")).ToList();
 
-            Spinner1 = false;
-            Saved = true;
+            spinnerSaving = false;
+            saved = true;
             StateHasChanged();
 
             await Task.Delay(1000);
 
-            Saved = false;
-            SaveLabel = "Save";
-            ControlsDisabled = false;
-            PlayDisabled = false;
-            BlowSet.Blows.Last().BellColor = Constants.UnstruckTestBellColor;
+            saved = false;
+            saveLabel = "Save";
+            controlsDisabled = false;
+            tenorWeightDisabled = TenorWeightSelect.TenorWeightDisabled(testSpec.Stage);
+            playDisabled = false;
+            blowSet.Blows.Last().BellColor = Constants.UnstruckTestBellColor;
             StateHasChanged();
         }
 
-        protected async Task Play()
+        async Task Play()
         {
-            if (PlayLabel == "Play")
+            if (playLabel == "Play")
             {
                 // Change test bell color to disabled color - can't adjust gap during play
-                BlowSet.Blows.Last().BellColor = Constants.DisabledUnstruckTestBellColor;
+                blowSet.Blows.Last().BellColor = Constants.DisabledUnstruckTestBellColor;
 
                 DateTime strikeTime = DateTime.Now;
 
-                foreach (Blow blow in BlowSet.Blows)
+                foreach (Blow blow in blowSet.Blows)
                 {
-                    // Set sound times and display times
+                    // Set strike times
                     strikeTime = strikeTime.AddMilliseconds(blow.Gap);
                     blow.StrikeTime = strikeTime;
-
-                    // Add a delay after sound time to display the strike
-                    DateTime altStrikeTime = strikeTime.AddMilliseconds(Constants.DisplayDelay);
-                    blow.AltStrikeTime = altStrikeTime;
                 }
 
-                CancellationTokenSource = new CancellationTokenSource();
-                CancellationToken = CancellationTokenSource.Token;
+                cancellationTokenSource = new CancellationTokenSource();
+                cancellationToken = cancellationTokenSource.Token;
 
-                SetState(ScreenState.Stop);
-                await Strike();
+                playLabel = "Stop";
+                controlsDisabled = true;
+                tenorWeightDisabled = true;
 
+                foreach (Blow blow in blowSet.Blows)
+                {
+                    TimeSpan delay;
+                    int delayMs;
+
+                    delay = blow.StrikeTime - DateTime.Now;
+                    delayMs = Convert.ToInt32(delay.TotalMilliseconds);
+
+                    if (delayMs > 0)
+                    {
+                        await Task.Delay(delayMs, cancellationToken);
+                    }
+
+                    if (cancellationToken.IsCancellationRequested)
+                    {
+                        break;
+                    }
+
+                    // Change bell color
+                    if (animate == true)
+                    {
+                        blow.BellColor = Constants.StruckBellColor;
+
+                        // Confirmed this is needed here
+                        StateHasChanged();
+                    }
+
+                    // Strike bell
+                    await JSRuntime.InvokeVoidAsync("PlayBellAudio", blow.AudioId);
+                }
+
+                // Wait for 0.6 seconds
+                await Task.Delay(600);
+
+                // Start spinner
+                spinnerPlaying = true;
+                playLabel = "Wait";
+                playDisabled = true;
+                StateHasChanged();
+
+                // Wait a further 2 seconds for the bells to finish sounding (each bell sample is 2.5 seconds)
+                await Task.Delay(2000);
+
+                // Reset play button
+                spinnerPlaying = false;
+                playLabel = "Play";
+                playDisabled = false;
             }
-            else if (PlayLabel == "Stop")
+            else if (playLabel == "Stop")
             {
-                PlayLabel = "Wait";
-                PlayDisabled = true;
-                Spinner2 = true;
-
-                CancellationTokenSource.Cancel();
+                // Wait for 0.6 seconds
+                spinnerPlaying = true;
+                playLabel = "Wait";
+                playDisabled = true;
+                
+                cancellationTokenSource.Cancel();
 
                 // Wait for 2.6 seconds for the sound to finish
                 await Task.Delay(2600);
 
-                Spinner2 = false;
-                PlayLabel = "Play";
-                PlayDisabled = false;
+                // Reset play button
+                spinnerPlaying = false;
+                playLabel = "Play";
+                playDisabled = false;
             }
 
-            // Set colors to unstruck
-            BlowSet.SetUnstruck();
-
-            SetState(ScreenState.Play);
-        }
-        
-        public async Task Strike()
-        {
-            foreach (Blow blow in BlowSet.Blows)
-            {
-                TimeSpan delay;
-                int delayMs;
-
-                delay = blow.StrikeTime - DateTime.Now;
-                delayMs = Convert.ToInt32(delay.TotalMilliseconds);
-
-                if (delayMs > 0)
-                {
-                    await Task.Delay(delayMs, CancellationToken);
-                }
-
-                if (CancellationToken.IsCancellationRequested)
-                {
-                    return;
-                }
-
-                // Strike bell
-                await JSRuntime.InvokeVoidAsync("PlayBellAudio", blow.AudioId);
-
-                /*
-                // Change color of bell on screen
-                delay = blow.AltStrikeTime - DateTime.Now;
-                delayMs = Convert.ToInt32(delay.TotalMilliseconds);
-
-                if (delayMs > 0)
-                {
-                    await Task.Delay(delayMs, CancellationToken);
-                }
-
-                if (CancellationToken.IsCancellationRequested)
-                {
-                    return;
-                }
-                */
-
-                // Change bell color
-                blow.BellColor = Constants.StruckBellColor;
-                StateHasChanged();
-            }
-
-            // Wait for 2.6 seconds for the sound to finish
-            await Task.Delay(1000, CancellationToken);
-            
-            Spinner2 = true;
-            PlayLabel = "Wait";
-            PlayDisabled = true;
-            StateHasChanged();
-            await Task.Delay(1600);
-            Spinner2 = false;
-            PlayLabel = "Play";
-            PlayDisabled = false;
+            // Reset screen
+            blowSet.SetUnstruck();
+            controlsDisabled = false;
+            tenorWeightDisabled = TenorWeightSelect.TenorWeightDisabled(testSpec.Stage);
         }
 
-        protected async Task Submit()
+        async Task Submit()
         {
-            SpinnerSubmit = true;
-            SubmitLabel = "Wait";
-            ControlsDisabled = true;
-            PlayDisabled = true;
-            BlowSet.Blows.Last().BellColor = Constants.DisabledUnstruckTestBellColor;
+            spinnerSubmitting = true;
+            submitLabel = "Wait";
+            controlsDisabled = true;
+            playDisabled = true;
+            blowSet.Blows.Last().BellColor = Constants.DisabledUnstruckTestBellColor;
             StateHasChanged();
 
             // Create a TestSubmission object
@@ -429,29 +392,29 @@ namespace StrikingInvestigation.Pages
                 UserId = string.Empty,
                 TestDate = DateTime.Now,
                 TestType = "Gap Test",
-                TestId = SelectedTest,
-                Gap = BlowSet.Blows.Last().Gap,
+                TestId = selectedTest,
+                Gap = blowSet.Blows.Last().Gap,
                 AB = string.Empty
             };
 
             // Push the testSubmission to the API in JSON format
             await Http.PostAsJsonAsync("api/testsubmissions", testSubmission);
 
-            SpinnerSubmit = false;
-            Submitted = true;
+            spinnerSubmitting = false;
+            submitted = true;
             StateHasChanged();
 
             await Task.Delay(1000);
 
-            Submitted = false;
-            SubmitLabel = "Submit";
-            ControlsDisabled = false;
-            PlayDisabled = false;
-            BlowSet.Blows.Last().BellColor = Constants.UnstruckTestBellColor;
+            submitted = false;
+            submitLabel = "Submit";
+            controlsDisabled = false;
+            playDisabled = false;
+            blowSet.Blows.Last().BellColor = Constants.UnstruckTestBellColor;
             StateHasChanged();
         }
 
-        protected void GapChangedWithButton(bool clicked)
+        void GapChangedWithButton(bool clicked)
         {
             if (clicked == true)
             {
@@ -459,12 +422,12 @@ namespace StrikingInvestigation.Pages
             }
         }
 
-        protected void TestBellMouseDown(MouseEventArgs e)
+        void TestBellMouseDown(MouseEventArgs e)
         {
             if (e.Buttons == 1)
             {
                 // Mouse movement only active in Play mode
-                if (PlayLabel == "Play")
+                if (playLabel == "Play")
                 {
                     // Call TestBellMouseMove to center the bell on where the mouse is clicked
                     TestBellMouseMove(e);
@@ -472,57 +435,57 @@ namespace StrikingInvestigation.Pages
             }
         }
 
-        protected void TestBellMouseMove(MouseEventArgs e)
+        void TestBellMouseMove(MouseEventArgs e)
         {
-            if (e.Buttons == 1 && PlayLabel == "Play")
+            if (e.Buttons == 1 && playLabel == "Play")
             {
                 int clientX = Convert.ToInt32(e.ClientX);
 
                 int newGapCumulativeRow;
 
-                if (BlowSet.Blows.Last().IsHandstroke)
+                if (blowSet.Blows.Last().IsHandstroke)
                 {
-                    newGapCumulativeRow = Convert.ToInt32((clientX - Screen.XMargin) / Screen.XScale);
+                    newGapCumulativeRow = Convert.ToInt32((clientX - screen.XMargin) / screen.XScale);
                 }
                 else
                 {
-                    int baseGap = Screen.BaseGap;
-                    newGapCumulativeRow = Convert.ToInt32((clientX - Screen.XMargin) / Screen.XScale) -
+                    int baseGap = screen.BaseGap;
+                    newGapCumulativeRow = Convert.ToInt32((clientX - screen.XMargin) / screen.XScale) -
                              baseGap;
                 }
 
-                int newGap = BlowSet.Blows.Last().Gap + (newGapCumulativeRow - BlowSet.Blows.Last().GapCumulativeRow);
+                int newGap = blowSet.Blows.Last().Gap + (newGapCumulativeRow - blowSet.Blows.Last().GapCumulativeRow);
                 int newGapRounded = Convert.ToInt32((double)newGap / Constants.Rounding) * Constants.Rounding;
-                
-                if (newGapRounded >= Screen.GapMin && newGapRounded <= Screen.GapMax &&
-                        newGapRounded != BlowSet.Blows.Last().Gap)
+
+                if (newGapRounded >= screen.GapMin && newGapRounded <= screen.GapMax &&
+                        newGapRounded != blowSet.Blows.Last().Gap)
                 {
-                    BlowSet.Blows.Last().UpdateGap(newGapRounded);
+                    blowSet.Blows.Last().UpdateGap(newGapRounded);
                 }
             }
         }
-        
-        protected void ArrowKeys(KeyboardEventArgs e)
+
+        void ArrowKeys(KeyboardEventArgs e)
         {
             // Keyboard arrows only active in Play mode
-            if (PlayLabel == "Play")
+            if (playLabel == "Play")
             {
                 if (e.Key == "ArrowLeft")
                 {
-                    int newGap = BlowSet.Blows.Last().Gap - Constants.Rounding;
+                    int newGap = blowSet.Blows.Last().Gap - Constants.Rounding;
 
-                    if (newGap >= Screen.GapMin)
+                    if (newGap >= screen.GapMin)
                     {
-                        BlowSet.Blows.Last().UpdateGap(newGap);
+                        blowSet.Blows.Last().UpdateGap(newGap);
                     }
                 }
                 else if (e.Key == "ArrowRight")
                 {
-                    int newGap = BlowSet.Blows.Last().Gap + Constants.Rounding;
+                    int newGap = blowSet.Blows.Last().Gap + Constants.Rounding;
 
-                    if (newGap <= Screen.GapMax)
+                    if (newGap <= screen.GapMax)
                     {
-                        BlowSet.Blows.Last().UpdateGap(newGap);
+                        blowSet.Blows.Last().UpdateGap(newGap);
                     }
                 }
             }

@@ -79,14 +79,14 @@ namespace StrikingInvestigation.Pages
             await JSRuntime.InvokeVoidAsync("SetFocusToElement", mainDiv);
         }
 
-        void TestChanged(int value)
+        async Task TestChanged(int value)
         {
             selectedTest = value;
             blow = null;
 
             if (selectedTest != 0 && selectedTest != -1)
             {
-                Load(selectedTest);
+                await Load(selectedTest);
             }
         }
 
@@ -119,7 +119,7 @@ namespace StrikingInvestigation.Pages
             blow.BellColor = Constants.UnstruckTestBellColor;
         }
 
-        async void Load(int id)
+        async Task Load(int id)
         {
             // Get a test from the API
             AVTestData aVTestData = await Http.GetFromJsonAsync<AVTestData>("api/avtests/" + id.ToString());
@@ -137,7 +137,7 @@ namespace StrikingInvestigation.Pages
             StateHasChanged();
         }
 
-        async void Save()
+        async Task Save()
         {
             spinnerSaving = true;
             saveLabel = "Wait";
