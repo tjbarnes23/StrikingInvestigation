@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace StrikingInvestigation.Utilities
+﻿namespace StrikingInvestigation.Utilities
 {
     public static class Constants
     {
@@ -11,7 +6,7 @@ namespace StrikingInvestigation.Utilities
         public const double XScale = 0.4;
         public const int XMargin = 100;
         public const double YScale = 100;
-        public const int YMargin = 150;
+        public const int YMargin = 0;
         
         public const string UnstruckBellColor = "silver";
         public const string UnstruckTestBellColor = "#1B6EC2";

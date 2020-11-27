@@ -2,325 +2,327 @@
 @using StrikingInvestigation.Models
 @using StrikingInvestigation.Utilities
 
-<h1>Gap Test</h1>
+<div class="container mx-0 mx-md-2 my-1 my-md-3">
+    <h1>Gap Test</h1>
 
-<p>Adjust the test bell until you think it is striking at the correct time.</p>
+    <p>Adjust the test bell until you think it is striking at the correct time.</p>
 
-@if (gapTestsData == null)
-{
-    <div class="spinner"></div>
-}
-else
-{
-    <EditForm Model="@gapTestsData">
-        <div style="display: inline-block">
-            <div class="form-group">
-                <label>
-                    Select Test
-                </label>
-
-                <CustomInputSelect Value="@selectedTest"
-                                    ValueChanged="@( (int value) => TestChanged(value) )"
-                                    ValueExpression="@( () => selectedTest )"
-                                    class="form-control"
-                                    disabled="@controlsDisabled">
-                    <option value="-1">Select test...</option>
-                    <option value="0">Practice</option>
-
-                    @foreach (GapTestData gapTestData in gapTestsData)
-                    {
-                        <option value="@gapTestData.Id">Test @gapTestData.Id</option>
-                    }
-                </CustomInputSelect>
-            </div>
-        </div>
-    </EditForm>
-
-    @if (selectedTest == 0)
+    @if (gapTestsData == null)
     {
-        <EditForm Model="@testSpec">
+        <div class="spinner"></div>
+    }
+    else
+    {
+        <EditForm Model="@gapTestsData">
             <div style="display: inline-block">
                 <div class="form-group">
                     <label>
-                        Stage
+                        Select Test
                     </label>
 
-                    <CustomInputSelect Value="@testSpec.Stage"
-                                       ValueChanged="@( (int value) => StageChanged(value) )"
-                                       ValueExpression="@( () => testSpec.Stage )"
+                    <CustomInputSelect Value="@selectedTest"
+                                       ValueChanged="@( (int value) => TestChanged(value) )"
+                                       ValueExpression="@( () => selectedTest )"
                                        class="form-control"
                                        disabled="@controlsDisabled">
-                        @for (int i = 5; i <= 12; i++)
+                        <option value="-1">Select test...</option>
+                        <option value="0">Practice</option>
+
+                        @foreach (GapTestData gapTestData in gapTestsData)
                         {
-                            <option value="@i">@StageConv.StageStr(i)</option>
+                            <option value="@gapTestData.Id">Test @gapTestData.Id</option>
                         }
                     </CustomInputSelect>
                 </div>
             </div>
+        </EditForm>
 
-            <div style="display: inline-block">
-                <div class="form-group">
-                    <label>
-                        Tenor weight
-                    </label>
-
-                    <CustomInputSelect Value="@testSpec.TenorWeight"
-                                       ValueChanged="@( (int value) => TenorWeightChanged(value) )"
-                                       ValueExpression="@( () => testSpec.TenorWeight )"
-                                       class="form-control"
-                                       disabled="@tenorWeightDisabled">
-                        <option value="8">@TenorWeightConv.TenorWeightStr(8)</option>
-                        <option value="23">@TenorWeightConv.TenorWeightStr(23)</option>
-                    </CustomInputSelect>
-                </div>
-            </div>
-
-            <div style="display: inline-block">
-                <div class="form-group">
-                    <label>
-                        Number of rows
-                    </label>
-
-                    <CustomInputSelect Value="@testSpec.NumRows"
-                                       ValueChanged="@( (int value) => NumRowsChanged(value) )"
-                                       ValueExpression="@( () => testSpec.NumRows )"
-                                       class="form-control"
-                                       disabled="@controlsDisabled">
-                        @for (int i = 2; i <= 8; i++)
-                        {
-                            <option value="@i">@i</option>
-                        }
-                    </CustomInputSelect>
-                </div>
-            </div>
-
-            <div style="display: inline-block">
-                <div class="form-group">
-                    <label>
-                        Max error size
-                    </label>
-
-                    <CustomInputSelect Value="@testSpec.ErrorSize"
-                                       ValueChanged="@( (int value) => ErrorSizeChanged(value) )"
-                                       ValueExpression="@( () => testSpec.ErrorSize )"
-                                       class="form-control"
-                                       disabled="@controlsDisabled">
-                        @for (int i = 100; i >= 0; i -= 10)
-                        {
-                            <option value="@i">@ErrorSizeConv.ErrorSizeStr(i)</option>
-                        }
-                    </CustomInputSelect>
-                </div>
-            </div>
-
-            <div style="display: inline-block">
-                <div class="form-group">
-                    <label>
-                        Test bell location
-                    </label>
-
-                    <CustomInputSelect Value="@testSpec.TestBellLoc"
-                                       ValueChanged="@( (int value) => TestBellLocChanged(value) )"
-                                       ValueExpression="@( () => testSpec.TestBellLoc )"
-                                       class="form-control"
-                                       disabled="@controlsDisabled">
-                        @for (int i = 1; i <= 2; i++)
-                        {
-                            <option value="@i">@TestBellLocConv.TestBellLocStr(i)</option>
-                        }
-                    </CustomInputSelect>
-                </div>
-            </div>
-
-            <div style="display: inline-block">
-                <button class="btn btn-primary" @onclick="Create" disabled="@controlsDisabled">
-                    Create Gap Test
-                </button>
-            </div>
-
-            @if (blowSet != null)
-            {
+        @if (selectedTest == 0)
+        {
+            <EditForm Model="@testSpec">
                 <div style="display: inline-block">
                     <div class="form-group">
                         <label>
-                            Show gap times
+                            Stage
                         </label>
 
-                        <InputCheckbox Value="@showGaps"
-                                       ValueChanged="@( (bool value) => ShowGapsChanged(value) )"
-                                       ValueExpression="@( () => showGaps )"
-                                       class="form-control"
-                                       disabled="@controlsDisabled" />
+                        <CustomInputSelect Value="@testSpec.Stage"
+                                           ValueChanged="@( (int value) => StageChanged(value) )"
+                                           ValueExpression="@( () => testSpec.Stage )"
+                                           class="form-control"
+                                           disabled="@controlsDisabled">
+                            @for (int i = 5; i <= 12; i++)
+                            {
+                                <option value="@i">@StageConv.StageStr(i)</option>
+                            }
+                        </CustomInputSelect>
                     </div>
                 </div>
 
                 <div style="display: inline-block">
                     <div class="form-group">
                         <label>
-                            Save test
+                            Tenor weight
                         </label>
 
-                        <button class="btn btn-primary" @onclick="Save" disabled="@controlsDisabled">
-                            @saveLabel
-                        </button>
+                        <CustomInputSelect Value="@testSpec.TenorWeight"
+                                           ValueChanged="@( (int value) => TenorWeightChanged(value) )"
+                                           ValueExpression="@( () => testSpec.TenorWeight )"
+                                           class="form-control"
+                                           disabled="@tenorWeightDisabled">
+                            <option value="8">@TenorWeightConv.TenorWeightStr(8)</option>
+                            <option value="23">@TenorWeightConv.TenorWeightStr(23)</option>
+                        </CustomInputSelect>
+                    </div>
+                </div>
 
-                        @if (spinnerSaving == true)
-                        {
-                            <div class="spinnerinline" style="display: inline-block; vertical-align: top;
+                <div style="display: inline-block">
+                    <div class="form-group">
+                        <label>
+                            Number of rows
+                        </label>
+
+                        <CustomInputSelect Value="@testSpec.NumRows"
+                                           ValueChanged="@( (int value) => NumRowsChanged(value) )"
+                                           ValueExpression="@( () => testSpec.NumRows )"
+                                           class="form-control"
+                                           disabled="@controlsDisabled">
+                            @for (int i = 2; i <= 8; i++)
+                            {
+                                <option value="@i">@i</option>
+                            }
+                        </CustomInputSelect>
+                    </div>
+                </div>
+
+                <div style="display: inline-block">
+                    <div class="form-group">
+                        <label>
+                            Max error size
+                        </label>
+
+                        <CustomInputSelect Value="@testSpec.ErrorSize"
+                                           ValueChanged="@( (int value) => ErrorSizeChanged(value) )"
+                                           ValueExpression="@( () => testSpec.ErrorSize )"
+                                           class="form-control"
+                                           disabled="@controlsDisabled">
+                            @for (int i = 100; i >= 0; i -= 10)
+                            {
+                                <option value="@i">@ErrorSizeConv.ErrorSizeStr(i)</option>
+                            }
+                        </CustomInputSelect>
+                    </div>
+                </div>
+
+                <div style="display: inline-block">
+                    <div class="form-group">
+                        <label>
+                            Test bell location
+                        </label>
+
+                        <CustomInputSelect Value="@testSpec.TestBellLoc"
+                                           ValueChanged="@( (int value) => TestBellLocChanged(value) )"
+                                           ValueExpression="@( () => testSpec.TestBellLoc )"
+                                           class="form-control"
+                                           disabled="@controlsDisabled">
+                            @for (int i = 1; i <= 2; i++)
+                            {
+                                <option value="@i">@TestBellLocConv.TestBellLocStr(i)</option>
+                            }
+                        </CustomInputSelect>
+                    </div>
+                </div>
+
+                <div style="display: inline-block">
+                    <button class="btn btn-primary" @onclick="Create" disabled="@controlsDisabled">
+                        Create Gap Test
+                    </button>
+                </div>
+
+                @if (blowSet != null)
+                {
+                    <div style="display: inline-block">
+                        <div class="form-group">
+                            <label>
+                                Show gap times
+                            </label>
+
+                            <InputCheckbox Value="@showGaps"
+                                           ValueChanged="@( (bool value) => ShowGapsChanged(value) )"
+                                           ValueExpression="@( () => showGaps )"
+                                           class="form-control"
+                                           disabled="@controlsDisabled" />
+                        </div>
+                    </div>
+
+                    <div style="display: inline-block">
+                        <div class="form-group">
+                            <label>
+                                Save test
+                            </label>
+
+                            <button class="btn btn-primary" @onclick="Save" disabled="@controlsDisabled">
+                                @saveLabel
+                            </button>
+
+                            @if (spinnerSaving == true)
+                            {
+                                <div class="spinnerinline" style="display: inline-block; vertical-align: top;
                             margin-left: 12px; margin-top: 7px;
                             --borderwidth: 5px; --width: 24px; --height: 24px">
-                            </div>
-                        }
+                                </div>
+                            }
 
-                        @if (saved == true)
-                        {
-                            <div style="display: inline-block; vertical-align: top; margin-left: 12px;
+                            @if (saved == true)
+                            {
+                                <div style="display: inline-block; vertical-align: top; margin-left: 12px;
                             margin-top: 7px">
-                                Saved
-                            </div>
-                        }
+                                    Saved
+                                </div>
+                            }
+                        </div>
                     </div>
-                </div>
-            }
-        </EditForm>
-    }
-    else if (selectedTest != -1)
-    {
-        <div>
-            <div style="display: inline-block">
-                <div class="form-group">
-                    <label>
-                        Stage
-                    </label>
-
-                    <div style="border: 1px solid #ced4da; border-radius: 4px; padding-left: 16px; padding-top: 7px">
-                        <label>
-                            @StageConv.StageStr(testSpec.Stage)
-                        </label>
-                    </div>
-                </div>
-            </div>
-
-            <div style="display: inline-block">
-                <div class="form-group">
-                    <label>
-                        Tenor weight
-                    </label>
-
-                    <div style="border: 1px solid #ced4da; border-radius: 4px; padding-left: 16px; padding-top: 7px">
-                        <label>
-                            @TenorWeightConv.TenorWeightStr(testSpec.TenorWeight)
-                        </label>
-                    </div>
-                </div>
-            </div>
-
-            <div style="display: inline-block">
-                <div class="form-group">
-                    <label>
-                        Number of rows
-                    </label>
-
-                    <div style="border: 1px solid #ced4da; border-radius: 4px; padding-left: 16px; padding-top: 7px">
-                        <label>
-                            @testSpec.NumRows
-                        </label>
-                    </div>
-                </div>
-            </div>
-        </div>
-    }
-}
-
-<div tabindex="0" @onkeydown="ArrowKeys" @ref="mainDiv">
-    @if (blowSet != null)
-    {
-        @foreach (Blow blow in blowSet.Blows)
-        {
-            // Place labels if it's the first blow of the row
-            if (blow.Place == 1)
-            {
-                <StrokeLabel Blow="@blow"
-                             Screen="@screen" />
-
-                <RowStartLabel Blow="@blow"
-                               Screen="@screen" />
-
-                <ChangeLabel Blow="@blow"
-                             Screen="@screen" />
-            }
-
-            if (blow != blowSet.Blows.Last())
-            {
-                <Bell Blow="@blow"
-                      Screen="@screen" />
-
-                if (showGaps == true)
-                {
-                    <GapLabel Blow="@blow"
-                              Screen="@screen" />
                 }
-            }
-            else
+            </EditForm>
+        }
+        else if (selectedTest != -1)
+        {
+            <div>
+                <div style="display: inline-block">
+                    <div class="form-group">
+                        <label>
+                            Stage
+                        </label>
+
+                        <div style="border: 1px solid #ced4da; border-radius: 4px; padding-left: 16px; padding-top: 7px">
+                            <label>
+                                @StageConv.StageStr(testSpec.Stage)
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="display: inline-block">
+                    <div class="form-group">
+                        <label>
+                            Tenor weight
+                        </label>
+
+                        <div style="border: 1px solid #ced4da; border-radius: 4px; padding-left: 16px; padding-top: 7px">
+                            <label>
+                                @TenorWeightConv.TenorWeightStr(testSpec.TenorWeight)
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="display: inline-block">
+                    <div class="form-group">
+                        <label>
+                            Number of rows
+                        </label>
+
+                        <div style="border: 1px solid #ced4da; border-radius: 4px; padding-left: 16px; padding-top: 7px">
+                            <label>
+                                @testSpec.NumRows
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    }
+
+    <div style="position: relative" tabindex="0" @onkeydown="ArrowKeys" @ref="mainDiv">
+        @if (blowSet != null)
+        {
+            @foreach (Blow blow in blowSet.Blows)
             {
-                <div @onmousedown="TestBellMouseDown" @onmousemove="TestBellMouseMove">
+                // Place labels if it's the first blow of the row
+                if (blow.Place == 1)
+                {
+                    <StrokeLabel Blow="@blow"
+                                 Screen="@screen" />
+
+                    <RowStartLabel Blow="@blow"
+                                   Screen="@screen" />
+
+                    <ChangeLabel Blow="@blow"
+                                 Screen="@screen" />
+                }
+
+                if (blow != blowSet.Blows.Last())
+                {
                     <Bell Blow="@blow"
                           Screen="@screen" />
-                </div>
+
+                    if (showGaps == true)
+                    {
+                        <GapLabel Blow="@blow"
+                                  Screen="@screen" />
+                    }
+                }
+                else
+                {
+                    <div @onmousedown="TestBellMouseDown" @onmousemove="TestBellMouseMove">
+                        <Bell Blow="@blow"
+                              Screen="@screen" />
+                    </div>
+                }
+
+                <audio id="@blow.AudioId" preload="auto">
+                    <source src="@blow.BellSound" type="audio/mpeg" />
+                </audio>
             }
 
-            <audio id="@blow.AudioId" preload="auto">
-                <source src="@blow.BellSound" type="audio/mpeg" />
-            </audio>
-        }
-
-        <BoundaryLabel Blow="@blowSet.Blows.Last()"
-                       Screen="@screen" />
-
-        <GapMinus Blow="@blowSet.Blows.Last()"
-                  Screen="@screen"
-                  GapDisabled="@controlsDisabled"
-                  Callback="GapChangedWithButton" />
-
-        <GapCurr Blow="@blowSet.Blows.Last()"
-                 Screen="@screen" />
-
-        <GapPlus Blow="@blowSet.Blows.Last()"
-                 Screen="@screen"
-                 GapDisabled="@controlsDisabled"
-                 Callback="GapChangedWithButton" />
-
-        <PlayBtn Blow="@blowSet.Blows.Last()"
-                 Screen="@screen"
-                 PlayLabel="@playLabel"
-                 PlayDisabled="@playDisabled"
-                 Callback="Play" />
-
-        @if (spinnerPlaying == true)
-        {
-            <SpinnerPlay Blow="@blowSet.Blows.Last()"
-                         Screen="@screen" />
-        }
-
-        @if (selectedTest != 0 && selectedTest != -1)
-        {
-            <SubmitBtn Blow="@blowSet.Blows.Last()"
-                       Screen="@screen"
-                       SubmitLabel="@submitLabel"
-                       SubmitDisabled="@controlsDisabled"
-                       Callback="Submit" />
-        }
-
-        @if (spinnerSubmitting == true)
-        {
-            <SpinnerSubmit Blow="@blowSet.Blows.Last()"
+            <BoundaryLabel Blow="@blowSet.Blows.Last()"
                            Screen="@screen" />
-        }
 
-        @if (submitted == true)
-        {
-            <SubmitLabel Blow="@blowSet.Blows.Last()"
-                         Screen="@screen" />
+            <GapMinus Blow="@blowSet.Blows.Last()"
+                      Screen="@screen"
+                      GapDisabled="@controlsDisabled"
+                      Callback="GapChangedWithButton" />
+
+            <GapCurr Blow="@blowSet.Blows.Last()"
+                     Screen="@screen" />
+
+            <GapPlus Blow="@blowSet.Blows.Last()"
+                     Screen="@screen"
+                     GapDisabled="@controlsDisabled"
+                     Callback="GapChangedWithButton" />
+
+            <PlayBtn Blow="@blowSet.Blows.Last()"
+                     Screen="@screen"
+                     PlayLabel="@playLabel"
+                     PlayDisabled="@playDisabled"
+                     Callback="Play" />
+
+            @if (spinnerPlaying == true)
+            {
+                <SpinnerPlay Blow="@blowSet.Blows.Last()"
+                             Screen="@screen" />
+            }
+
+            @if (selectedTest != 0 && selectedTest != -1)
+            {
+                <SubmitBtn Blow="@blowSet.Blows.Last()"
+                           Screen="@screen"
+                           SubmitLabel="@submitLabel"
+                           SubmitDisabled="@controlsDisabled"
+                           Callback="Submit" />
+            }
+
+            @if (spinnerSubmitting == true)
+            {
+                <SpinnerSubmit Blow="@blowSet.Blows.Last()"
+                               Screen="@screen" />
+            }
+
+            @if (submitted == true)
+            {
+                <SubmitLabel Blow="@blowSet.Blows.Last()"
+                             Screen="@screen" />
+            }
         }
-    }
+    </div>
 </div>

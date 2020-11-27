@@ -1,14 +1,23 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http;
-using System.Net.Http.Json;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Components;
-using StrikingInvestigation.Models;
+using StrikingInvestigation.Utilities;
 
 namespace StrikingInvestigation.Pages
 {
     public partial class Index
     {
+        int width;
+
+        [Inject]
+        Device Device { get; set; }
+
+        [Inject]
+        Viewport Viewport { get; set; }
+
+        async Task GetWidth()
+        {
+            BrowserDimensions browserDimensions = await Viewport.GetDimensions();
+            width = browserDimensions.Width;
+        }
     }
 }

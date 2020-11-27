@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net.Http;
 using System.Net.Http.Json;
 using System.Text.Json;
 using System.Threading;
@@ -47,6 +46,8 @@ namespace StrikingInvestigation.Pages
 
         ElementReference mainDiv;
 
+        int width;
+
         public GapTest()
         {
             testSpec = new TestSpec
@@ -82,11 +83,18 @@ namespace StrikingInvestigation.Pages
         IJSRuntime JSRuntime { get; set; }
 
         [Inject]
-        HttpClient Http { get; set; }
-        
+        TJBarnesService TJBarnesService { get; set; }
+
+        [Inject]
+        Device Device { get; set; }
+
+        [Inject]
+        Viewport Viewport { get; set; }
+
         protected override async Task OnInitializedAsync()
         {
-            gapTestsData = (await Http.GetFromJsonAsync<GapTestData[]>("api/gaptests")).ToList();
+            gapTestsData = (await TJBarnesService.GetHttpClient()
+                    .GetFromJsonAsync<GapTestData[]>("api/gaptests")).ToList();
             saveLabel = "Save";
             playLabel = "Play";
             submitLabel = "Submit";
@@ -208,7 +216,8 @@ namespace StrikingInvestigation.Pages
         async Task Load(int id)
         {
             // Get a test from the API
-            GapTestData gapTestData = await Http.GetFromJsonAsync<GapTestData>("api/gaptests/" + id.ToString());
+            GapTestData gapTestData = await TJBarnesService.GetHttpClient().
+                    GetFromJsonAsync<GapTestData>("api/gaptests/" + id.ToString());
 
             // Use the Deserializer method of the JsonSerializer class (in the System.Text.Json namespace) to create
             // a BlowSetCore object
@@ -262,10 +271,11 @@ namespace StrikingInvestigation.Pages
             };
 
             // Push the Json object to the API
-            await Http.PostAsJsonAsync("api/gaptests", gapTestData);
+            await TJBarnesService.GetHttpClient().PostAsJsonAsync("api/gaptests", gapTestData);
 
             // Refresh the contents of the Select Test dropdown 
-            gapTestsData = (await Http.GetFromJsonAsync<GapTestData[]>("api/gaptests")).ToList();
+            gapTestsData = (await TJBarnesService.GetHttpClient()
+                    .GetFromJsonAsync<GapTestData[]>("api/gaptests")).ToList();
 
             spinnerSaving = false;
             saved = true;
@@ -398,7 +408,7 @@ namespace StrikingInvestigation.Pages
             };
 
             // Push the testSubmission to the API in JSON format
-            await Http.PostAsJsonAsync("api/testsubmissions", testSubmission);
+            await TJBarnesService.GetHttpClient().PostAsJsonAsync("api/testsubmissions", testSubmission);
 
             spinnerSubmitting = false;
             submitted = true;
@@ -489,6 +499,12 @@ namespace StrikingInvestigation.Pages
                     }
                 }
             }
+        }
+
+        async Task GetWidth()
+        {
+            BrowserDimensions browserDimensions = await Viewport.GetDimensions();
+            width = browserDimensions.Width;
         }
     }
 }

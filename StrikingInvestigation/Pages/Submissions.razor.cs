@@ -1,10 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using System.Net.Http;
 using System.Net.Http.Json;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Components;
 using StrikingInvestigation.Models;
+using StrikingInvestigation.Utilities;
 
 namespace StrikingInvestigation.Pages
 {
@@ -12,12 +12,27 @@ namespace StrikingInvestigation.Pages
     {
         IEnumerable<TestSubmission> testSubmissions;
 
+        int width;
+
         [Inject]
-        HttpClient Http { get; set; }
+        TJBarnesService TJBarnesService { get; set; }
+
+        [Inject]
+        Device Device { get; set; }
+
+        [Inject]
+        Viewport Viewport { get; set; }
 
         protected override async Task OnInitializedAsync()
         {
-            testSubmissions = (await Http.GetFromJsonAsync<TestSubmission[]>("api/testsubmissions")).ToList();
+            testSubmissions = (await TJBarnesService.GetHttpClient()
+                    .GetFromJsonAsync<TestSubmission[]>("api/testsubmissions")).ToList();
+        }
+
+        async Task GetWidth()
+        {
+            BrowserDimensions browserDimensions = await Viewport.GetDimensions();
+            width = browserDimensions.Width;
         }
     }
 }

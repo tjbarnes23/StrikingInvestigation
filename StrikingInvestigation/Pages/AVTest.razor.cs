@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net.Http;
 using System.Net.Http.Json;
 using System.Text.Json;
 using System.Threading;
@@ -43,6 +42,8 @@ namespace StrikingInvestigation.Pages
 
         ElementReference mainDiv;
 
+        int width;
+
         public AVTest()
         {
             screen = new Screen
@@ -51,7 +52,7 @@ namespace StrikingInvestigation.Pages
                 XScale = Constants.XScale,
                 XMargin = Constants.XMargin,
                 YScale = Constants.YScale,
-                YMargin = 300,
+                YMargin = Constants.YMargin + 75,
                 GapMin = 200,
                 GapMax = 1200,
                 BaseGap = 0
@@ -64,11 +65,18 @@ namespace StrikingInvestigation.Pages
         IJSRuntime JSRuntime { get; set; }
 
         [Inject]
-        HttpClient Http { get; set; }
-                
+        TJBarnesService TJBarnesService { get; set; }
+
+        [Inject]
+        Device Device { get; set; }
+
+        [Inject]
+        Viewport Viewport { get; set; }
+
         protected override async Task OnInitializedAsync()
         {
-            aVTestsData = (await Http.GetFromJsonAsync<AVTestData[]>("api/avtests")).ToList();
+            aVTestsData = (await TJBarnesService.GetHttpClient()
+                    .GetFromJsonAsync<AVTestData[]>("api/avtests")).ToList();
             saveLabel = "Save";
             playLabel = "Play";
             submitLabel = "Submit";
@@ -122,7 +130,8 @@ namespace StrikingInvestigation.Pages
         async Task Load(int id)
         {
             // Get a test from the API
-            AVTestData aVTestData = await Http.GetFromJsonAsync<AVTestData>("api/avtests/" + id.ToString());
+            AVTestData aVTestData = await TJBarnesService.GetHttpClient()
+                    .GetFromJsonAsync<AVTestData>("api/avtests/" + id.ToString());
 
             // Use the Deserializer method of the JsonSerializer class (in the System.Text.Json namespace) to create
             // a BlowCore object
@@ -159,10 +168,11 @@ namespace StrikingInvestigation.Pages
             };
 
             // Push the Json object to the API
-            await Http.PostAsJsonAsync("api/avtests", aVTestData);
+            await TJBarnesService.GetHttpClient().PostAsJsonAsync("api/avtests", aVTestData);
 
             // Refresh the contents of the Select Test dropdown 
-            aVTestsData = (await Http.GetFromJsonAsync<AVTestData[]>("api/avtests")).ToList();
+            aVTestsData = (await TJBarnesService.GetHttpClient()
+                    .GetFromJsonAsync<AVTestData[]>("api/avtests")).ToList();
 
             spinnerSaving = false;
             saved = true;
@@ -337,7 +347,7 @@ namespace StrikingInvestigation.Pages
             };
 
             // Push the testSubmission to the API in JSON format
-            await Http.PostAsJsonAsync("api/testsubmissions", testSubmission);
+            await TJBarnesService.GetHttpClient().PostAsJsonAsync("api/testsubmissions", testSubmission);
 
             spinnerSubmitting = false;
             submitted = true;
@@ -415,6 +425,12 @@ namespace StrikingInvestigation.Pages
                     }
                 }
             }
+        }
+
+        async Task GetWidth()
+        {
+            BrowserDimensions browserDimensions = await Viewport.GetDimensions();
+            width = browserDimensions.Width;
         }
     }
 }

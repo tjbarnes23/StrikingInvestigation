@@ -1,13 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net.Http;
 using System.Net.Http.Json;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Components;
-using Microsoft.AspNetCore.Components.Web;
 using Microsoft.JSInterop;
 using StrikingInvestigation.Models;
 using StrikingInvestigation.Utilities;
@@ -63,6 +61,8 @@ namespace StrikingInvestigation.Pages
         string resultSource;
         bool resultEntered;
 
+        int width;
+
         public ABTest()
         {
             testSpec = new TestSpec
@@ -112,11 +112,18 @@ namespace StrikingInvestigation.Pages
         IJSRuntime JSRuntime { get; set; }
 
         [Inject]
-        HttpClient Http { get; set; }
+        TJBarnesService TJBarnesService { get; set; }
+
+        [Inject]
+        Device Device { get; set; }
+
+        [Inject]
+        Viewport Viewport { get; set; }
 
         protected override async Task OnInitializedAsync()
         {
-            aBTestsData = (await Http.GetFromJsonAsync<ABTestData[]>("api/abtests")).ToList();
+            aBTestsData = (await TJBarnesService.GetHttpClient()
+                    .GetFromJsonAsync<ABTestData[]>("api/abtests")).ToList();
             saveLabel = "Save";
             playLabelA = "Play A";
             playLabelB = "Play B";
@@ -282,7 +289,8 @@ namespace StrikingInvestigation.Pages
         async Task Load(int id)
         {
             // Get a test from the API
-            ABTestData aBTestData = await Http.GetFromJsonAsync<ABTestData>("api/abtests/" + id.ToString());
+            ABTestData aBTestData = await TJBarnesService.GetHttpClient()
+                    .GetFromJsonAsync<ABTestData>("api/abtests/" + id.ToString());
 
             // Use the Deserializer method of the JsonSerializer class (in the System.Text.Json namespace) to create
             // a BlowSetCore object for each of A and B
@@ -360,10 +368,11 @@ namespace StrikingInvestigation.Pages
             };
 
             // Push the Json object to the API
-            await Http.PostAsJsonAsync("api/abtests", aBTestData);
+            await TJBarnesService.GetHttpClient().PostAsJsonAsync("api/abtests", aBTestData);
 
             // Refresh the contents of the Select Test dropdown 
-            aBTestsData = (await Http.GetFromJsonAsync<ABTestData[]>("api/abtests")).ToList();
+            aBTestsData = (await TJBarnesService.GetHttpClient()
+                    .GetFromJsonAsync<ABTestData[]>("api/abtests")).ToList();
 
             spinnerSaving = false;
             saved = true;
@@ -715,7 +724,7 @@ namespace StrikingInvestigation.Pages
             };
 
             // Push the testSubmission to the API in JSON format
-            await Http.PostAsJsonAsync("api/testsubmissions", testSubmission);
+            await TJBarnesService.GetHttpClient().PostAsJsonAsync("api/testsubmissions", testSubmission);
 
             switch (result)
             {
@@ -768,6 +777,12 @@ namespace StrikingInvestigation.Pages
             playDisabledA = false;
             playDisabledB = false;
             StateHasChanged();
+        }
+
+        async Task GetWidth()
+        {
+            BrowserDimensions browserDimensions = await Viewport.GetDimensions();
+            width = browserDimensions.Width;
         }
     }
 }
