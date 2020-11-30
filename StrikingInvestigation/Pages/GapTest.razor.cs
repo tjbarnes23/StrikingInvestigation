@@ -19,11 +19,11 @@ namespace StrikingInvestigation.Pages
         readonly TestSpec testSpec;
         readonly Screen screen;
         int selectedTest;
-        
+
         bool showGaps;
-        
+
         BlowSet blowSet;
-        
+
         bool controlsDisabled;
         bool tenorWeightDisabled;
         bool playDisabled;
@@ -240,7 +240,7 @@ namespace StrikingInvestigation.Pages
             // to the right to make the 1st blow of each row align vertically (when no striking errors)
             int baseGap = BaseGaps.BaseGap(testSpec.Stage, testSpec.TenorWeight, 1);
             screen.BaseGap = baseGap;
-                        
+
             StateHasChanged();
         }
 
@@ -292,8 +292,10 @@ namespace StrikingInvestigation.Pages
             StateHasChanged();
         }
 
-        async Task Play()
+        async Task PlayAsync()
         {
+            int initialDelay = 1000;
+            
             if (playLabel == "Play")
             {
                 // Change test bell color to disabled color - can't adjust gap during play
@@ -345,46 +347,93 @@ namespace StrikingInvestigation.Pages
                     // Strike bell
                     await JSRuntime.InvokeVoidAsync("PlayBellAudio", blow.AudioId);
                 }
-
-                // Wait for 0.6 seconds
-                await Task.Delay(600);
-
-                // Start spinner
-                spinnerPlaying = true;
-                playLabel = "Wait";
-                playDisabled = true;
-                StateHasChanged();
-
-                // Wait a further 2 seconds for the bells to finish sounding (each bell sample is 2.5 seconds)
-                await Task.Delay(2000);
-
-                // Reset play button
-                spinnerPlaying = false;
-                playLabel = "Play";
-                playDisabled = false;
             }
             else if (playLabel == "Stop")
             {
-                // Wait for 0.6 seconds
-                spinnerPlaying = true;
-                playLabel = "Wait";
-                playDisabled = true;
-                
                 cancellationTokenSource.Cancel();
-
-                // Wait for 2.6 seconds for the sound to finish
-                await Task.Delay(2600);
-
-                // Reset play button
-                spinnerPlaying = false;
-                playLabel = "Play";
-                playDisabled = false;
+                initialDelay = 0;
             }
+
+            // Initial delay
+            await Task.Delay(initialDelay);
+
+            // Start spinner
+            playDisabled = true;
+            playLabel = "Wait";
+            spinnerPlaying = true;
+            StateHasChanged();
+
+            // Wait 2 or 2.6 seconds depending on whether arriving here on stop or end of play
+            await Task.Delay(2600 - initialDelay);
+
+            // Reset play button
+            spinnerPlaying = false;
+            playLabel = "Play";
+            playDisabled = false;
+            
+            // Reset screen
+            blowSet.SetUnstruck();
+            controlsDisabled = false;
+            tenorWeightDisabled = TenorWeightSelect.TenorWeightDisabled(testSpec.Stage);
+            StateHasChanged();
+        }
+
+        async void Play()
+        {
+            // Change test bell color to disabled color - can't adjust gap during play
+            blowSet.Blows.Last().BellColor = Constants.DisabledUnstruckTestBellColor;
+
+            DateTime strikeTime = DateTime.Now;
+
+            foreach (Blow blow in blowSet.Blows)
+            {
+                // Set strike times
+                strikeTime = strikeTime.AddMilliseconds(blow.Gap);
+                blow.StrikeTime = strikeTime;
+            }
+
+            playDisabled = true;
+            playLabel = "Wait";
+            controlsDisabled = true;
+            tenorWeightDisabled = true;
+
+            foreach (Blow blow in blowSet.Blows)
+            {
+                TimeSpan delay;
+                int delayMs;
+
+                delay = blow.StrikeTime - DateTime.Now;
+                delayMs = Convert.ToInt32(delay.TotalMilliseconds);
+
+                if (delayMs > 0)
+                {
+                    await Task.Delay(delayMs);
+                }
+
+                // Strike bell
+                await JSRuntime.InvokeVoidAsync("PlayBellAudio", blow.AudioId);
+            }
+            
+            // Initial delay
+            await Task.Delay(600);
+
+            // Start spinner
+            spinnerPlaying = true;
+            StateHasChanged();
+
+            // Wait 2 seconds
+            await Task.Delay(2000);
+
+            // Reset play button
+            spinnerPlaying = false;
+            playLabel = "Play";
+            playDisabled = false;
 
             // Reset screen
             blowSet.SetUnstruck();
             controlsDisabled = false;
             tenorWeightDisabled = TenorWeightSelect.TenorWeightDisabled(testSpec.Stage);
+            StateHasChanged();
         }
 
         async Task Submit()
