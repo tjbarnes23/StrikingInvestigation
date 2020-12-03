@@ -363,7 +363,7 @@ namespace StrikingInvestigation.Pages
             spinnerPlaying = true;
             StateHasChanged();
 
-            // Wait 2 or 2.6 seconds depending on whether arriving here on stop or end of play
+            // Wait 2.6 or 1.6 seconds depending on whether arriving here on stop or end of play
             await Task.Delay(2600 - initialDelay);
 
             // Reset play button

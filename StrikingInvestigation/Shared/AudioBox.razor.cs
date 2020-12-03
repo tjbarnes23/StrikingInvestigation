@@ -12,9 +12,6 @@ namespace StrikingInvestigation.Shared
         [Parameter]
         public Screen Screen { get; set; }
 
-        [Parameter]
-        public int Duration { get; set; }
-
         string BoundaryLeftPos { get; set; }
 
         string BoundaryTopPos { get; set; }
@@ -67,7 +64,7 @@ namespace StrikingInvestigation.Shared
             DotLeftEndPos = (x4Pos - 14).ToString() + "px";
             DotTopPos = (y3Pos - 14).ToString() + "px";
 
-            DurationStr = Duration.ToString() + "ms";
+            DurationStr = Screen.AnimationDuration.ToString() + "ms";
         }
     }
 }

@@ -49,14 +49,10 @@ namespace StrikingInvestigation.Pages
         bool submitted2;
         bool submitted3;
 
-        bool animate;
-
         CancellationTokenSource cancellationTokenSource;
         CancellationToken cancellationToken;
 
         bool isA;
-        int durationA;
-        int durationB;
         bool resultSound;
         string resultSource;
         bool resultEntered;
@@ -88,7 +84,8 @@ namespace StrikingInvestigation.Pages
                 GapMin = 0,
                 GapMax = 0,
                 BaseGap = baseGap,
-                RunAnimation = false
+                RunAnimation = false,
+                AnimationDuration = 0
             };
 
             screenB = new Screen
@@ -101,11 +98,11 @@ namespace StrikingInvestigation.Pages
                 GapMin = 0,
                 GapMax = 0,
                 BaseGap = baseGap,
-                RunAnimation = false
+                RunAnimation = false,
+                AnimationDuration = 0
             };
 
             selectedTest = -1;
-            animate = true;
         }
 
         [Inject]
@@ -279,8 +276,8 @@ namespace StrikingInvestigation.Pages
                 }
             }
 
-            durationA = blowSetA.Blows.Last().GapCumulative + 600;
-            durationB = blowSetB.Blows.Last().GapCumulative + 600;
+            screenA.AnimationDuration = blowSetA.Blows.Last().GapCumulative + 600;
+            screenB.AnimationDuration = blowSetB.Blows.Last().GapCumulative + 600;
             resultEntered = false;
 
             showGaps = false;
@@ -330,8 +327,8 @@ namespace StrikingInvestigation.Pages
             screenA.BaseGap = baseGap;
             screenB.BaseGap = baseGap;
 
-            durationA = blowSetA.Blows.Last().GapCumulative + 600;
-            durationB = blowSetB.Blows.Last().GapCumulative + 600;
+            screenA.AnimationDuration = blowSetA.Blows.Last().GapCumulative + 600;
+            screenB.AnimationDuration = blowSetB.Blows.Last().GapCumulative + 600;
             resultEntered = false;
 
             showGaps = false;
@@ -389,8 +386,10 @@ namespace StrikingInvestigation.Pages
             StateHasChanged();
         }
 
-        async Task PlayA()
+        async Task PlayAsyncA()
         {
+            int initialDelay = 600;
+
             if (playLabelA == "Play A")
             {
                 DateTime strikeTime = DateTime.Now;
@@ -410,7 +409,7 @@ namespace StrikingInvestigation.Pages
                 tenorWeightDisabled = true;
                 playDisabledB = true;
 
-                // If ShowGaps is false, start the animation
+                // Start the animation if not showing the bells
                 if (showGaps == false)
                 {
                     screenA.RunAnimation = true;
@@ -435,7 +434,7 @@ namespace StrikingInvestigation.Pages
                     }
 
                     // Change bell color
-                    if (showGaps == true)
+                    if (Device.DeviceLoad == DeviceLoad.High && showGaps == true)
                     {
                         blow.BellColor = Constants.StruckBellColor;
 
@@ -446,52 +445,41 @@ namespace StrikingInvestigation.Pages
                     // Strike bell
                     await JSRuntime.InvokeVoidAsync("PlayBellAudio", blow.AudioId);
                 }
-
-                // Wait for 0.6 seconds
-                await Task.Delay(600);
-
-                // Start spinner
-                spinnerPlayingA = true;
-                playLabelA = "Wait";
-                playDisabledA = true;
-                StateHasChanged();
-
-                // Wait a further 2 seconds for the bells to finish sounding (each bell sample is 2.5 seconds)
-                await Task.Delay(2000);
-
-                spinnerPlayingA = false;
-                playLabelA = "Play A";
-                playDisabledA = false;
-
-                if (showGaps == false)
-                {
-                    screenA.RunAnimation = false;
-                }
             }
             else if (playLabelA == "Stop A")
             {
-                spinnerPlayingA = true;
-                playLabelA = "Wait";
-                playDisabledA = true;
-                
                 cancellationTokenSource.Cancel();
-
-                if (showGaps == false)
-                {
-                    screenA.RunAnimation = false;
-                }
-
-                // Wait for 2.6 seconds for the sound to finish
-                await Task.Delay(2600);
-
-                // Reset play A button
-                spinnerPlayingA = false;
-                playLabelA = "Play A";
-                playDisabledA = false;
+                initialDelay = 0;
             }
 
+            // Initial delay
+            if (initialDelay > 0)
+            {
+                await Task.Delay(initialDelay);
+            }
+
+            // Reset animation
+            if (showGaps == false)
+            {
+                screenA.RunAnimation = false;
+            }
+
+            // Start spinner
+            playDisabledA = true;
+            playLabelA = "Wait";
+            spinnerPlayingA = true;
+            StateHasChanged();
+
+            // Wait 2.6 or 2 seconds depending on whether arriving here on stop or end of play
+            await Task.Delay(2600 - initialDelay);
+
+            // Reset play button
+            spinnerPlayingA = false;
+            playLabelA = "Play A";
+            playDisabledA = false;
+
             // Reset screen
-            if (showGaps == true)
+            if (Device.DeviceLoad == DeviceLoad.High && showGaps == true)
             {
                 blowSetA.SetUnstruck();
             }
@@ -499,10 +487,13 @@ namespace StrikingInvestigation.Pages
             controlsDisabled = false;
             tenorWeightDisabled = TenorWeightSelect.TenorWeightDisabled(testSpec.Stage);
             playDisabledB = false;
+            StateHasChanged();
         }
 
-        async Task PlayB()
+        async Task PlayAsyncB()
         {
+            int initialDelay = 600;
+
             if (playLabelB == "Play B")
             {
                 DateTime strikeTime = DateTime.Now;
@@ -522,7 +513,7 @@ namespace StrikingInvestigation.Pages
                 tenorWeightDisabled = true;
                 playDisabledA = true;
 
-                // If ShowGaps is false, start the animation
+                // Start the animation if not showing the bells
                 if (showGaps == false)
                 {
                     screenB.RunAnimation = true;
@@ -547,7 +538,7 @@ namespace StrikingInvestigation.Pages
                     }
 
                     // Change bell color
-                    if (showGaps == true)
+                    if (Device.DeviceLoad == DeviceLoad.High && showGaps == true)
                     {
                         blow.BellColor = Constants.StruckBellColor;
 
@@ -558,52 +549,41 @@ namespace StrikingInvestigation.Pages
                     // Strike bell
                     await JSRuntime.InvokeVoidAsync("PlayBellAudio", blow.AudioId);
                 }
-
-                // Wait for 0.6 seconds
-                await Task.Delay(600);
-
-                // Start spinner
-                spinnerPlayingB = true;
-                playLabelB = "Wait";
-                playDisabledB = true;
-                StateHasChanged();
-
-                // Wait a further 2 seconds for the bells to finish sounding (each bell sample is 2.5 seconds)
-                await Task.Delay(2000);
-
-                spinnerPlayingB = false;
-                playLabelB = "Play B";
-                playDisabledB = false;
-
-                if (showGaps == false)
-                {
-                    screenB.RunAnimation = false;
-                }
             }
             else if (playLabelB == "Stop B")
             {
-                spinnerPlayingB = true;
-                playLabelB = "Wait";
-                playDisabledB = true;
-
                 cancellationTokenSource.Cancel();
-
-                if (showGaps == false)
-                {
-                    screenB.RunAnimation = false;
-                }
-
-                // Wait for 2.6 seconds for the sound to finish
-                await Task.Delay(2600);
-
-                // Reset play A button
-                spinnerPlayingB = false;
-                playLabelB = "Play B";
-                playDisabledB = false;
+                initialDelay = 0;
             }
 
+            // Initial delay
+            if (initialDelay > 0)
+            {
+                await Task.Delay(initialDelay);
+            }
+
+            // Reset animation
+            if (showGaps == false)
+            {
+                screenB.RunAnimation = false;
+            }
+
+            // Start spinner
+            playDisabledB = true;
+            playLabelB = "Wait";
+            spinnerPlayingB = true;
+            StateHasChanged();
+
+            // Wait 2.6 or 2 seconds depending on whether arriving here on stop or end of play
+            await Task.Delay(2600 - initialDelay);
+
+            // Reset play button
+            spinnerPlayingB = false;
+            playLabelB = "Play B";
+            playDisabledB = false;
+
             // Reset screen
-            if (showGaps == true)
+            if (Device.DeviceLoad == DeviceLoad.High && showGaps == true)
             {
                 blowSetB.SetUnstruck();
             }
@@ -611,6 +591,143 @@ namespace StrikingInvestigation.Pages
             controlsDisabled = false;
             tenorWeightDisabled = TenorWeightSelect.TenorWeightDisabled(testSpec.Stage);
             playDisabledA = false;
+            StateHasChanged();
+        }
+
+        async void PlayA()
+        {
+            DateTime strikeTime = DateTime.Now;
+
+            foreach (Blow blow in blowSetA.Blows)
+            {
+                // Set strike times
+                strikeTime = strikeTime.AddMilliseconds(blow.Gap);
+                blow.StrikeTime = strikeTime;
+            }
+
+            playDisabledA = true;
+            playLabelA = "Wait";
+            controlsDisabled = true;
+            tenorWeightDisabled = true;
+            playDisabledB = true;
+
+            // Start the animation if not showing the bells
+            if (showGaps == false)
+            {
+                screenA.RunAnimation = true;
+            }
+
+            foreach (Blow blow in blowSetA.Blows)
+            {
+                TimeSpan delay;
+                int delayMs;
+
+                delay = blow.StrikeTime - DateTime.Now;
+                delayMs = Convert.ToInt32(delay.TotalMilliseconds);
+
+                if (delayMs > 0)
+                {
+                    await Task.Delay(delayMs);
+                }
+
+                // Strike bell
+                await JSRuntime.InvokeVoidAsync("PlayBellAudio", blow.AudioId);
+            }
+
+            // Initial delay
+            await Task.Delay(600);
+
+            // Reset animation
+            if (showGaps == false)
+            {
+                screenA.RunAnimation = false;
+            }
+
+            // Start spinner
+            spinnerPlayingA = true;
+            StateHasChanged();
+
+            // Wait 2 seconds
+            await Task.Delay(2000);
+
+            // Reset play button
+            spinnerPlayingA = false;
+            playLabelA = "Play A";
+            playDisabledA = false;
+
+            // Reset screen
+            controlsDisabled = false;
+            tenorWeightDisabled = TenorWeightSelect.TenorWeightDisabled(testSpec.Stage);
+            playDisabledB = false;
+            StateHasChanged();
+        }
+
+        async void PlayB()
+        {
+            DateTime strikeTime = DateTime.Now;
+
+            foreach (Blow blow in blowSetB.Blows)
+            {
+                // Set strike times
+                strikeTime = strikeTime.AddMilliseconds(blow.Gap);
+                blow.StrikeTime = strikeTime;
+            }
+
+            playDisabledB = true;
+            playLabelB = "Wait";
+            controlsDisabled = true;
+            tenorWeightDisabled = true;
+            playDisabledA = true;
+
+            // Start the animation if not showing the bells
+            if (showGaps == false)
+            {
+                screenB.RunAnimation = true;
+            }
+
+            foreach (Blow blow in blowSetB.Blows)
+            {
+                TimeSpan delay;
+                int delayMs;
+
+                delay = blow.StrikeTime - DateTime.Now;
+                delayMs = Convert.ToInt32(delay.TotalMilliseconds);
+
+                if (delayMs > 0)
+                {
+                    await Task.Delay(delayMs);
+                }
+
+                // Strike bell
+                await JSRuntime.InvokeVoidAsync("PlayBellAudio", blow.AudioId);
+            }
+
+            // Initial delay
+            await Task.Delay(600);
+
+            // Reset animation
+            if (showGaps == false)
+            {
+                screenB.RunAnimation = false;
+            }
+
+            // Start spinner
+            spinnerPlayingB = true;
+            StateHasChanged();
+
+            // Wait 2 seconds
+            await Task.Delay(2000);
+
+            // Reset play button
+            spinnerPlayingB = false;
+            playLabelB = "Play B";
+            playDisabledB = false;
+
+            // Reset screen
+            controlsDisabled = false;
+            tenorWeightDisabled = TenorWeightSelect.TenorWeightDisabled(testSpec.Stage);
+            playDisabledA = false;
+            StateHasChanged();
         }
 
         async Task AHasErrors()

@@ -19,5 +19,7 @@
         public int BaseGap { get; set; }
 
         public bool RunAnimation { get; set; }
+
+        public int AnimationDuration { get; set; }
     }
 }

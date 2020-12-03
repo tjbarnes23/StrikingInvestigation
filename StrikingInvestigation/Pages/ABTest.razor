@@ -205,33 +205,28 @@
     <div style="position: relative">
         @if (blowSetA != null)
         {
-            @foreach (Blow blow in blowSetA.Blows)
+            foreach (Blow blow in blowSetA.Blows)
             {
-                // Place labels if it's the first blow of the row
-                if (blow.Place == 1)
-                {
-                    <StrokeLabel Blow="@blow"
-                                 Screen="@screenA" />
-
-                    <RowStartLabel Blow="@blow"
-                                   Screen="@screenA" />
-
-                    <ChangeLabel Blow="@blow"
-                                 Screen="@screenA" />
-                }
-
                 if (showGaps == true)
                 {
+                    // Place labels if it's the first blow of the row
+                    if (blow.Place == 1)
+                    {
+                        <StrokeLabel Blow="@blow"
+                                     Screen="@screenA" />
+
+                        <RowStartLabel Blow="@blow"
+                                       Screen="@screenA" />
+
+                        <ChangeLabel Blow="@blow"
+                                     Screen="@screenA" />
+                    }
+
                     <Bell Blow="@blow"
                           Screen="@screenA" />
 
                     <GapLabel Blow="@blow"
                               Screen="@screenA" />
-                }
-                else
-                {
-                    <AudioBox2 TestSpec="@testSpec"
-                               Screen="@screenA" />
                 }
 
                 <audio id="@blow.AudioId" preload="auto">
@@ -239,11 +234,36 @@
                 </audio>
             }
 
-            <PlayBtn2 TestSpec="@testSpec"
-                      Screen="@screenA"
-                      PlayLabel="@playLabelA"
-                      PlayDisabled="@playDisabledA"
-                      Callback="PlayA" />
+            if (showGaps == false)
+            {
+                if (Device.DeviceLoad == DeviceLoad.High)
+                {
+                    <AudioBox TestSpec="@testSpec"
+                              Screen="@screenA" />
+                }
+                else
+                {
+                    <AudioBox2 TestSpec="@testSpec"
+                               Screen="@screenA" />
+                }
+            }
+
+            if (Device.DeviceLoad == DeviceLoad.Low)
+            {
+                <PlayBtn2 TestSpec="@testSpec"
+                          Screen="@screenA"
+                          PlayLabel="@playLabelA"
+                          PlayDisabled="@playDisabledA"
+                          Callback="PlayA" />
+            }
+            else
+            {
+                <PlayBtn2 TestSpec="@testSpec"
+                          Screen="@screenA"
+                          PlayLabel="@playLabelA"
+                          PlayDisabled="@playDisabledA"
+                          Callback="PlayAsyncA" />
+            }
 
             @if (spinnerPlayingA == true)
             {
@@ -256,25 +276,38 @@
         {
             @foreach (Blow blow in blowSetB.Blows)
             {
-                // Place labels if it's the first blow of the row
-                if (blow.Place == 1)
-                {
-                    <StrokeLabel Blow="@blow"
-                                 Screen="@screenB" />
-
-                    <RowStartLabel Blow="@blow"
-                                   Screen="@screenB" />
-
-                    <ChangeLabel Blow="@blow"
-                                 Screen="@screenB" />
-                }
-
                 if (showGaps == true)
                 {
+                    // Place labels if it's the first blow of the row
+                    if (blow.Place == 1)
+                    {
+                        <StrokeLabel Blow="@blow"
+                                     Screen="@screenB" />
+
+                        <RowStartLabel Blow="@blow"
+                                       Screen="@screenB" />
+
+                        <ChangeLabel Blow="@blow"
+                                     Screen="@screenB" />
+                    }
+
                     <Bell Blow="@blow"
                           Screen="@screenB" />
 
                     <GapLabel Blow="@blow"
+                              Screen="@screenB" />
+                }
+
+                <audio id="@blow.AudioId" preload="auto">
+                    <source src="@blow.BellSound" type="audio/mpeg" />
+                </audio>
+            }
+
+            if (showGaps == false)
+            {
+                if (Device.DeviceLoad == DeviceLoad.High)
+                {
+                    <AudioBox TestSpec="@testSpec"
                               Screen="@screenB" />
                 }
                 else
@@ -283,16 +316,24 @@
                                Screen="@screenB" />
                 }
 
-                <audio id="@blow.AudioId" preload="auto">
-                    <source src="@blow.BellSound" type="audio/mpeg" />
-                </audio>
             }
 
-            <PlayBtn2 TestSpec="@testSpec"
-                      Screen="@screenB"
-                      PlayLabel="@playLabelB"
-                      PlayDisabled="@playDisabledB"
-                      Callback="PlayB" />
+            if (Device.DeviceLoad == DeviceLoad.Low)
+            {
+                <PlayBtn2 TestSpec="@testSpec"
+                          Screen="@screenB"
+                          PlayLabel="@playLabelB"
+                          PlayDisabled="@playDisabledB"
+                          Callback="PlayB" />
+            }
+            else
+            {
+                <PlayBtn2 TestSpec="@testSpec"
+                          Screen="@screenB"
+                          PlayLabel="@playLabelB"
+                          PlayDisabled="@playDisabledB"
+                          Callback="PlayAsyncB" />
+            }
 
             @if (spinnerPlayingB == true)
             {
@@ -349,7 +390,7 @@
             {
                 <div class="spinnerabs"
                      style="--leftpos: 500px;
-                            --toppos: 1203px">
+                                --toppos: 1203px">
                 </div>
             }
 
@@ -357,7 +398,7 @@
             {
                 <div class="posabs"
                      style="--leftpos: 500px;
-                            --toppos: 1203px">
+                                --toppos: 1203px">
                     Submitted
                 </div>
             }
@@ -366,7 +407,7 @@
             {
                 <div class="spinnerabs"
                      style="--leftpos: 635px;
-                            --toppos: 1203px">
+                                --toppos: 1203px">
                 </div>
             }
 
@@ -374,7 +415,7 @@
             {
                 <div class="posabs"
                      style="--leftpos: 635px;
-                            --toppos: 1203px">
+                                --toppos: 1203px">
                     Submitted
                 </div>
             }
@@ -382,7 +423,7 @@
             {
                 <div class="spinnerabs"
                      style="--leftpos: 770px;
-                            --toppos: 1203px">
+                                --toppos: 1203px">
                 </div>
             }
 
@@ -390,7 +431,7 @@
             {
                 <div class="posabs"
                      style="--leftpos: 770px;
-                            --toppos: 1203px">
+                                --toppos: 1203px">
                     Submitted
                 </div>
             }

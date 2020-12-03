@@ -1,12 +1,9 @@
 ﻿namespace StrikingInvestigation.Utilities
 {
-    public class Device
+    public enum DeviceLoad
     {
-        public enum Load
-        {
-            High,
-            Medium,
-            Low
-        }
+        High,
+        Medium,
+        Low
     }
 }
