@@ -14,10 +14,15 @@ namespace StrikingInvestigation.Pages
         [Inject]
         Viewport Viewport { get; set; }
 
-        async Task GetWidth()
+        protected override async Task OnInitializedAsync()
+        {
+            width = await GetWidth();
+        }
+
+        async Task<int> GetWidth()
         {
             BrowserDimensions browserDimensions = await Viewport.GetDimensions();
-            width = browserDimensions.Width;
+            return browserDimensions.Width;
         }
     }
 }

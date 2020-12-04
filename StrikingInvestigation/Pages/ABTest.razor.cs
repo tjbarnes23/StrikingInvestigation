@@ -127,6 +127,7 @@ namespace StrikingInvestigation.Pages
             submitLabel1 = "A has errors";
             submitLabel2 = "B has errors";
             submitLabel3 = "I can't tell which has errors";
+            width = await GetWidth();
         }
 
         async Task TestChanged(int value)
@@ -276,8 +277,8 @@ namespace StrikingInvestigation.Pages
                 }
             }
 
-            screenA.AnimationDuration = blowSetA.Blows.Last().GapCumulative + 600;
-            screenB.AnimationDuration = blowSetB.Blows.Last().GapCumulative + 600;
+            screenA.AnimationDuration = blowSetA.Blows.Last().GapCumulative + 1000;
+            screenB.AnimationDuration = blowSetB.Blows.Last().GapCumulative + 1000;
             resultEntered = false;
 
             showGaps = false;
@@ -327,8 +328,8 @@ namespace StrikingInvestigation.Pages
             screenA.BaseGap = baseGap;
             screenB.BaseGap = baseGap;
 
-            screenA.AnimationDuration = blowSetA.Blows.Last().GapCumulative + 600;
-            screenB.AnimationDuration = blowSetB.Blows.Last().GapCumulative + 600;
+            screenA.AnimationDuration = blowSetA.Blows.Last().GapCumulative + 1000;
+            screenB.AnimationDuration = blowSetB.Blows.Last().GapCumulative + 1000;
             resultEntered = false;
 
             showGaps = false;
@@ -388,7 +389,7 @@ namespace StrikingInvestigation.Pages
 
         async Task PlayAsyncA()
         {
-            int initialDelay = 600;
+            int initialDelay = 1000;
 
             if (playLabelA == "Play A")
             {
@@ -455,13 +456,16 @@ namespace StrikingInvestigation.Pages
             // Initial delay
             if (initialDelay > 0)
             {
+                // Test was not stopped
                 await Task.Delay(initialDelay);
             }
-
-            // Reset animation
-            if (showGaps == false)
+            else
             {
-                screenA.RunAnimation = false;
+                // Reset animation immediately when test is stopped
+                if (showGaps == false)
+                {
+                    screenA.RunAnimation = false;
+                }
             }
 
             // Start spinner
@@ -470,8 +474,15 @@ namespace StrikingInvestigation.Pages
             spinnerPlayingA = true;
             StateHasChanged();
 
-            // Wait 2.6 or 2 seconds depending on whether arriving here on stop or end of play
+            // Wait 2.6 or 1.6 further seconds for the sound to finish, depending on whether arriving here
+            // on stop or end of play
             await Task.Delay(2600 - initialDelay);
+
+            // Reset animation, unless it was already reset earlier after a stop
+            if (initialDelay > 0 && showGaps == false)
+            {
+                screenA.RunAnimation = false;
+            }
 
             // Reset play button
             spinnerPlayingA = false;
@@ -492,7 +503,7 @@ namespace StrikingInvestigation.Pages
 
         async Task PlayAsyncB()
         {
-            int initialDelay = 600;
+            int initialDelay = 1000;
 
             if (playLabelB == "Play B")
             {
@@ -559,13 +570,16 @@ namespace StrikingInvestigation.Pages
             // Initial delay
             if (initialDelay > 0)
             {
+                // Test was not stopped
                 await Task.Delay(initialDelay);
             }
-
-            // Reset animation
-            if (showGaps == false)
+            else
             {
-                screenB.RunAnimation = false;
+                // Reset animation immediately when test is stopped
+                if (showGaps == false)
+                {
+                    screenB.RunAnimation = false;
+                }
             }
 
             // Start spinner
@@ -574,8 +588,15 @@ namespace StrikingInvestigation.Pages
             spinnerPlayingB = true;
             StateHasChanged();
 
-            // Wait 2.6 or 2 seconds depending on whether arriving here on stop or end of play
+            // Wait 2.6 or 1.6 further seconds for the sound to finish, depending on whether arriving here
+            // on stop or end of play
             await Task.Delay(2600 - initialDelay);
+
+            // Reset animation, unless it was already reset earlier after a stop
+            if (initialDelay > 0 && showGaps == false)
+            {
+                screenB.RunAnimation = false;
+            }
 
             // Reset play button
             spinnerPlayingB = false;
@@ -635,20 +656,20 @@ namespace StrikingInvestigation.Pages
             }
 
             // Initial delay
-            await Task.Delay(600);
+            await Task.Delay(1000);
+
+            // Start spinner
+            spinnerPlayingA = true;
+            StateHasChanged();
+
+            // Wait 1.6 further seconds for the sound to finish
+            await Task.Delay(1600);
 
             // Reset animation
             if (showGaps == false)
             {
                 screenA.RunAnimation = false;
             }
-
-            // Start spinner
-            spinnerPlayingA = true;
-            StateHasChanged();
-
-            // Wait 2 seconds
-            await Task.Delay(2000);
 
             // Reset play button
             spinnerPlayingA = false;
@@ -703,20 +724,20 @@ namespace StrikingInvestigation.Pages
             }
 
             // Initial delay
-            await Task.Delay(600);
+            await Task.Delay(1000);
+
+            // Start spinner
+            spinnerPlayingB = true;
+            StateHasChanged();
+
+            // Wait 1.6 further seconds for the sound to finish
+            await Task.Delay(1600);
 
             // Reset animation
             if (showGaps == false)
             {
                 screenB.RunAnimation = false;
             }
-
-            // Start spinner
-            spinnerPlayingB = true;
-            StateHasChanged();
-
-            // Wait 2 seconds
-            await Task.Delay(2000);
 
             // Reset play button
             spinnerPlayingB = false;
@@ -896,10 +917,10 @@ namespace StrikingInvestigation.Pages
             StateHasChanged();
         }
 
-        async Task GetWidth()
+        async Task<int> GetWidth()
         {
             BrowserDimensions browserDimensions = await Viewport.GetDimensions();
-            width = browserDimensions.Width;
+            return browserDimensions.Width;
         }
     }
 }

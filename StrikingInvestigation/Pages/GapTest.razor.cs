@@ -39,8 +39,6 @@ namespace StrikingInvestigation.Pages
         bool saved;
         bool submitted;
 
-        bool animate;
-
         CancellationTokenSource cancellationTokenSource;
         CancellationToken cancellationToken;
 
@@ -76,7 +74,6 @@ namespace StrikingInvestigation.Pages
             };
 
             selectedTest = -1;
-            animate = true;
         }
 
         [Inject]
@@ -98,6 +95,7 @@ namespace StrikingInvestigation.Pages
             saveLabel = "Save";
             playLabel = "Play";
             submitLabel = "Submit";
+            width = await GetWidth();
         }
 
         protected override async void OnAfterRender(bool firstRender)
@@ -336,7 +334,7 @@ namespace StrikingInvestigation.Pages
                     }
 
                     // Change bell color
-                    if (animate == true)
+                    if (Device.DeviceLoad == DeviceLoad.High)
                     {
                         blow.BellColor = Constants.StruckBellColor;
 
@@ -355,7 +353,10 @@ namespace StrikingInvestigation.Pages
             }
 
             // Initial delay
-            await Task.Delay(initialDelay);
+            if (initialDelay > 0)
+            {
+                await Task.Delay(initialDelay);
+            }
 
             // Start spinner
             playDisabled = true;
@@ -363,16 +364,25 @@ namespace StrikingInvestigation.Pages
             spinnerPlaying = true;
             StateHasChanged();
 
-            // Wait 2.6 or 1.6 seconds depending on whether arriving here on stop or end of play
+            // Wait 2.6 or 1.6 further seconds for the sound to finish, depending on whether arriving here
+            // on stop or end of play
             await Task.Delay(2600 - initialDelay);
 
             // Reset play button
             spinnerPlaying = false;
             playLabel = "Play";
             playDisabled = false;
-            
+
             // Reset screen
-            blowSet.SetUnstruck();
+            if (Device.DeviceLoad == DeviceLoad.High)
+            {
+                blowSet.SetUnstruck();
+            }
+            else
+            {
+                blowSet.Blows.Last().BellColor = Constants.UnstruckTestBellColor;
+            }
+            
             controlsDisabled = false;
             tenorWeightDisabled = TenorWeightSelect.TenorWeightDisabled(testSpec.Stage);
             StateHasChanged();
@@ -415,14 +425,14 @@ namespace StrikingInvestigation.Pages
             }
             
             // Initial delay
-            await Task.Delay(600);
+            await Task.Delay(1000);
 
             // Start spinner
             spinnerPlaying = true;
             StateHasChanged();
 
-            // Wait 2 seconds
-            await Task.Delay(2000);
+            // Wait further 1.6 seconds for the sound to finish
+            await Task.Delay(1600);
 
             // Reset play button
             spinnerPlaying = false;
@@ -430,7 +440,7 @@ namespace StrikingInvestigation.Pages
             playDisabled = false;
 
             // Reset screen
-            blowSet.SetUnstruck();
+            blowSet.Blows.Last().BellColor = Constants.UnstruckTestBellColor;
             controlsDisabled = false;
             tenorWeightDisabled = TenorWeightSelect.TenorWeightDisabled(testSpec.Stage);
             StateHasChanged();
@@ -550,10 +560,10 @@ namespace StrikingInvestigation.Pages
             }
         }
 
-        async Task GetWidth()
+        async Task<int> GetWidth()
         {
             BrowserDimensions browserDimensions = await Viewport.GetDimensions();
-            width = browserDimensions.Width;
+            return browserDimensions.Width;
         }
     }
 }

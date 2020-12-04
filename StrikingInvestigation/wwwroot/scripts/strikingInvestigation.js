@@ -1,4 +1,11 @@
-﻿window.SetFocusToElement = (element) =>
+﻿window.getDimensions = function () {
+    return {
+        width: window.innerWidth,
+        height: window.innerHeight
+    };
+};
+
+window.SetFocusToElement = (element) =>
 {
     element.focus();
 }

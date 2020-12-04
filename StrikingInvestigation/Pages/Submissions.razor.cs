@@ -27,12 +27,13 @@ namespace StrikingInvestigation.Pages
         {
             testSubmissions = (await TJBarnesService.GetHttpClient()
                     .GetFromJsonAsync<TestSubmission[]>("api/testsubmissions")).ToList();
+            width = await GetWidth();
         }
 
-        async Task GetWidth()
+        async Task<int> GetWidth()
         {
             BrowserDimensions browserDimensions = await Viewport.GetDimensions();
-            width = browserDimensions.Width;
+            return browserDimensions.Width;
         }
     }
 }

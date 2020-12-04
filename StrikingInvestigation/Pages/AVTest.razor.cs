@@ -80,6 +80,7 @@ namespace StrikingInvestigation.Pages
             saveLabel = "Save";
             playLabel = "Play";
             submitLabel = "Submit";
+            width = await GetWidth();
         }
 
         protected override async void OnAfterRender(bool firstRender)
@@ -427,10 +428,10 @@ namespace StrikingInvestigation.Pages
             }
         }
 
-        async Task GetWidth()
+        async Task<int> GetWidth()
         {
             BrowserDimensions browserDimensions = await Viewport.GetDimensions();
-            width = browserDimensions.Width;
+            return browserDimensions.Width;
         }
     }
 }
