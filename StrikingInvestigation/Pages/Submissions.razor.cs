@@ -3,6 +3,7 @@ using System.Linq;
 using System.Net.Http.Json;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Components;
+using Microsoft.JSInterop;
 using StrikingInvestigation.Models;
 using StrikingInvestigation.Utilities;
 
@@ -12,28 +13,30 @@ namespace StrikingInvestigation.Pages
     {
         IEnumerable<TestSubmission> testSubmissions;
 
-        int width;
+        int browserWidth;
+        int browserHeight;
 
         [Inject]
-        TJBarnesService TJBarnesService { get; set; }
+        IJSRuntime JSRuntime { get; set; }
 
         [Inject]
         Device Device { get; set; }
 
         [Inject]
-        Viewport Viewport { get; set; }
+        TJBarnesService TJBarnesService { get; set; }
 
         protected override async Task OnInitializedAsync()
         {
             testSubmissions = (await TJBarnesService.GetHttpClient()
                     .GetFromJsonAsync<TestSubmission[]>("api/testsubmissions")).ToList();
-            width = await GetWidth();
+            await PopulateBrowserDimensions();
         }
 
-        async Task<int> GetWidth()
+        async Task PopulateBrowserDimensions()
         {
-            BrowserDimensions browserDimensions = await Viewport.GetDimensions();
-            return browserDimensions.Width;
+            BrowserDimensions browserDimensions = await JSRuntime.InvokeAsync<BrowserDimensions>("getDimensions");
+            browserWidth = browserDimensions.Width;
+            browserHeight = browserDimensions.Height;
         }
     }
 }

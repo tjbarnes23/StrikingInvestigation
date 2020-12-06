@@ -42,7 +42,8 @@ namespace StrikingInvestigation.Pages
 
         ElementReference mainDiv;
 
-        int width;
+        int browserWidth;
+        int browserHeight;
 
         public AVTest()
         {
@@ -65,13 +66,10 @@ namespace StrikingInvestigation.Pages
         IJSRuntime JSRuntime { get; set; }
 
         [Inject]
-        TJBarnesService TJBarnesService { get; set; }
-
-        [Inject]
         Device Device { get; set; }
 
         [Inject]
-        Viewport Viewport { get; set; }
+        TJBarnesService TJBarnesService { get; set; }
 
         protected override async Task OnInitializedAsync()
         {
@@ -80,7 +78,7 @@ namespace StrikingInvestigation.Pages
             saveLabel = "Save";
             playLabel = "Play";
             submitLabel = "Submit";
-            width = await GetWidth();
+            await PopulateBrowserDimensions();
         }
 
         protected override async void OnAfterRender(bool firstRender)
@@ -428,10 +426,11 @@ namespace StrikingInvestigation.Pages
             }
         }
 
-        async Task<int> GetWidth()
+        async Task PopulateBrowserDimensions()
         {
-            BrowserDimensions browserDimensions = await Viewport.GetDimensions();
-            return browserDimensions.Width;
+            BrowserDimensions browserDimensions = await JSRuntime.InvokeAsync<BrowserDimensions>("getDimensions");
+            browserWidth = browserDimensions.Width;
+            browserHeight = browserDimensions.Height;
         }
     }
 }

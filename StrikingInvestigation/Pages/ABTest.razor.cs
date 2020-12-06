@@ -57,7 +57,8 @@ namespace StrikingInvestigation.Pages
         string resultSource;
         bool resultEntered;
 
-        int width;
+        int browserWidth;
+        int browserHeight;
 
         public ABTest()
         {
@@ -109,13 +110,10 @@ namespace StrikingInvestigation.Pages
         IJSRuntime JSRuntime { get; set; }
 
         [Inject]
-        TJBarnesService TJBarnesService { get; set; }
-
-        [Inject]
         Device Device { get; set; }
 
         [Inject]
-        Viewport Viewport { get; set; }
+        TJBarnesService TJBarnesService { get; set; }
 
         protected override async Task OnInitializedAsync()
         {
@@ -127,7 +125,7 @@ namespace StrikingInvestigation.Pages
             submitLabel1 = "A has errors";
             submitLabel2 = "B has errors";
             submitLabel3 = "I can't tell which has errors";
-            width = await GetWidth();
+            await PopulateBrowserDimensions();
         }
 
         async Task TestChanged(int value)
@@ -917,10 +915,11 @@ namespace StrikingInvestigation.Pages
             StateHasChanged();
         }
 
-        async Task<int> GetWidth()
+        async Task PopulateBrowserDimensions()
         {
-            BrowserDimensions browserDimensions = await Viewport.GetDimensions();
-            return browserDimensions.Width;
+            BrowserDimensions browserDimensions = await JSRuntime.InvokeAsync<BrowserDimensions>("getDimensions");
+            browserWidth = browserDimensions.Width;
+            browserHeight = browserDimensions.Height;
         }
     }
 }

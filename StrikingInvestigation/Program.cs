@@ -13,8 +13,6 @@ namespace StrikingInvestigation
             var builder = WebAssemblyHostBuilder.CreateDefault(args);
             builder.RootComponents.Add<App>("#app");
 
-            builder.Services.AddSingleton<Viewport>();
-
             builder.Services.AddSingleton<Device>();
 
             builder.Services.AddHttpClient<TJBarnesService>(client =>
