@@ -237,6 +237,7 @@ namespace StrikingInvestigation.Pages
             int baseGap = BaseGaps.BaseGap(testSpec.Stage, testSpec.TenorWeight, 1);
             screen.BaseGap = baseGap;
 
+            showGaps = false;
             StateHasChanged();
         }
 
@@ -313,11 +314,11 @@ namespace StrikingInvestigation.Pages
                 controlsDisabled = true;
                 tenorWeightDisabled = true;
 
+                TimeSpan delay;
+                int delayMs;
+
                 foreach (Blow blow in blowSet.Blows)
                 {
-                    TimeSpan delay;
-                    int delayMs;
-
                     delay = blow.StrikeTime - DateTime.Now;
                     delayMs = Convert.ToInt32(delay.TotalMilliseconds);
 
@@ -405,11 +406,11 @@ namespace StrikingInvestigation.Pages
             controlsDisabled = true;
             tenorWeightDisabled = true;
 
+            TimeSpan delay;
+            int delayMs;
+
             foreach (Blow blow in blowSet.Blows)
             {
-                TimeSpan delay;
-                int delayMs;
-
                 delay = blow.StrikeTime - DateTime.Now;
                 delayMs = Convert.ToInt32(delay.TotalMilliseconds);
 

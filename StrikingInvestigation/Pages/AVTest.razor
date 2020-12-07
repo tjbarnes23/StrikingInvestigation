@@ -128,11 +128,22 @@
                      GapDisabled="@controlsDisabled"
                      Callback="GapChangedWithButton" />
 
-            <PlayBtn Blow="@blow"
-                     Screen="@screen"
-                     PlayLabel="@playLabel"
-                     PlayDisabled="@playDisabled"
-                     Callback="Play" />
+            if (Device.DeviceLoad == DeviceLoad.Low)
+            {
+                <PlayBtn Blow="@blow"
+                         Screen="@screen"
+                         PlayLabel="@playLabel"
+                         PlayDisabled="@playDisabled"
+                         Callback="Play" />
+            }
+            else
+            {
+                <PlayBtn Blow="@blow"
+                         Screen="@screen"
+                         PlayLabel="@playLabel"
+                         PlayDisabled="@playDisabled"
+                         Callback="PlayAsync" />
+            }
 
             @if (spinnerPlaying == true)
             {

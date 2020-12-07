@@ -326,6 +326,7 @@ namespace StrikingInvestigation.Pages
             screenA.BaseGap = baseGap;
             screenB.BaseGap = baseGap;
 
+            // Set the timing for the animation (when not showing the bells)
             screenA.AnimationDuration = blowSetA.Blows.Last().GapCumulative + 1000;
             screenB.AnimationDuration = blowSetB.Blows.Last().GapCumulative + 1000;
             resultEntered = false;
@@ -414,11 +415,11 @@ namespace StrikingInvestigation.Pages
                     screenA.RunAnimation = true;
                 }
 
+                TimeSpan delay;
+                int delayMs;
+
                 foreach (Blow blow in blowSetA.Blows)
                 {
-                    TimeSpan delay;
-                    int delayMs;
-
                     delay = blow.StrikeTime - DateTime.Now;
                     delayMs = Convert.ToInt32(delay.TotalMilliseconds);
 
@@ -528,11 +529,11 @@ namespace StrikingInvestigation.Pages
                     screenB.RunAnimation = true;
                 }
 
+                TimeSpan delay;
+                int delayMs;
+
                 foreach (Blow blow in blowSetB.Blows)
                 {
-                    TimeSpan delay;
-                    int delayMs;
-
                     delay = blow.StrikeTime - DateTime.Now;
                     delayMs = Convert.ToInt32(delay.TotalMilliseconds);
 
@@ -636,11 +637,11 @@ namespace StrikingInvestigation.Pages
                 screenA.RunAnimation = true;
             }
 
+            TimeSpan delay;
+            int delayMs;
+
             foreach (Blow blow in blowSetA.Blows)
             {
-                TimeSpan delay;
-                int delayMs;
-
                 delay = blow.StrikeTime - DateTime.Now;
                 delayMs = Convert.ToInt32(delay.TotalMilliseconds);
 
@@ -704,11 +705,11 @@ namespace StrikingInvestigation.Pages
                 screenB.RunAnimation = true;
             }
 
+            TimeSpan delay;
+            int delayMs;
+
             foreach (Blow blow in blowSetB.Blows)
             {
-                TimeSpan delay;
-                int delayMs;
-
                 delay = blow.StrikeTime - DateTime.Now;
                 delayMs = Convert.ToInt32(delay.TotalMilliseconds);
 

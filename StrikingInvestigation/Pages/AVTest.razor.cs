@@ -142,6 +142,7 @@ namespace StrikingInvestigation.Pages
             
             blow.BellColor = Constants.UnstruckTestBellColor;
 
+            showGaps = false;
             StateHasChanged();
         }
 
@@ -187,8 +188,10 @@ namespace StrikingInvestigation.Pages
             StateHasChanged();
         }
 
-        async Task Play()
+        async Task PlayAsync()
         {
+            int initialDelay = 1000;
+
             if (playLabel == "Play")
             {
                 // Change test bell color to disabled color - can't adjust gap during play
@@ -230,7 +233,7 @@ namespace StrikingInvestigation.Pages
                     // Strike bell
                     await JSRuntime.InvokeVoidAsync("PlayBellAudio", blow.AudioId);
 
-                    // Change color of bell on screen
+                    // Process display
                     delay = blow.StrikeTime - DateTime.Now;
                     delayMs = Convert.ToInt32(delay.TotalMilliseconds);
 
@@ -246,6 +249,8 @@ namespace StrikingInvestigation.Pages
 
                     // Change bell color
                     blow.BellColor = Constants.StruckBellColor;
+
+                    // Confirmed this is needed here
                     StateHasChanged();
                 }
                 else
@@ -266,9 +271,11 @@ namespace StrikingInvestigation.Pages
 
                     // Change bell color
                     blow.BellColor = Constants.StruckBellColor;
+
+                    // Confirmed this is needed here
                     StateHasChanged();
 
-                    // Bell sound
+                    // Process sound
                     delay = blow.AltStrikeTime - DateTime.Now;
                     delayMs = Convert.ToInt32(delay.TotalMilliseconds);
 
@@ -285,44 +292,138 @@ namespace StrikingInvestigation.Pages
                     // Strike bell
                     await JSRuntime.InvokeVoidAsync("PlayBellAudio", blow.AudioId);
                 }
-
-                // Wait for 0.6 seconds
-                await Task.Delay(600);
-
-                // Start spinner
-                spinnerPlaying = true;
-                playLabel = "Wait";
-                playDisabled = true;
-                StateHasChanged();
-
-                // Wait a further 2 seconds for the bells to finish sounding (each bell sample is 2.5 seconds)
-                await Task.Delay(2000);
-
-                // Reset play button
-                spinnerPlaying = false;
-                playLabel = "Play";
-                playDisabled = false;
             }
             else if (playLabel == "Stop")
             {
-                spinnerPlaying = true;
-                playLabel = "Wait";
-                playDisabled = true;
-
                 cancellationTokenSource.Cancel();
-
-                // Wait for 2.6 seconds for the sound to finish
-                await Task.Delay(2600);
-
-                // Reset play button
-                spinnerPlaying = false;
-                playLabel = "Play";
-                playDisabled = false;
+                initialDelay = 0;
             }
+
+            // Initial delay
+            if (initialDelay > 0)
+            {
+                await Task.Delay(initialDelay);
+            }
+
+            // Start spinner
+            playDisabled = true;
+            playLabel = "Wait";
+            spinnerPlaying = true;
+            StateHasChanged();
+
+            // Wait 2.6 or 1.6 further seconds for the sound to finish, depending on whether arriving here
+            // on stop or end of play
+            await Task.Delay(2600 - initialDelay);
+
+            // Reset play button
+            spinnerPlaying = false;
+            playLabel = "Play";
+            playDisabled = false;
 
             // Reset screen
             blow.BellColor = Constants.UnstruckTestBellColor;
             controlsDisabled = false;
+            StateHasChanged();
+        }
+
+        async void Play()
+        {
+            // Change test bell color to disabled color - can't adjust gap during play
+            blow.BellColor = Constants.DisabledUnstruckTestBellColor;
+
+            DateTime strikeTime = DateTime.Now;
+
+            // This is the time to display the strike on the screen
+            blow.StrikeTime = strikeTime.AddMilliseconds(blow.Gap);
+
+            // This is the time to make the strike sound
+            blow.AltStrikeTime = strikeTime.AddMilliseconds(blow.AltGap);
+
+            playDisabled = true;
+            playLabel = "Wait";
+            controlsDisabled = true;
+
+            TimeSpan delay;
+            int delayMs;
+
+            if (blow.AltStrikeTime <= blow.StrikeTime)
+            {
+                // Process sound before display
+                delay = blow.AltStrikeTime - DateTime.Now;
+                delayMs = Convert.ToInt32(delay.TotalMilliseconds);
+
+                if (delayMs > 0)
+                {
+                    await Task.Delay(delayMs);
+                }
+
+                // Strike bell
+                await JSRuntime.InvokeVoidAsync("PlayBellAudio", blow.AudioId);
+
+                // Process display
+                delay = blow.StrikeTime - DateTime.Now;
+                delayMs = Convert.ToInt32(delay.TotalMilliseconds);
+
+                if (delayMs > 0)
+                {
+                    await Task.Delay(delayMs);
+                }
+
+                // Change bell color
+                blow.BellColor = Constants.StruckBellColor;
+
+                // Confirmed this is needed here
+                StateHasChanged();
+            }
+            else
+            {
+                // Process display before sound
+                delay = blow.StrikeTime - DateTime.Now;
+                delayMs = Convert.ToInt32(delay.TotalMilliseconds);
+
+                if (delayMs > 0)
+                {
+                    await Task.Delay(delayMs);
+                }
+
+                // Change bell color
+                blow.BellColor = Constants.StruckBellColor;
+
+                // Confirmed this is needed here
+                StateHasChanged();
+
+                // Process sound
+                delay = blow.AltStrikeTime - DateTime.Now;
+                delayMs = Convert.ToInt32(delay.TotalMilliseconds);
+
+                if (delayMs > 0)
+                {
+                    await Task.Delay(delayMs);
+                }
+
+                // Strike bell
+                await JSRuntime.InvokeVoidAsync("PlayBellAudio", blow.AudioId);
+            }
+
+            // Initial delay
+            await Task.Delay(1000);
+
+            // Start spinner
+            spinnerPlaying = true;
+            StateHasChanged();
+
+            // Wait further 1.6 seconds for the sound to finish
+            await Task.Delay(1600);
+
+            // Reset play button
+            spinnerPlaying = false;
+            playLabel = "Play";
+            playDisabled = false;
+
+            // Reset screen
+            blow.BellColor = Constants.UnstruckTestBellColor;
+            controlsDisabled = false;
+            StateHasChanged();
         }
 
         async Task Submit()
