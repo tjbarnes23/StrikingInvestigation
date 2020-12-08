@@ -196,7 +196,9 @@ h6 {
 
 .bell {
     box-sizing: border-box;
-    border: 10px solid var(--color);
+    border-width: var(--borderwidth);
+    border-style: solid;
+    border-color: var(--color);
     border-radius: 50%;
     position: absolute;
     left: var(--leftpos);
@@ -204,14 +206,14 @@ h6 {
     width: var(--diameter);
     height: var(--diameter);
     user-select: none;
-    font-size: 14px;
+    font-size: var(--fontsize);
     font-weight: bold;
     text-align: center;
     padding-top: var(--padding);
 }
 
 .strokelabel {
-    font-size: 24px;
+    font-size: var(--fontsize);
     font-weight: bold;
     color: silver;
     position: absolute;
@@ -221,6 +223,7 @@ h6 {
 }
 
 .changelabel {
+    font-size: var(--fontsize);
     position: absolute;
     left: var(--leftpos);
     top: var(--toppos);
@@ -229,12 +232,14 @@ h6 {
 
 .rowstartlabel {
     box-sizing: content-box;
-    border-left: 6px dashed silver;
+    border-left-width: var(--borderwidth);
+    border-left-style: dashed;
+    border-left-color: silver;
     position: absolute;
     left: var(--leftpos);
     top: var(--toppos);
     width: 0px;
-    height: 60px;
+    height: var(--height);
 }
 
 .boundarylabel {

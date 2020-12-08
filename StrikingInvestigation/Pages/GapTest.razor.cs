@@ -59,21 +59,7 @@ namespace StrikingInvestigation.Pages
                 TestBellLoc = 1
             };
 
-            // In a Gap Test, gaps are rounded to the nearest 10ms
-            int baseGap = BaseGaps.BaseGap(testSpec.Stage, testSpec.TenorWeight, Constants.Rounding);
-
-            screen = new Screen
-            {
-                DiameterScale = Constants.DiameterScale,
-                XScale = Constants.XScale,
-                XMargin = Constants.XMargin,
-                YScale = Constants.YScale,
-                YMargin = Constants.YMargin,
-                GapMin = 20,
-                GapMax = 700,
-                BaseGap = baseGap
-            };
-
+            screen = new Screen();
             selectedTest = -1;
         }
 
@@ -94,6 +80,20 @@ namespace StrikingInvestigation.Pages
             playLabel = "Play";
             submitLabel = "Submit";
             await PopulateBrowserDimensions();
+            
+            screen.DiameterScale = ScreenSizing.DiameterScale(browserWidth);
+            screen.XScale = ScreenSizing.XScale(browserWidth);
+            screen.XMargin = ScreenSizing.XMargin(browserWidth);
+            screen.YScale = ScreenSizing.YScale(browserWidth);
+            screen.YMargin = ScreenSizing.YMargin(browserWidth);
+            screen.BorderWidth = ScreenSizing.BorderWidth(browserWidth);
+            screen.FontSize = ScreenSizing.FontSize(browserWidth);
+            screen.StrokeLabelXOffset = ScreenSizing.StrokeLabelXOffset(browserWidth);
+            screen.StrokeLabelYOffset = ScreenSizing.StrokeLabelYOffset(browserWidth);
+            screen.RowStartLabelWidth = ScreenSizing.RowStartLabelWidth(browserWidth);
+            screen.RowStartLabelHeight = ScreenSizing.RowStartLabelHeight(browserWidth);
+            screen.ChangeLabelXOffset = ScreenSizing.ChangeLabelXOffset(browserWidth);
+            screen.ChangeLabelYOffset = ScreenSizing.ChangeLabelYOffset(browserWidth);
         }
 
         protected override async void OnAfterRender(bool firstRender)
@@ -127,10 +127,6 @@ namespace StrikingInvestigation.Pages
 
             tenorWeightDisabled = TenorWeightSelect.TenorWeightDisabled(testSpec.Stage);
 
-            // Need to recalculate BaseGap on a stage change
-            int baseGap = BaseGaps.BaseGap(testSpec.Stage, testSpec.TenorWeight, Constants.Rounding);
-            screen.BaseGap = baseGap;
-
             if (blowSet != null)
             {
                 blowSet = null;
@@ -140,10 +136,6 @@ namespace StrikingInvestigation.Pages
         void TenorWeightChanged(int value)
         {
             testSpec.TenorWeight = value;
-
-            // Need to recalculate BaseGap on a tenor change
-            int baseGap = BaseGaps.BaseGap(testSpec.Stage, testSpec.TenorWeight, Constants.Rounding);
-            screen.BaseGap = baseGap;
 
             if (blowSet != null)
             {
@@ -207,6 +199,24 @@ namespace StrikingInvestigation.Pages
             blowSet.PopulateBlows(testBlock, testPlace, string.Empty);
             blowSet.CreateRandomSpacing(testSpec.ErrorSize, Constants.Rounding);
             blowSet.SetUnstruck();
+
+            // Set up blow-dependent elements of the screen object
+            // When practicing in a Gap Test, gaps are rounded to the nearest 10ms so that bells will align
+            // if zero gap error is selected
+            int baseGap = BaseGaps.BaseGap(testSpec.Stage, testSpec.TenorWeight, 10);
+            screen.BaseGap = baseGap;
+            screen.GapMin = 20;
+
+            // If test bell is 1st's place of a handstroke row, need to adjust GapMax to have a higher value
+            // because of the handstroke gap
+            if (testSpec.NumRows % 2 == 1 && testPlace == 1)
+            {
+                screen.GapMax = Convert.ToInt32(Math.Round(((double)screen.BaseGap * 3) / 50)) * 50;
+            }
+            else
+            {
+                screen.GapMax = Convert.ToInt32(Math.Round(((double)baseGap * 2) / 50)) * 50;
+            }
         }
 
         async Task Load(int id)
@@ -232,10 +242,21 @@ namespace StrikingInvestigation.Pages
             testSpec.TenorWeight = blowSet.TenorWeight;
             testSpec.NumRows = blowSet.NumRows;
 
-            // Update Screen.BaseGap - this varies by stage and tenorweight, and is used to shift backstroke rows
-            // to the right to make the 1st blow of each row align vertically (when no striking errors)
+            // Set up blow-dependent elements of the screen object
             int baseGap = BaseGaps.BaseGap(testSpec.Stage, testSpec.TenorWeight, 1);
             screen.BaseGap = baseGap;
+            screen.GapMin = 20;
+
+            // If test bell is 1st's place of a handstroke row, need to adjust GapMax to have a higher value
+            // because of the handstroke gap
+            if (blowSet.Blows.Last().IsHandstroke == true && blowSet.Blows.Last().Place == 1)
+            {
+                screen.GapMax = Convert.ToInt32(Math.Round(((double)screen.BaseGap * 3) / 50)) * 50;
+            }
+            else
+            {
+                screen.GapMax = Convert.ToInt32(Math.Round(((double)baseGap * 2) / 50)) * 50;
+            }
 
             showGaps = false;
             StateHasChanged();
@@ -517,9 +538,8 @@ namespace StrikingInvestigation.Pages
                 }
                 else
                 {
-                    int baseGap = screen.BaseGap;
                     newGapCumulativeRow = Convert.ToInt32((clientX - screen.XMargin) / screen.XScale) -
-                             baseGap;
+                             screen.BaseGap;
                 }
 
                 int newGap = blowSet.Blows.Last().Gap + (newGapCumulativeRow - blowSet.Blows.Last().GapCumulativeRow);

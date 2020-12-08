@@ -1,0 +1,27 @@
+﻿<div class="strokelabel"
+        style="--fontsize: @strokeFontSizeStr;
+        --leftpos: @strokeLabelLeftPosStr;
+        --toppos: @strokeLabelTopPosStr">
+    @if (Blow.IsHandstroke == true)
+    {
+        <span>H</span>
+    }
+    else
+    {
+        <span>B</span>
+    }
+</div>
+
+<div class="rowstartlabel"
+        style="--borderwidth: @rowStartLabelWidthStr;
+        --leftpos:  @rowStartLabelLeftPosStr;
+        --toppos: @rowStartLabelTopPosStr;
+        --height: @rowStartLabelHeightStr">
+</div>
+
+<div class="changelabel"
+        style="--fontsize: @changeFontSizeStr;
+        --leftpos: @changeLabelLeftPosStr;
+        --toppos: @changeLabelTopPosStr">
+    @Blow.ChangeStr
+</div>

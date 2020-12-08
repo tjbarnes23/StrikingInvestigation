@@ -8,9 +8,12 @@ namespace StrikingInvestigation.Shared
     public partial class Bell
     {
         // The first two fields below correspond to values in the bell CSS class
-        readonly int borderSize = 10;
-        readonly int fontSize = 14;
-        readonly int paddingAdj = -3;
+        string borderWidthStr;
+        string diameterStr;
+        string leftPosStr;
+        string topPosStr;
+        string fontSizeStr;
+        string paddingStr;
 
         [Parameter]
         public Blow Blow { get; set; }
@@ -18,35 +21,42 @@ namespace StrikingInvestigation.Shared
         [Parameter]
         public Screen Screen { get; set; }
 
-        string DiameterStr { get; set; }
-
-        string LeftPos { get; set; }
-
-        string TopPos { get; set; }
-
-        string Padding { get; set; }
-
         protected override void OnParametersSet()
         {
-            double diameter = Diam.Diameter(Blow.BellActual) * Screen.DiameterScale;
-            DiameterStr = Convert.ToInt32(diameter).ToString() + "px";
+            double diameter;
+            double leftPos;
+            double topPos;
+            double padding;
+
+            borderWidthStr = Screen.BorderWidth.ToString() + "px";
+
+            diameter = Diam.Diameter(Blow.BellActual) * Screen.DiameterScale;
+            diameterStr = Convert.ToInt32(diameter).ToString() + "px";
 
             if (Blow.IsHandstroke)
             {
-                LeftPos = Convert.ToInt32((Blow.GapCumulativeRow * Screen.XScale) - (diameter / 2) +
-                        Screen.XMargin).ToString() + "px";
+                leftPos = (Blow.GapCumulativeRow * Screen.XScale) - (diameter / 2) +
+                        Screen.XMargin;
             }
             else
             {
-                LeftPos = Convert.ToInt32((Blow.GapCumulativeRow * Screen.XScale) - (diameter / 2) +
-                        (Screen.BaseGap * Screen.XScale) + Screen.XMargin).ToString() + "px";
+                leftPos = (Blow.GapCumulativeRow * Screen.XScale) - (diameter / 2) +
+                        (Screen.BaseGap * Screen.XScale) + Screen.XMargin;
             }
 
-            TopPos = Convert.ToInt32((Blow.RowNum * Screen.YScale) - (diameter / 2) +
-                    Screen.YMargin).ToString() + "px";
+            leftPosStr = Convert.ToInt32(leftPos).ToString() + "px";
 
-            double padding = ((diameter - (borderSize * 2) - fontSize) / 2) + paddingAdj;
-            Padding = Convert.ToInt32(padding).ToString() + "px";
+            topPos = (Blow.RowNum * Screen.YScale) - (diameter / 2) +
+                    Screen.YMargin;
+            topPosStr = Convert.ToInt32(topPos).ToString() + "px";
+
+            fontSizeStr = Screen.FontSize.ToString() + "px";
+
+            // Need logic here for centering the bell number inside the bell.
+            // For now, use a default of -3
+            // Check whether alignment is centerline - may need to change that
+            padding = ((diameter - (Screen.BorderWidth * 2) - Screen.FontSize) / 2) - 3;
+            paddingStr = Convert.ToInt32(padding).ToString() + "px";
         }
     }
 }
