@@ -3,6 +3,8 @@
 @using StrikingInvestigation.Utilities
 
 <div class="container mx-0 mx-md-2 my-1 my-md-3">
+    <div style="float: right">(@browserWidth, @browserHeight)</div>
+    
     <h1>A/B Test</h1>
 
     <p>Try to detect whether block A or block B below contains striking errors.</p>
@@ -117,7 +119,7 @@
                 </div>
 
                 <div style="display: inline-block">
-                    <button class="btn btn-primary" @onclick="CreateABTest" disabled="@controlsDisabled">
+                    <button class="btn btn-primary" @onclick="Create" disabled="@controlsDisabled">
                         Create A/B Test
                     </button>
                 </div>
@@ -201,247 +203,229 @@
             </div>
         }
     }
+</div>
 
-    <div style="position: relative">
-        @if (blowSetA != null)
+<div style="position: relative">
+    @if (blowSetA != null)
+    {
+        foreach (Blow blow in blowSetA.Blows)
         {
-            foreach (Blow blow in blowSetA.Blows)
+            if (screenA.ShowGaps == true)
             {
-                if (showGaps == true)
+                // Place labels if it's the first blow of the row
+                if (blow.Place == 1)
                 {
-                    // Place labels if it's the first blow of the row
-                    if (blow.Place == 1)
-                    {
-                        <StrokeLabel Blow="@blow"
-                                     Screen="@screenA" />
-
-                        <RowStartLabel Blow="@blow"
-                                       Screen="@screenA" />
-
-                        <ChangeLabel Blow="@blow"
-                                     Screen="@screenA" />
-                    }
-
-                    <Bell Blow="@blow"
-                          Screen="@screenA" />
-
-                    <GapLabel Blow="@blow"
-                              Screen="@screenA" />
+                    <StartOfRowLabel Blow="@blow"
+                            Screen="@screenA" />
                 }
 
-                <audio id="@blow.AudioId" preload="auto">
-                    <source src="@blow.BellSound" type="audio/mpeg" />
-                </audio>
+                <Bell Blow="@blow"
+                        Screen="@screenA" />
             }
 
-            if (showGaps == false)
-            {
-                if (Device.DeviceLoad == DeviceLoad.High)
-                {
-                    <AudioBox TestSpec="@testSpec"
-                              Screen="@screenA" />
-                }
-                else
-                {
-                    <AudioBox2 TestSpec="@testSpec"
-                               Screen="@screenA" />
-                }
-            }
+            <audio id="@blow.AudioId" preload="auto">
+                <source src="@blow.BellSound" type="audio/mpeg" />
+            </audio>
+        }
 
-            if (Device.DeviceLoad == DeviceLoad.Low)
+        if (screenA.ShowGaps == false)
+        {
+            if (Device.DeviceLoad == DeviceLoad.High)
             {
-                <PlayBtn2 TestSpec="@testSpec"
-                          Screen="@screenA"
-                          PlayLabel="@playLabelA"
-                          PlayDisabled="@playDisabledA"
-                          Callback="PlayA" />
+                <AudioBox TestSpec="@testSpec"
+                            Screen="@screenA" />
             }
             else
             {
-                <PlayBtn2 TestSpec="@testSpec"
-                          Screen="@screenA"
-                          PlayLabel="@playLabelA"
-                          PlayDisabled="@playDisabledA"
-                          Callback="PlayAsyncA" />
-            }
-
-            @if (spinnerPlayingA == true)
-            {
-                <SpinnerPlay2 TestSpec="@testSpec"
-                              Screen="@screenA" />
+                <AudioBox2 TestSpec="@testSpec"
+                            Screen="@screenA" />
             }
         }
 
-        @if (blowSetB != null)
+        if (Device.DeviceLoad == DeviceLoad.Low)
         {
-            @foreach (Blow blow in blowSetB.Blows)
+            <PlayBtn2 TestSpec="@testSpec"
+                        Screen="@screenA"
+                        PlayLabel="@playLabelA"
+                        PlayDisabled="@playDisabledA"
+                        Callback="PlayA" />
+        }
+        else
+        {
+            <PlayBtn2 TestSpec="@testSpec"
+                        Screen="@screenA"
+                        PlayLabel="@playLabelA"
+                        PlayDisabled="@playDisabledA"
+                        Callback="PlayAsyncA" />
+        }
+
+        @if (spinnerPlayingA == true)
+        {
+            <SpinnerPlay2 TestSpec="@testSpec"
+                            Screen="@screenA" />
+        }
+    }
+
+    @if (blowSetB != null)
+    {
+        @foreach (Blow blow in blowSetB.Blows)
+        {
+            if (screenB.ShowGaps == true)
             {
-                if (showGaps == true)
+                // Place labels if it's the first blow of the row
+                if (blow.Place == 1)
                 {
-                    // Place labels if it's the first blow of the row
-                    if (blow.Place == 1)
-                    {
-                        <StrokeLabel Blow="@blow"
-                                     Screen="@screenB" />
-
-                        <RowStartLabel Blow="@blow"
-                                       Screen="@screenB" />
-
-                        <ChangeLabel Blow="@blow"
-                                     Screen="@screenB" />
-                    }
-
-                    <Bell Blow="@blow"
-                          Screen="@screenB" />
-
-                    <GapLabel Blow="@blow"
-                              Screen="@screenB" />
+                    <StartOfRowLabel Blow="@blow"
+                            Screen="@screenB" />
                 }
 
-                <audio id="@blow.AudioId" preload="auto">
-                    <source src="@blow.BellSound" type="audio/mpeg" />
-                </audio>
+                <Bell Blow="@blow"
+                        Screen="@screenB" />
             }
 
-            if (showGaps == false)
-            {
-                if (Device.DeviceLoad == DeviceLoad.High)
-                {
-                    <AudioBox TestSpec="@testSpec"
-                              Screen="@screenB" />
-                }
-                else
-                {
-                    <AudioBox2 TestSpec="@testSpec"
-                               Screen="@screenB" />
-                }
+            <audio id="@blow.AudioId" preload="auto">
+                <source src="@blow.BellSound" type="audio/mpeg" />
+            </audio>
+        }
 
-            }
-
-            if (Device.DeviceLoad == DeviceLoad.Low)
+        if (screenB.ShowGaps == false)
+        {
+            if (Device.DeviceLoad == DeviceLoad.High)
             {
-                <PlayBtn2 TestSpec="@testSpec"
-                          Screen="@screenB"
-                          PlayLabel="@playLabelB"
-                          PlayDisabled="@playDisabledB"
-                          Callback="PlayB" />
+                <AudioBox TestSpec="@testSpec"
+                            Screen="@screenB" />
             }
             else
             {
-                <PlayBtn2 TestSpec="@testSpec"
-                          Screen="@screenB"
-                          PlayLabel="@playLabelB"
-                          PlayDisabled="@playDisabledB"
-                          Callback="PlayAsyncB" />
+                <AudioBox2 TestSpec="@testSpec"
+                            Screen="@screenB" />
             }
 
-            @if (spinnerPlayingB == true)
-            {
-                <SpinnerPlay2 TestSpec="@testSpec"
-                              Screen="@screenB" />
-            }
         }
 
-        @if (blowSetA != null && blowSetB != null)
+        if (Device.DeviceLoad == DeviceLoad.Low)
         {
-            <div class="posabs" style="--leftpos: 20px; --toppos: 1157px">
-                <label>
-                    Play the two blocks above and then click one of these 3 buttons:
-                </label>
-            </div>
+            <PlayBtn2 TestSpec="@testSpec"
+                        Screen="@screenB"
+                        PlayLabel="@playLabelB"
+                        PlayDisabled="@playDisabledB"
+                        Callback="PlayB" />
+        }
+        else
+        {
+            <PlayBtn2 TestSpec="@testSpec"
+                        Screen="@screenB"
+                        PlayLabel="@playLabelB"
+                        PlayDisabled="@playDisabledB"
+                        Callback="PlayAsyncB" />
+        }
 
-            <div class="posabs" style="--leftpos: 500px; --toppos: 1150px">
-                <button class="btn btn-primary" @onclick="AHasErrors" style="width: 120px" disabled="@controlsDisabled">
-                    @submitLabel1
-                </button>
-            </div>
+        @if (spinnerPlayingB == true)
+        {
+            <SpinnerPlay2 TestSpec="@testSpec"
+                            Screen="@screenB" />
+        }
+    }
 
-            <div class="posabs" style="--leftpos: 635px; --toppos: 1150px">
-                <button class="btn btn-primary" @onclick="BHasErrors" style="width: 120px" disabled="@controlsDisabled">
-                    @submitLabel2
-                </button>
-            </div>
+    @if (blowSetA != null && blowSetB != null)
+    {
+        <div class="posabs" style="--leftpos: 20px; --toppos: 1157px">
+            <label>
+                Play the two blocks above and then click one of these 3 buttons:
+            </label>
+        </div>
 
-            <div class="posabs" style="--leftpos: 770px; --toppos: 1150px">
-                <button class="btn btn-primary" @onclick="DontKnow" style="width: 220px" disabled="@controlsDisabled">
-                    @submitLabel3
-                </button>
-            </div>
+        <div class="posabs" style="--leftpos: 500px; --toppos: 1150px">
+            <button class="btn btn-primary" @onclick="AHasErrors" style="width: 120px" disabled="@controlsDisabled">
+                @submitLabel1
+            </button>
+        </div>
 
-            @if (resultEntered == true)
-            {
+        <div class="posabs" style="--leftpos: 635px; --toppos: 1150px">
+            <button class="btn btn-primary" @onclick="BHasErrors" style="width: 120px" disabled="@controlsDisabled">
+                @submitLabel2
+            </button>
+        </div>
+
+        <div class="posabs" style="--leftpos: 770px; --toppos: 1150px">
+            <button class="btn btn-primary" @onclick="DontKnow" style="width: 220px" disabled="@controlsDisabled">
+                @submitLabel3
+            </button>
+        </div>
+
+        @if (resultEntered == true)
+        {
+            <EditForm Model="@screenA">
                 <div class="posabs" style="--leftpos: 1026px; --toppos: 1157px">
                     <label>
                         Show bells:
                     </label>
                 </div>
-
-                <EditForm Model="@showGaps">
-                    <InputCheckbox Value="@showGaps"
-                                   ValueChanged="@( (bool value) => ShowGapsChanged(value) )"
-                                   ValueExpression="@( () => showGaps )"
-                                   class="form-control posabswh"
-                                   style="--leftpos: 1118px; --toppos: 1158px; --width: 20px; --height: 20px"
-                                   disabled="@controlsDisabled" />
-                </EditForm>
-            }
-
-            @if (spinnerSubmitting1 == true)
-            {
-                <div class="spinnerabs"
-                     style="--leftpos: 500px;
-                                --toppos: 1203px">
-                </div>
-            }
-
-            @if (submitted1 == true)
-            {
-                <div class="posabs"
-                     style="--leftpos: 500px;
-                                --toppos: 1203px">
-                    Submitted
-                </div>
-            }
-
-            @if (spinnerSubmitting2 == true)
-            {
-                <div class="spinnerabs"
-                     style="--leftpos: 635px;
-                                --toppos: 1203px">
-                </div>
-            }
-
-            @if (submitted2 == true)
-            {
-                <div class="posabs"
-                     style="--leftpos: 635px;
-                                --toppos: 1203px">
-                    Submitted
-                </div>
-            }
-            @if (spinnerSubmitting3 == true)
-            {
-                <div class="spinnerabs"
-                     style="--leftpos: 770px;
-                                --toppos: 1203px">
-                </div>
-            }
-
-            @if (submitted3 == true)
-            {
-                <div class="posabs"
-                     style="--leftpos: 770px;
-                                --toppos: 1203px">
-                    Submitted
-                </div>
-            }
-
-            @if (resultSound == true)
-            {
-                <audio id="sound" autoplay>
-                    <source src="@resultSource" />
-                </audio>
-            }
+            
+                <InputCheckbox Value="@screenA.ShowGaps"
+                                ValueChanged="@( (bool value) => ShowGapsChanged(value) )"
+                                ValueExpression="@( () => screenA.ShowGaps )"
+                                class="form-control posabswh"
+                                style="--leftpos: 1118px; --toppos: 1158px; --width: 20px; --height: 20px"
+                                disabled="@controlsDisabled" />
+            </EditForm>
         }
-    </div>
+
+        @if (spinnerSubmitting1 == true)
+        {
+            <div class="spinnerabs"
+                    style="--leftpos: 500px;
+                            --toppos: 1203px">
+            </div>
+        }
+
+        @if (submitted1 == true)
+        {
+            <div class="posabs"
+                    style="--leftpos: 500px;
+                            --toppos: 1203px">
+                Submitted
+            </div>
+        }
+
+        @if (spinnerSubmitting2 == true)
+        {
+            <div class="spinnerabs"
+                    style="--leftpos: 635px;
+                            --toppos: 1203px">
+            </div>
+        }
+
+        @if (submitted2 == true)
+        {
+            <div class="posabs"
+                    style="--leftpos: 635px;
+                            --toppos: 1203px">
+                Submitted
+            </div>
+        }
+        @if (spinnerSubmitting3 == true)
+        {
+            <div class="spinnerabs"
+                    style="--leftpos: 770px;
+                            --toppos: 1203px">
+            </div>
+        }
+
+        @if (submitted3 == true)
+        {
+            <div class="posabs"
+                    style="--leftpos: 770px;
+                            --toppos: 1203px">
+                Submitted
+            </div>
+        }
+
+        @if (resultSound == true)
+        {
+            <audio id="sound" autoplay>
+                <source src="@resultSource" />
+            </audio>
+        }
+    }
 </div>

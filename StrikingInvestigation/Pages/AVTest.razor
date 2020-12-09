@@ -3,6 +3,8 @@
 @using StrikingInvestigation.Utilities
 
 <div class="container mx-0 mx-md-2 my-1 my-md-3">
+    <div style="float: right">(@browserWidth, @browserHeight)</div>
+    
     <h1>A/V Test</h1>
 
     <p>Adjust the test bell until it strikes at the same time that it changes color.</p>
@@ -93,84 +95,84 @@
             </EditForm>
         }
     }
+</div>
 
-    <div style="position: relative" tabindex="0" @onkeydown="ArrowKeys" @ref="mainDiv">
-        @if (blow != null)
+<div style="position: relative" tabindex="0" @onkeydown="ArrowKeys" @ref="mainDiv">
+    @if (blow != null)
+    {
+        <div @onmousedown="TestBellMouseDown" @onmousemove="TestBellMouseMove">
+            <Bell Blow="@blow"
+                    Screen="@screen" />
+        </div>
+
+        @if (showGaps == true)
         {
-            <div @onmousedown="TestBellMouseDown" @onmousemove="TestBellMouseMove">
-                <Bell Blow="@blow"
-                      Screen="@screen" />
-            </div>
-
-            @if (showGaps == true)
-            {
-                <GapAudioLabel Blow="@blow"
-                               Screen="@screen" />
-            }
-
-            <audio id="@blow.AudioId" preload="auto">
-                <source src="@blow.BellSound" type="audio/mpeg" />
-            </audio>
-
-            <BoundaryLabel Blow="@blow"
-                           Screen="@screen" />
-
-            <GapMinus Blow="@blow"
-                      Screen="@screen"
-                      GapDisabled="@controlsDisabled"
-                      Callback="GapChangedWithButton" />
-
-            <GapCurr Blow="@blow"
-                     Screen="@screen" />
-
-            <GapPlus Blow="@blow"
-                     Screen="@screen"
-                     GapDisabled="@controlsDisabled"
-                     Callback="GapChangedWithButton" />
-
-            if (Device.DeviceLoad == DeviceLoad.Low)
-            {
-                <PlayBtn Blow="@blow"
-                         Screen="@screen"
-                         PlayLabel="@playLabel"
-                         PlayDisabled="@playDisabled"
-                         Callback="Play" />
-            }
-            else
-            {
-                <PlayBtn Blow="@blow"
-                         Screen="@screen"
-                         PlayLabel="@playLabel"
-                         PlayDisabled="@playDisabled"
-                         Callback="PlayAsync" />
-            }
-
-            @if (spinnerPlaying == true)
-            {
-                <SpinnerPlay Blow="@blow"
-                             Screen="@screen" />
-            }
-
-            @if (selectedTest != 0 && selectedTest != -1)
-            {
-                <SubmitBtn Blow="@blow"
-                           Screen="@screen"
-                           SubmitLabel="@submitLabel"
-                           SubmitDisabled="@controlsDisabled"
-                           Callback="Submit" />
-            }
-
-            @if (spinnerSubmitting == true)
-            {
-                <SpinnerSubmit Blow="@blow"
-                               Screen="@screen" />
-            }
-
-            @if (submitted == true)
-            {
-                <SubmitLabel Blow="@blow"
-                             Screen="@screen" />
-            }
+            <GapAudioLabel Blow="@blow"
+                            Screen="@screen" />
         }
-    </div>
+
+        <audio id="@blow.AudioId" preload="auto">
+            <source src="@blow.BellSound" type="audio/mpeg" />
+        </audio>
+
+        <BoundaryLabel Blow="@blow"
+                        Screen="@screen" />
+
+        <GapMinus Blow="@blow"
+                    Screen="@screen"
+                    GapDisabled="@controlsDisabled"
+                    Callback="GapChangedWithButton" />
+
+        <GapCurr Blow="@blow"
+                    Screen="@screen" />
+
+        <GapPlus Blow="@blow"
+                    Screen="@screen"
+                    GapDisabled="@controlsDisabled"
+                    Callback="GapChangedWithButton" />
+
+        if (Device.DeviceLoad == DeviceLoad.Low)
+        {
+            <PlayBtn Blow="@blow"
+                        Screen="@screen"
+                        PlayLabel="@playLabel"
+                        PlayDisabled="@playDisabled"
+                        Callback="Play" />
+        }
+        else
+        {
+            <PlayBtn Blow="@blow"
+                        Screen="@screen"
+                        PlayLabel="@playLabel"
+                        PlayDisabled="@playDisabled"
+                        Callback="PlayAsync" />
+        }
+
+        @if (spinnerPlaying == true)
+        {
+            <SpinnerPlay Blow="@blow"
+                            Screen="@screen" />
+        }
+
+        @if (selectedTest != 0 && selectedTest != -1)
+        {
+            <SubmitBtn Blow="@blow"
+                        Screen="@screen"
+                        SubmitLabel="@submitLabel"
+                        SubmitDisabled="@controlsDisabled"
+                        Callback="Submit" />
+        }
+
+        @if (spinnerSubmitting == true)
+        {
+            <SpinnerSubmit Blow="@blow"
+                            Screen="@screen" />
+        }
+
+        @if (submitted == true)
+        {
+            <SubmitLabel Blow="@blow"
+                            Screen="@screen" />
+        }
+    }
 </div>

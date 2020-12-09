@@ -1,10 +1,21 @@
 ﻿<div class="bell"
         style="--borderwidth: @borderWidthStr;
         --color: @Blow.BellColor;
-        --leftpos: @leftPosStr;
-        --toppos: @topPosStr;
+        --leftpos: @bellLeftPosStr;
+        --toppos: @bellTopPosStr;
         --diameter: @diameterStr;
-        --fontsize: @fontSizeStr;
+        --fontsize: @bellFontSizeStr;
         --padding: @paddingStr">
     @Blow.Bell
 </div>
+
+@if (Screen.ShowGaps == true && Blow.IsTestBell == false)
+{
+    <div class="gaplabel"
+            style="--leftpos: @gapLabelLeftPosStr;
+            --toppos: @gapLabelTopPosStr;
+            --fontsize: @gapLabelFontSizeStr;
+            --bgcolor: @bgColor">
+        @gapStr
+    </div>
+}

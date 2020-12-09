@@ -254,13 +254,11 @@ h6 {
 }
 
 .gaplabel {
-    font-size: small;
+    font-size: var(--fontsize);
     background-color: var(--bgcolor);
     position: absolute;
     left: var(--leftpos);
     top: var(--toppos);
-    width: 22px;
-    height: 18px;
     user-select: none;
 }
 

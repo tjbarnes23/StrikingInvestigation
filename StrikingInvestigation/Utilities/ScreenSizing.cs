@@ -127,6 +127,30 @@ namespace StrikingInvestigation.Utilities
             }
         }
 
+        public static int YMarginB(int browserWidth)
+        {
+            if (browserWidth < 576)
+            {
+                return 250;
+            }
+            else if (browserWidth < 768)
+            {
+                return 300;
+            }
+            else if (browserWidth < 992)
+            {
+                return 350;
+            }
+            else if (browserWidth < 1200)
+            {
+                return 400;
+            }
+            else
+            {
+                return 450;
+            }
+        }
+
         public static int BorderWidth(int browserWidth)
         {
             if (browserWidth < 576)

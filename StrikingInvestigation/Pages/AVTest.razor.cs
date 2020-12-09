@@ -47,18 +47,7 @@ namespace StrikingInvestigation.Pages
 
         public AVTest()
         {
-            screen = new Screen
-            {
-                DiameterScale = 3,
-                XScale = Constants.XScale,
-                XMargin = Constants.XMargin,
-                YScale = Constants.YScale,
-                YMargin = Constants.YMargin + 75,
-                GapMin = 200,
-                GapMax = 1200,
-                BaseGap = 0
-            };
-
+            screen = new Screen();
             selectedTest = -1;
         }
 
@@ -78,7 +67,18 @@ namespace StrikingInvestigation.Pages
             saveLabel = "Save";
             playLabel = "Play";
             submitLabel = "Submit";
+
             await PopulateBrowserDimensions();
+
+            screen.DiameterScale = ScreenSizing.DiameterScale(browserWidth) * 1.5;
+            screen.XScale = ScreenSizing.XScale(browserWidth);
+            screen.XMargin = ScreenSizing.XMargin(browserWidth);
+            screen.YScale = ScreenSizing.YScale(browserWidth);
+            screen.YMargin = ScreenSizing.YMargin(browserWidth) + 50;
+            screen.BorderWidth = ScreenSizing.BorderWidth(browserWidth);
+            screen.FontSize = ScreenSizing.FontSize(browserWidth);
+            screen.GapMin = 200;
+            screen.GapMax = 1200;
         }
 
         protected override async void OnAfterRender(bool firstRender)

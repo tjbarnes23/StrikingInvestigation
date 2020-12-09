@@ -140,52 +140,54 @@
                         Create Gap Test
                     </button>
                 </div>
-
-                @if (blowSet != null)
-                {
+            </EditForm>
+            
+            @if (blowSet != null)
+            {
+                <EditForm Model="@screen">
                     <div style="display: inline-block">
                         <div class="form-group">
                             <label>
                                 Show gap times
                             </label>
 
-                            <InputCheckbox Value="@showGaps"
-                                           ValueChanged="@( (bool value) => ShowGapsChanged(value) )"
-                                           ValueExpression="@( () => showGaps )"
-                                           class="form-control"
-                                           disabled="@controlsDisabled" />
+                            <InputCheckbox Value="@screen.ShowGaps"
+                                            ValueChanged="@( (bool value) => ShowGapsChanged(value) )"
+                                            ValueExpression="@( () => screen.ShowGaps )"
+                                            class="form-control"
+                                            disabled="@controlsDisabled" />
                         </div>
                     </div>
+                </EditForm>
 
-                    <div style="display: inline-block">
-                        <div class="form-group">
-                            <label>
-                                Save test
-                            </label>
+                <div style="display: inline-block">
+                    <div class="form-group">
+                        <label>
+                            Save test
+                        </label>
 
-                            <button class="btn btn-primary" @onclick="Save" disabled="@controlsDisabled">
-                                @saveLabel
-                            </button>
+                        <button class="btn btn-primary" @onclick="Save" disabled="@controlsDisabled">
+                            @saveLabel
+                        </button>
 
-                            @if (spinnerSaving == true)
-                            {
-                                <div class="spinnerinline" style="display: inline-block; vertical-align: top;
-                            margin-left: 12px; margin-top: 7px;
-                            --borderwidth: 5px; --width: 24px; --height: 24px">
-                                </div>
-                            }
+                        @if (spinnerSaving == true)
+                        {
+                            <div class="spinnerinline" style="display: inline-block; vertical-align: top;
+                        margin-left: 12px; margin-top: 7px;
+                        --borderwidth: 5px; --width: 24px; --height: 24px">
+                            </div>
+                        }
 
-                            @if (saved == true)
-                            {
-                                <div style="display: inline-block; vertical-align: top; margin-left: 12px;
-                            margin-top: 7px">
-                                    Saved
-                                </div>
-                            }
-                        </div>
+                        @if (saved == true)
+                        {
+                            <div style="display: inline-block; vertical-align: top; margin-left: 12px;
+                        margin-top: 7px">
+                                Saved
+                            </div>
+                        }
                     </div>
-                }
-            </EditForm>
+                </div>
+            }
         }
         else if (selectedTest != -1)
         {
@@ -252,12 +254,6 @@
             {
                 <Bell Blow="@blow"
                         Screen="@screen" />
-
-                if (showGaps == true)
-                {
-                    <GapLabel Blow="@blow"
-                                Screen="@screen" />
-                }
             }
             else
             {

@@ -20,8 +20,6 @@ namespace StrikingInvestigation.Pages
         readonly Screen screen;
         int selectedTest;
 
-        bool showGaps;
-
         BlowSet blowSet;
 
         bool controlsDisabled;
@@ -79,6 +77,7 @@ namespace StrikingInvestigation.Pages
             saveLabel = "Save";
             playLabel = "Play";
             submitLabel = "Submit";
+            
             await PopulateBrowserDimensions();
             
             screen.DiameterScale = ScreenSizing.DiameterScale(browserWidth);
@@ -175,7 +174,7 @@ namespace StrikingInvestigation.Pages
 
         void ShowGapsChanged(bool value)
         {
-            showGaps = value;
+            screen.ShowGaps = value;
         }
 
         void Create()
@@ -200,7 +199,7 @@ namespace StrikingInvestigation.Pages
             blowSet.CreateRandomSpacing(testSpec.ErrorSize, Constants.Rounding);
             blowSet.SetUnstruck();
 
-            // Set up blow-dependent elements of the screen object
+            // Set up test spec-dependent elements of the screen object
             // When practicing in a Gap Test, gaps are rounded to the nearest 10ms so that bells will align
             // if zero gap error is selected
             int baseGap = BaseGaps.BaseGap(testSpec.Stage, testSpec.TenorWeight, 10);
@@ -242,7 +241,7 @@ namespace StrikingInvestigation.Pages
             testSpec.TenorWeight = blowSet.TenorWeight;
             testSpec.NumRows = blowSet.NumRows;
 
-            // Set up blow-dependent elements of the screen object
+            // Set up test spec-dependent elements of the screen object
             int baseGap = BaseGaps.BaseGap(testSpec.Stage, testSpec.TenorWeight, 1);
             screen.BaseGap = baseGap;
             screen.GapMin = 20;
@@ -258,7 +257,7 @@ namespace StrikingInvestigation.Pages
                 screen.GapMax = Convert.ToInt32(Math.Round(((double)baseGap * 2) / 50)) * 50;
             }
 
-            showGaps = false;
+            screen.ShowGaps = false;
             StateHasChanged();
         }
 

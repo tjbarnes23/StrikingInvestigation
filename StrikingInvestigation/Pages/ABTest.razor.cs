@@ -20,8 +20,6 @@ namespace StrikingInvestigation.Pages
         readonly Screen screenB;
         int selectedTest;
 
-        bool showGaps;
-
         BlowSet blowSetA;
         BlowSet blowSetB;
 
@@ -72,37 +70,8 @@ namespace StrikingInvestigation.Pages
                 TestBellLoc = 0 // Indicates no test bell
             };
 
-            // No rounding in A/B test
-            int baseGap = BaseGaps.BaseGap(testSpec.Stage, testSpec.TenorWeight, 1);
-
-            screenA = new Screen
-            {
-                DiameterScale = Constants.DiameterScale,
-                XScale = Constants.XScale,
-                XMargin = Constants.XMargin,
-                YScale = Constants.YScale,
-                YMargin = Constants.YMargin,
-                GapMin = 0,
-                GapMax = 0,
-                BaseGap = baseGap,
-                RunAnimation = false,
-                AnimationDuration = 0
-            };
-
-            screenB = new Screen
-            {
-                DiameterScale = Constants.DiameterScale,
-                XScale = Constants.XScale,
-                XMargin = Constants.XMargin,
-                YScale = Constants.YScale,
-                YMargin = Constants.YMargin + 475,
-                GapMin = 0,
-                GapMax = 0,
-                BaseGap = baseGap,
-                RunAnimation = false,
-                AnimationDuration = 0
-            };
-
+            screenA = new Screen();
+            screenB = new Screen();
             selectedTest = -1;
         }
 
@@ -125,7 +94,36 @@ namespace StrikingInvestigation.Pages
             submitLabel1 = "A has errors";
             submitLabel2 = "B has errors";
             submitLabel3 = "I can't tell which has errors";
+            
             await PopulateBrowserDimensions();
+
+            screenA.DiameterScale = ScreenSizing.DiameterScale(browserWidth);
+            screenA.XScale = ScreenSizing.XScale(browserWidth);
+            screenA.XMargin = ScreenSizing.XMargin(browserWidth);
+            screenA.YScale = ScreenSizing.YScale(browserWidth);
+            screenA.YMargin = ScreenSizing.YMargin(browserWidth);
+            screenA.BorderWidth = ScreenSizing.BorderWidth(browserWidth);
+            screenA.FontSize = ScreenSizing.FontSize(browserWidth);
+            screenA.StrokeLabelXOffset = ScreenSizing.StrokeLabelXOffset(browserWidth);
+            screenA.StrokeLabelYOffset = ScreenSizing.StrokeLabelYOffset(browserWidth);
+            screenA.RowStartLabelWidth = ScreenSizing.RowStartLabelWidth(browserWidth);
+            screenA.RowStartLabelHeight = ScreenSizing.RowStartLabelHeight(browserWidth);
+            screenA.ChangeLabelXOffset = ScreenSizing.ChangeLabelXOffset(browserWidth);
+            screenA.ChangeLabelYOffset = ScreenSizing.ChangeLabelYOffset(browserWidth);
+
+            screenB.DiameterScale = ScreenSizing.DiameterScale(browserWidth);
+            screenB.XScale = ScreenSizing.XScale(browserWidth);
+            screenB.XMargin = ScreenSizing.XMargin(browserWidth);
+            screenB.YScale = ScreenSizing.YScale(browserWidth);
+            screenB.YMargin = ScreenSizing.YMarginB(browserWidth);
+            screenB.BorderWidth = ScreenSizing.BorderWidth(browserWidth);
+            screenB.FontSize = ScreenSizing.FontSize(browserWidth);
+            screenB.StrokeLabelXOffset = ScreenSizing.StrokeLabelXOffset(browserWidth);
+            screenB.StrokeLabelYOffset = ScreenSizing.StrokeLabelYOffset(browserWidth);
+            screenB.RowStartLabelWidth = ScreenSizing.RowStartLabelWidth(browserWidth);
+            screenB.RowStartLabelHeight = ScreenSizing.RowStartLabelHeight(browserWidth);
+            screenB.ChangeLabelXOffset = ScreenSizing.ChangeLabelXOffset(browserWidth);
+            screenB.ChangeLabelYOffset = ScreenSizing.ChangeLabelYOffset(browserWidth);
         }
 
         async Task TestChanged(int value)
@@ -155,11 +153,6 @@ namespace StrikingInvestigation.Pages
 
             tenorWeightDisabled = TenorWeightSelect.TenorWeightDisabled(testSpec.Stage);
 
-            // Need to recalculate BaseGap on a stage change
-            int baseGap = BaseGaps.BaseGap(testSpec.Stage, testSpec.TenorWeight, 1);
-            screenA.BaseGap = baseGap;
-            screenB.BaseGap = baseGap;
-
             if (blowSetA != null)
             {
                 blowSetA = null;
@@ -174,11 +167,6 @@ namespace StrikingInvestigation.Pages
         void TenorWeightChanged(int value)
         {
             testSpec.TenorWeight = value;
-
-            // Need to recalculate BaseGap on a tenor change
-            int baseGap = BaseGaps.BaseGap(testSpec.Stage, testSpec.TenorWeight, 1);
-            screenA.BaseGap = baseGap;
-            screenB.BaseGap = baseGap;
 
             if (blowSetA != null)
             {
@@ -223,10 +211,11 @@ namespace StrikingInvestigation.Pages
 
         void ShowGapsChanged(bool value)
         {
-            showGaps = value;
+            screenA.ShowGaps = value;
+            screenB.ShowGaps = value;
         }
 
-        void CreateABTest()
+        void Create()
         {
             // Choose whether A or B will have the errors
             Random rand = new Random();
@@ -275,11 +264,18 @@ namespace StrikingInvestigation.Pages
                 }
             }
 
+            // Set up test spec-dependent elements of the screen object
+            int baseGap = BaseGaps.BaseGap(testSpec.Stage, testSpec.TenorWeight, 1);
+            screenA.BaseGap = baseGap;
+            screenB.BaseGap = baseGap;
+
+            // Set the timing for the animation (when not showing the bells)
             screenA.AnimationDuration = blowSetA.Blows.Last().GapCumulative + 1000;
             screenB.AnimationDuration = blowSetB.Blows.Last().GapCumulative + 1000;
             resultEntered = false;
 
-            showGaps = false;
+            screenA.ShowGaps = false;
+            screenB.ShowGaps = false;
         }
 
         async Task Load(int id)
@@ -319,9 +315,7 @@ namespace StrikingInvestigation.Pages
             testSpec.TenorWeight = blowSetA.TenorWeight;
             testSpec.ErrorType = blowSetA.ErrorType;
 
-            // Update Screen.BaseGap - this varies by stage and tenorweight, and is used to shift backstroke rows
-            // to the right to make the 1st blow of each row align vertically (when no striking errors)
-            // No rounding in an A/B test
+            // Set up test spec-dependent elements of the screen object
             int baseGap = BaseGaps.BaseGap(testSpec.Stage, testSpec.TenorWeight, 1);
             screenA.BaseGap = baseGap;
             screenB.BaseGap = baseGap;
@@ -331,7 +325,8 @@ namespace StrikingInvestigation.Pages
             screenB.AnimationDuration = blowSetB.Blows.Last().GapCumulative + 1000;
             resultEntered = false;
 
-            showGaps = false;
+            screenA.ShowGaps = false;
+            screenB.ShowGaps = false;
             StateHasChanged();
         }
 
@@ -410,7 +405,7 @@ namespace StrikingInvestigation.Pages
                 playDisabledB = true;
 
                 // Start the animation if not showing the bells
-                if (showGaps == false)
+                if (screenA.ShowGaps == false)
                 {
                     screenA.RunAnimation = true;
                 }
@@ -434,7 +429,7 @@ namespace StrikingInvestigation.Pages
                     }
 
                     // Change bell color
-                    if (Device.DeviceLoad == DeviceLoad.High && showGaps == true)
+                    if (Device.DeviceLoad == DeviceLoad.High && screenA.ShowGaps == true)
                     {
                         blow.BellColor = Constants.StruckBellColor;
 
@@ -461,7 +456,7 @@ namespace StrikingInvestigation.Pages
             else
             {
                 // Reset animation immediately when test is stopped
-                if (showGaps == false)
+                if (screenA.ShowGaps == false)
                 {
                     screenA.RunAnimation = false;
                 }
@@ -478,7 +473,7 @@ namespace StrikingInvestigation.Pages
             await Task.Delay(2600 - initialDelay);
 
             // Reset animation, unless it was already reset earlier after a stop
-            if (initialDelay > 0 && showGaps == false)
+            if (initialDelay > 0 && screenA.ShowGaps == false)
             {
                 screenA.RunAnimation = false;
             }
@@ -489,7 +484,7 @@ namespace StrikingInvestigation.Pages
             playDisabledA = false;
 
             // Reset screen
-            if (Device.DeviceLoad == DeviceLoad.High && showGaps == true)
+            if (Device.DeviceLoad == DeviceLoad.High && screenA.ShowGaps == true)
             {
                 blowSetA.SetUnstruck();
             }
@@ -524,7 +519,7 @@ namespace StrikingInvestigation.Pages
                 playDisabledA = true;
 
                 // Start the animation if not showing the bells
-                if (showGaps == false)
+                if (screenB.ShowGaps == false)
                 {
                     screenB.RunAnimation = true;
                 }
@@ -548,7 +543,7 @@ namespace StrikingInvestigation.Pages
                     }
 
                     // Change bell color
-                    if (Device.DeviceLoad == DeviceLoad.High && showGaps == true)
+                    if (Device.DeviceLoad == DeviceLoad.High && screenB.ShowGaps == true)
                     {
                         blow.BellColor = Constants.StruckBellColor;
 
@@ -575,7 +570,7 @@ namespace StrikingInvestigation.Pages
             else
             {
                 // Reset animation immediately when test is stopped
-                if (showGaps == false)
+                if (screenB.ShowGaps == false)
                 {
                     screenB.RunAnimation = false;
                 }
@@ -592,7 +587,7 @@ namespace StrikingInvestigation.Pages
             await Task.Delay(2600 - initialDelay);
 
             // Reset animation, unless it was already reset earlier after a stop
-            if (initialDelay > 0 && showGaps == false)
+            if (initialDelay > 0 && screenB.ShowGaps == false)
             {
                 screenB.RunAnimation = false;
             }
@@ -603,7 +598,7 @@ namespace StrikingInvestigation.Pages
             playDisabledB = false;
 
             // Reset screen
-            if (Device.DeviceLoad == DeviceLoad.High && showGaps == true)
+            if (Device.DeviceLoad == DeviceLoad.High && screenB.ShowGaps == true)
             {
                 blowSetB.SetUnstruck();
             }
@@ -632,7 +627,7 @@ namespace StrikingInvestigation.Pages
             playDisabledB = true;
 
             // Start the animation if not showing the bells
-            if (showGaps == false)
+            if (screenA.ShowGaps == false)
             {
                 screenA.RunAnimation = true;
             }
@@ -665,7 +660,7 @@ namespace StrikingInvestigation.Pages
             await Task.Delay(1600);
 
             // Reset animation
-            if (showGaps == false)
+            if (screenA.ShowGaps == false)
             {
                 screenA.RunAnimation = false;
             }
@@ -700,7 +695,7 @@ namespace StrikingInvestigation.Pages
             playDisabledA = true;
 
             // Start the animation if not showing the bells
-            if (showGaps == false)
+            if (screenB.ShowGaps == false)
             {
                 screenB.RunAnimation = true;
             }
@@ -733,7 +728,7 @@ namespace StrikingInvestigation.Pages
             await Task.Delay(1600);
 
             // Reset animation
-            if (showGaps == false)
+            if (screenB.ShowGaps == false)
             {
                 screenB.RunAnimation = false;
             }
@@ -758,7 +753,8 @@ namespace StrikingInvestigation.Pages
             }
             else
             {
-                showGaps = true;
+                screenA.ShowGaps = true;
+                screenB.ShowGaps = true;
                 resultEntered = true;
 
                 if (isA == true)
@@ -787,7 +783,8 @@ namespace StrikingInvestigation.Pages
             }
             else
             {
-                showGaps = true;
+                screenA.ShowGaps = true;
+                screenB.ShowGaps = true;
                 resultEntered = true;
 
                 if (isA == true)
@@ -816,7 +813,8 @@ namespace StrikingInvestigation.Pages
             }
             else
             {
-                showGaps = true;
+                screenA.ShowGaps = true;
+                screenB.ShowGaps = true;
                 resultEntered = true;
             }
         }

@@ -34,6 +34,8 @@
 
         public int GapMax { get; set; }
 
+        public bool ShowGaps { get; set; }
+
         public bool RunAnimation { get; set; }
 
         public int AnimationDuration { get; set; }
