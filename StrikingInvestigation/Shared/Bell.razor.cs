@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Web;
 using StrikingInvestigation.Models;
 using StrikingInvestigation.Utilities;
 
@@ -26,6 +28,9 @@ namespace StrikingInvestigation.Shared
 
         [Parameter]
         public Screen Screen { get; set; }
+
+        [Parameter]
+        public EventCallback<CallbackParam> Callback { get; set; }
 
         protected override void OnParametersSet()
         {
@@ -61,7 +66,7 @@ namespace StrikingInvestigation.Shared
 
             // Need logic here for centering the bell number inside the bell.
             // For now, use a default of -3
-            // Check whether alignment is centerline - may need to change that
+            // Check whether alignment is baseline - may need to change that
             padding = ((diameter - (Screen.BorderWidth * 2) - Screen.FontSize) / 2) - 3;
             paddingStr = Convert.ToInt32(padding).ToString() + "px";
 
@@ -105,6 +110,49 @@ namespace StrikingInvestigation.Shared
             }
 
             gapStr = Blow.Gap.ToString();
+        }
+
+        async Task TestBellMouseDown(MouseEventArgs e)
+        {
+            if (e.Buttons == 1)
+            {
+                // Mouse movement only active in Play mode
+                if (Screen.PlayLabel == "Play")
+                {
+                    // Call TestBellMouseMove to center the bell on where the mouse is clicked
+                    await TestBellMouseMove(e);
+                }
+            }
+        }
+
+        async Task TestBellMouseMove(MouseEventArgs e)
+        {
+            if (e.Buttons == 1 && Screen.PlayLabel == "Play")
+            {
+                int clientX = Convert.ToInt32(e.ClientX);
+
+                int newGapCumulativeRow;
+
+                if (Blow.IsHandstroke)
+                {
+                    newGapCumulativeRow = Convert.ToInt32((clientX - Screen.XMargin) / Screen.XScale);
+                }
+                else
+                {
+                    newGapCumulativeRow = Convert.ToInt32((clientX - Screen.XMargin) / Screen.XScale) -
+                             Screen.BaseGap;
+                }
+
+                int newGap = Blow.Gap + (newGapCumulativeRow - Blow.GapCumulativeRow);
+                int newGapRounded = Convert.ToInt32((double)newGap / Constants.Rounding) * Constants.Rounding;
+
+                if (newGapRounded >= Screen.GapMin && newGapRounded <= Screen.GapMax &&
+                        newGapRounded != Blow.Gap)
+                {
+                    Blow.UpdateGap(newGapRounded);
+                    await Callback.InvokeAsync(CallbackParam.MouseMove);
+                }
+            }
         }
     }
 }

@@ -17,29 +17,10 @@ namespace StrikingInvestigation.Pages
     {
         IEnumerable<AVTestData> aVTestsData;
         readonly Screen screen;
-        int selectedTest;
-        
-        bool showGaps;
-
         Blow blow;
-
-        bool controlsDisabled;
-        bool playDisabled;
-
-        string saveLabel;
-        string playLabel;
-        string submitLabel;
-
-        bool spinnerSaving;
-        bool spinnerPlaying;
-        bool spinnerSubmitting;
-
-        bool saved;
-        bool submitted;
-
+                
         CancellationTokenSource cancellationTokenSource;
         CancellationToken cancellationToken;
-
         ElementReference mainDiv;
 
         int browserWidth;
@@ -48,7 +29,7 @@ namespace StrikingInvestigation.Pages
         public AVTest()
         {
             screen = new Screen();
-            selectedTest = -1;
+            screen.SelectedTest = -1;
         }
 
         [Inject]
@@ -64,9 +45,9 @@ namespace StrikingInvestigation.Pages
         {
             aVTestsData = (await TJBarnesService.GetHttpClient()
                     .GetFromJsonAsync<AVTestData[]>("api/avtests")).ToList();
-            saveLabel = "Save";
-            playLabel = "Play";
-            submitLabel = "Submit";
+            screen.SaveLabel = "Save";
+            screen.PlayLabel = "Play";
+            screen.SubmitLabel = "Submit";
 
             await PopulateBrowserDimensions();
 
@@ -88,18 +69,18 @@ namespace StrikingInvestigation.Pages
 
         async Task TestChanged(int value)
         {
-            selectedTest = value;
+            screen.SelectedTest = value;
             blow = null;
 
-            if (selectedTest != 0 && selectedTest != -1)
+            if (screen.SelectedTest != 0 && screen.SelectedTest != -1)
             {
-                await Load(selectedTest);
+                await Load(screen.SelectedTest);
             }
         }
 
         void ShowGapsChanged(bool value)
         {
-            showGaps = value;
+            screen.ShowGaps = value;
         }
 
         void Create()
@@ -142,16 +123,16 @@ namespace StrikingInvestigation.Pages
             
             blow.BellColor = Constants.UnstruckTestBellColor;
 
-            showGaps = false;
+            screen.ShowGaps = false;
             StateHasChanged();
         }
 
         async Task Save()
         {
-            spinnerSaving = true;
-            saveLabel = "Wait";
-            controlsDisabled = true;
-            playDisabled = true;
+            screen.SpinnerSaving = true;
+            screen.SaveLabel = "Wait";
+            screen.ControlsDisabled = true;
+            screen.PlayDisabled = true;
             blow.BellColor = Constants.DisabledUnstruckTestBellColor;
             StateHasChanged();
 
@@ -174,25 +155,62 @@ namespace StrikingInvestigation.Pages
             aVTestsData = (await TJBarnesService.GetHttpClient()
                     .GetFromJsonAsync<AVTestData[]>("api/avtests")).ToList();
 
-            spinnerSaving = false;
-            saved = true;
+            screen.SpinnerSaving = false;
+            screen.Saved = true;
             StateHasChanged();
 
             await Task.Delay(1000);
 
-            saved = false;
-            saveLabel = "Save";
-            controlsDisabled = false;
-            playDisabled = false;
+            screen.Saved = false;
+            screen.SaveLabel = "Save";
+            screen.ControlsDisabled = false;
+            screen.PlayDisabled = false;
             blow.BellColor = Constants.UnstruckTestBellColor;
             StateHasChanged();
+        }
+
+        async Task ProcessCallback(CallbackParam cbp)
+        {
+            switch (cbp)
+            {
+                case CallbackParam.GapMinus:
+                    StateHasChanged();
+                    break;
+
+                case CallbackParam.GapPlus:
+                    StateHasChanged();
+                    break;
+
+                case CallbackParam.MouseMove:
+                    StateHasChanged();
+                    break;
+
+                case CallbackParam.Play:
+                    if (Device.DeviceLoad == DeviceLoad.Low)
+                    {
+                        Play();
+                    }
+                    else
+                    {
+                        await PlayAsync();
+                    }
+
+                    break;
+
+                case CallbackParam.Submit:
+                    await Submit();
+                    break;
+
+                default:
+                    break;
+            }
         }
 
         async Task PlayAsync()
         {
             int initialDelay = 1000;
 
-            if (playLabel == "Play")
+            if (screen.PlayLabel == "Play")
             {
                 // Change test bell color to disabled color - can't adjust gap during play
                 blow.BellColor = Constants.DisabledUnstruckTestBellColor;
@@ -208,8 +226,8 @@ namespace StrikingInvestigation.Pages
                 cancellationTokenSource = new CancellationTokenSource();
                 cancellationToken = cancellationTokenSource.Token;
 
-                playLabel = "Stop";
-                controlsDisabled = true;
+                screen.PlayLabel = "Stop";
+                screen.ControlsDisabled = true;
 
                 TimeSpan delay;
                 int delayMs;
@@ -293,7 +311,7 @@ namespace StrikingInvestigation.Pages
                     await JSRuntime.InvokeVoidAsync("PlayBellAudio", blow.AudioId);
                 }
             }
-            else if (playLabel == "Stop")
+            else if (screen.PlayLabel == "Stop")
             {
                 cancellationTokenSource.Cancel();
                 initialDelay = 0;
@@ -306,9 +324,9 @@ namespace StrikingInvestigation.Pages
             }
 
             // Start spinner
-            playDisabled = true;
-            playLabel = "Wait";
-            spinnerPlaying = true;
+            screen.PlayDisabled = true;
+            screen.PlayLabel = "Wait";
+            screen.SpinnerPlaying = true;
             StateHasChanged();
 
             // Wait 2.6 or 1.6 further seconds for the sound to finish, depending on whether arriving here
@@ -316,13 +334,13 @@ namespace StrikingInvestigation.Pages
             await Task.Delay(2600 - initialDelay);
 
             // Reset play button
-            spinnerPlaying = false;
-            playLabel = "Play";
-            playDisabled = false;
+            screen.SpinnerPlaying = false;
+            screen.PlayLabel = "Play";
+            screen.PlayDisabled = false;
 
             // Reset screen
             blow.BellColor = Constants.UnstruckTestBellColor;
-            controlsDisabled = false;
+            screen.ControlsDisabled = false;
             StateHasChanged();
         }
 
@@ -339,9 +357,9 @@ namespace StrikingInvestigation.Pages
             // This is the time to make the strike sound
             blow.AltStrikeTime = strikeTime.AddMilliseconds(blow.AltGap);
 
-            playDisabled = true;
-            playLabel = "Wait";
-            controlsDisabled = true;
+            screen.PlayDisabled = true;
+            screen.PlayLabel = "Wait";
+            screen.ControlsDisabled = true;
 
             TimeSpan delay;
             int delayMs;
@@ -409,29 +427,29 @@ namespace StrikingInvestigation.Pages
             await Task.Delay(1000);
 
             // Start spinner
-            spinnerPlaying = true;
+            screen.SpinnerPlaying = true;
             StateHasChanged();
 
             // Wait further 1.6 seconds for the sound to finish
             await Task.Delay(1600);
 
             // Reset play button
-            spinnerPlaying = false;
-            playLabel = "Play";
-            playDisabled = false;
+            screen.SpinnerPlaying = false;
+            screen.PlayLabel = "Play";
+            screen.PlayDisabled = false;
 
             // Reset screen
             blow.BellColor = Constants.UnstruckTestBellColor;
-            controlsDisabled = false;
+            screen.ControlsDisabled = false;
             StateHasChanged();
         }
 
         async Task Submit()
         {
-            spinnerSubmitting = true;
-            submitLabel = "Wait";
-            controlsDisabled = true;
-            playDisabled = true;
+            screen.SpinnerSubmitting = true;
+            screen.SubmitLabel = "Wait";
+            screen.ControlsDisabled = true;
+            screen.PlayDisabled = true;
             blow.BellColor = Constants.DisabledUnstruckTestBellColor;
             StateHasChanged();
 
@@ -441,7 +459,7 @@ namespace StrikingInvestigation.Pages
                 UserId = string.Empty,
                 TestDate = DateTime.Now,
                 TestType = "A/V Test",
-                TestId = selectedTest,
+                TestId = screen.SelectedTest,
                 Gap = blow.Gap,
                 AB = string.Empty
             };
@@ -449,62 +467,24 @@ namespace StrikingInvestigation.Pages
             // Push the testSubmission to the API in JSON format
             await TJBarnesService.GetHttpClient().PostAsJsonAsync("api/testsubmissions", testSubmission);
 
-            spinnerSubmitting = false;
-            submitted = true;
+            screen.SpinnerSubmitting = false;
+            screen.Submitted = true;
             StateHasChanged();
 
             await Task.Delay(1000);
 
-            submitted = false;
-            submitLabel = "Submit";
-            controlsDisabled = false;
-            playDisabled = false;
+            screen.Submitted = false;
+            screen.SubmitLabel = "Submit";
+            screen.ControlsDisabled = false;
+            screen.PlayDisabled = false;
             blow.BellColor = Constants.UnstruckTestBellColor;
             StateHasChanged();
         }
 
-        void GapChangedWithButton(bool clicked)
-        {
-            if (clicked == true)
-            {
-                StateHasChanged();
-            }
-        }
-
-        void TestBellMouseDown(MouseEventArgs e)
-        {
-            if (e.Buttons == 1)
-            {
-                // Mouse movement only active in Play mode
-                if (playLabel == "Play")
-                {
-                    // Call TestBellMouseMove to center the bell on where the mouse is clicked
-                    TestBellMouseMove(e);
-                }
-            }
-        }
-
-        void TestBellMouseMove(MouseEventArgs e)
-        {
-            if (e.Buttons == 1 && playLabel == "Play")
-            {
-                int clientX = Convert.ToInt32(e.ClientX);
-
-                int newGap = Convert.ToInt32((clientX - screen.XMargin) / screen.XScale);
-                int newGapRounded = Convert.ToInt32((double)newGap / Constants.Rounding) * Constants.Rounding;
-
-                if (newGapRounded >= screen.GapMin && newGapRounded <= screen.GapMax &&
-                        newGapRounded != blow.Gap)
-                {
-                    blow.UpdateGap(newGapRounded);
-                }
-            }
-        }
-
         void ArrowKeys(KeyboardEventArgs e)
         {
-            // Keyboard arrows only active in Play mode
-            if (playLabel == "Play")
+            // Keyboard arrows only active when a blow is populated and when in Play mode
+            if (blow != null && screen.PlayLabel == "Play")
             {
                 if (e.Key == "ArrowLeft")
                 {

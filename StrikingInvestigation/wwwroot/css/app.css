@@ -253,6 +253,16 @@ h6 {
     z-index: -1;
 }
 
+.boundarylabelinline {
+    box-sizing: border-box;
+    border-width: 3px;
+    border-style: dotted;
+    border-color: silver;
+    width: var(--width);
+    height: var(--height);
+    z-index: -1;
+}
+
 .gaplabel {
     font-size: var(--fontsize);
     background-color: var(--bgcolor);

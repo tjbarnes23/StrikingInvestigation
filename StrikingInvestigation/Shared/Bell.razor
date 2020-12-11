@@ -1,13 +1,31 @@
-﻿<div class="bell"
-        style="--borderwidth: @borderWidthStr;
-        --color: @Blow.BellColor;
-        --leftpos: @bellLeftPosStr;
-        --toppos: @bellTopPosStr;
-        --diameter: @diameterStr;
-        --fontsize: @bellFontSizeStr;
-        --padding: @paddingStr">
-    @Blow.Bell
-</div>
+﻿@if (Blow.IsTestBell == true)
+{
+    <div @onmousedown="TestBellMouseDown"
+            @onmousemove="TestBellMouseMove"
+            class="bell"
+            style="--borderwidth: @borderWidthStr;
+            --color: @Blow.BellColor;
+            --leftpos: @bellLeftPosStr;
+            --toppos: @bellTopPosStr;
+            --diameter: @diameterStr;
+            --fontsize: @bellFontSizeStr;
+            --padding: @paddingStr">
+        @Blow.Bell
+    </div>
+}
+else
+{
+    <div class="bell"
+            style="--borderwidth: @borderWidthStr;
+            --color: @Blow.BellColor;
+            --leftpos: @bellLeftPosStr;
+            --toppos: @bellTopPosStr;
+            --diameter: @diameterStr;
+            --fontsize: @bellFontSizeStr;
+            --padding: @paddingStr">
+        @Blow.Bell
+    </div>
+}
 
 @if (Screen.ShowGaps == true && Blow.IsTestBell == false)
 {

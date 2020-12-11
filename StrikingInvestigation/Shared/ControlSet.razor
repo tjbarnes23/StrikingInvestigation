@@ -1,0 +1,135 @@
+﻿<!-- Boundary box row -->
+<div class="posabs"
+        style="--leftpos: @boundaryRowLeftPosStr;
+        --toppos: @boundaryRowTopPosStr;
+        z-index: -1">
+
+    <!-- Box around test bell -->
+    <div class="boundarylabelinline"
+            style="display: inline-block;
+            --width: @boundaryLabelWidthStr;
+            --height: @boundaryLabelHeightStr">
+    </div>
+
+    <!-- Alt gap label -->
+    @if (Screen.ShowGaps == true && Blow.AltGap != 0)
+    {
+        <div style="display: inline-block;
+                font-size: @altGapLabelFontSizeStr;
+                vertical-align: top;
+                margin-left: 10px;
+                margin-top: @altGapLabelMarginTopStr;
+                z-index: -1">
+            <div>
+                Audio gap
+            </div>
+
+            <div style="padding-left: 10px">
+                @altGapLabelStr
+            </div>
+        </div>
+    }
+</div>
+
+<!-- Button row -->
+<div class="posabs"
+     style="--leftpos: @buttonRowLeftPosStr;
+        --toppos: @buttonRowTopPosStr">
+
+    <!-- Gap minus button -->
+    <div style="display: inline-block">
+        <button class="btn btn-primary"
+                @onclick="GapMinusClick"
+                style="width: 75px"
+                disabled="@Screen.ControlsDisabled">
+            @gapMinusStr
+        </button>
+    </div>
+
+    <!-- Current gap label -->
+    <div style="display: inline-block;
+            width: 50px;
+            height: 38px;
+            border: 1px solid black;
+            text-align: center;
+            padding-top: 6px">
+        <label>
+            @Blow.GapStr
+        </label>
+    </div>
+
+    <!-- Gap plus button -->
+    <div style="display: inline-block">
+        <button class="btn btn-primary"
+                @onclick="GapPlusClick"
+                style="width: 75px"
+                disabled="@Screen.ControlsDisabled">
+            @gapPlusStr
+        </button>
+    </div>
+
+    <!-- Play button -->
+    <div style="display: inline-block">
+        <button class="btn btn-primary"
+                @onclick="PlayClick"
+                style="width: 75px"
+                disabled="@Screen.PlayDisabled">
+            @Screen.PlayLabel
+        </button>
+    </div>
+
+    <!-- Play spinner -->
+    @if (Screen.SpinnerPlaying == true)
+    {
+        <div class="spinnerinline"
+                style="display: inline-block;
+                vertical-align: top;
+                margin-left: 12px;
+                margin-top: 7px;
+                --borderwidth: 5px;
+                --width: 24px;
+                --height: 24px">
+        </div>
+    }
+</div>
+
+<!-- Submit row -->
+@if (Screen.SelectedTest != 0 && Screen.SelectedTest != -1)
+{
+    <div class="posabs"
+            style="--leftpos: @submitRowLeftPosStr;
+            --toppos: @submitRowTopPosStr">
+
+        <!-- Submit button -->
+        <div style="display: inline-block">
+            <button class="btn btn-primary"
+                    @onclick="SubmitClick"
+                    style="width: 75px"
+                    disabled="@Screen.ControlsDisabled">
+                @Screen.SubmitLabel
+            </button>
+        </div>
+
+        <!-- Submit spinner -->
+        @if (Screen.SpinnerSubmitting == true)
+        {
+            <div class="spinnerinline"
+                    style="display: inline-block;
+                    vertical-align: top;
+                    margin-left: 12px;
+                    margin-top: 7px;
+                    --borderwidth: 5px;
+                    --width: 24px;
+                    --height: 24px">
+            </div>
+        }
+
+        <!-- Submit message -->
+        @if (Screen.Submitted == true)
+        {
+            <div style="display: inline-block">
+                Submitted
+            </div>
+        }
+    </div>
+}

@@ -22,11 +22,11 @@
                         Select Test
                     </label>
 
-                    <CustomInputSelect Value="@selectedTest"
+                    <CustomInputSelect Value="screen.SelectedTest"
                                        ValueChanged="@( (int value) => TestChanged(value) )"
-                                       ValueExpression="@( () => selectedTest )"
+                                       ValueExpression="@( () => screen.SelectedTest )"
                                        class="form-control"
-                                       disabled="@controlsDisabled">
+                                       disabled="@screen.ControlsDisabled">
                         <option value="-1">Select test...</option>
                         <option value="0">Practice</option>
 
@@ -39,11 +39,11 @@
             </div>
         </EditForm>
 
-        @if (selectedTest == 0)
+        @if (screen.SelectedTest == 0)
         {
-            <EditForm Model="@showGaps">
+            <EditForm Model="@screen.ShowGaps">
                 <div style="display: inline-block">
-                    <button class="btn btn-primary" @onclick="Create" disabled="@controlsDisabled">
+                    <button class="btn btn-primary" @onclick="Create" disabled="@screen.ControlsDisabled">
                         Create A/V Test
                     </button>
                 </div>
@@ -56,11 +56,11 @@
                                 Show audio gap time
                             </label>
 
-                            <InputCheckbox Value="@showGaps"
+                            <InputCheckbox Value="@screen.ShowGaps"
                                            ValueChanged="@( (bool value) => ShowGapsChanged(value) )"
-                                           ValueExpression="@( () => showGaps )"
+                                           ValueExpression="@( () => screen.ShowGaps )"
                                            class="form-control"
-                                           disabled="@controlsDisabled" />
+                                           disabled="@screen.ControlsDisabled" />
                         </div>
                     </div>
 
@@ -70,11 +70,11 @@
                                 Save test
                             </label>
 
-                            <button class="btn btn-primary" @onclick="Save" disabled="@controlsDisabled">
-                                @saveLabel
+                            <button class="btn btn-primary" @onclick="Save" disabled="@screen.ControlsDisabled">
+                                @screen.SaveLabel
                             </button>
 
-                            @if (spinnerSaving == true)
+                            @if (screen.SpinnerSaving == true)
                             {
                                 <div class="spinnerinline" style="display: inline-block; vertical-align: top;
                                 margin-left: 12px; margin-top: 7px;
@@ -82,7 +82,7 @@
                                 </div>
                             }
 
-                            @if (saved == true)
+                            @if (screen.Saved == true)
                             {
                                 <div style="display: inline-block; vertical-align: top; margin-left: 12px;
                                 margin-top: 7px">
@@ -100,79 +100,16 @@
 <div style="position: relative" tabindex="0" @onkeydown="ArrowKeys" @ref="mainDiv">
     @if (blow != null)
     {
-        <div @onmousedown="TestBellMouseDown" @onmousemove="TestBellMouseMove">
-            <Bell Blow="@blow"
-                    Screen="@screen" />
-        </div>
-
-        @if (showGaps == true)
-        {
-            <GapAudioLabel Blow="@blow"
-                            Screen="@screen" />
-        }
+        <Bell Blow="@blow"
+                Screen="@screen"
+                Callback="ProcessCallback" />
 
         <audio id="@blow.AudioId" preload="auto">
             <source src="@blow.BellSound" type="audio/mpeg" />
         </audio>
 
-        <BoundaryLabel Blow="@blow"
-                        Screen="@screen" />
-
-        <GapMinus Blow="@blow"
-                    Screen="@screen"
-                    GapDisabled="@controlsDisabled"
-                    Callback="GapChangedWithButton" />
-
-        <GapCurr Blow="@blow"
-                    Screen="@screen" />
-
-        <GapPlus Blow="@blow"
-                    Screen="@screen"
-                    GapDisabled="@controlsDisabled"
-                    Callback="GapChangedWithButton" />
-
-        if (Device.DeviceLoad == DeviceLoad.Low)
-        {
-            <PlayBtn Blow="@blow"
-                        Screen="@screen"
-                        PlayLabel="@playLabel"
-                        PlayDisabled="@playDisabled"
-                        Callback="Play" />
-        }
-        else
-        {
-            <PlayBtn Blow="@blow"
-                        Screen="@screen"
-                        PlayLabel="@playLabel"
-                        PlayDisabled="@playDisabled"
-                        Callback="PlayAsync" />
-        }
-
-        @if (spinnerPlaying == true)
-        {
-            <SpinnerPlay Blow="@blow"
-                            Screen="@screen" />
-        }
-
-        @if (selectedTest != 0 && selectedTest != -1)
-        {
-            <SubmitBtn Blow="@blow"
-                        Screen="@screen"
-                        SubmitLabel="@submitLabel"
-                        SubmitDisabled="@controlsDisabled"
-                        Callback="Submit" />
-        }
-
-        @if (spinnerSubmitting == true)
-        {
-            <SpinnerSubmit Blow="@blow"
-                            Screen="@screen" />
-        }
-
-        @if (submitted == true)
-        {
-            <SubmitLabel Blow="@blow"
-                            Screen="@screen" />
-        }
+        <ControlSet Blow="@blow"
+                Screen="@screen"
+                Callback="ProcessCallback" />
     }
 </div>
