@@ -24,9 +24,6 @@ namespace StrikingInvestigation.Pages
         CancellationToken cancellationToken;
         ElementReference mainDiv;
 
-        int browserWidth;
-        int browserHeight;
-
         public GapTest()
         {
             testSpec = new TestSpec
@@ -36,11 +33,11 @@ namespace StrikingInvestigation.Pages
                 NumRows = 4,
                 ErrorType = 0,
                 ErrorSize = 80,
-                TestBellLoc = 1
+                TestBellLoc = 1,
+                SelectedTest = -1
             };
 
             screen = new Screen();
-            screen.SelectedTest = -1;
         }
 
         [Inject]
@@ -56,25 +53,31 @@ namespace StrikingInvestigation.Pages
         {
             gapTestsData = (await TJBarnesService.GetHttpClient()
                     .GetFromJsonAsync<GapTestData[]>("api/gaptests")).ToList();
-            screen.SaveLabel = "Save";
+
+            BrowserDimensions browserDimensions = await JSRuntime.InvokeAsync<BrowserDimensions>("getDimensions");
+            testSpec.BrowserWidth = browserDimensions.Width;
+            testSpec.BrowserHeight = browserDimensions.Height;
+            testSpec.DeviceLoad = Device.DeviceLoad;
+
+            testSpec.SaveLabel = "Save";
+
+            testSpec.DiameterScale = ScreenSizing.DiameterScale(testSpec.BrowserWidth);
+            testSpec.XScale = ScreenSizing.XScale(testSpec.BrowserWidth);
+            testSpec.YScale = ScreenSizing.YScale(testSpec.BrowserWidth);
+            testSpec.BorderWidth = ScreenSizing.BorderWidth(testSpec.BrowserWidth);
+            testSpec.FontSize = ScreenSizing.FontSize(testSpec.BrowserWidth);
+            testSpec.StrokeLabelXOffset = ScreenSizing.StrokeLabelXOffset(testSpec.BrowserWidth);
+            testSpec.StrokeLabelYOffset = ScreenSizing.StrokeLabelYOffset(testSpec.BrowserWidth);
+            testSpec.RowStartLabelWidth = ScreenSizing.RowStartLabelWidth(testSpec.BrowserWidth);
+            testSpec.RowStartLabelHeight = ScreenSizing.RowStartLabelHeight(testSpec.BrowserWidth);
+            testSpec.ChangeLabelXOffset = ScreenSizing.ChangeLabelXOffset(testSpec.BrowserWidth);
+            testSpec.ChangeLabelYOffset = ScreenSizing.ChangeLabelYOffset(testSpec.BrowserWidth);
+            
+            testSpec.SubmitLabel1 = "Submit";
+
+            screen.XMargin = ScreenSizing.XMargin(testSpec.BrowserWidth);
+            screen.YMargin = ScreenSizing.YMargin(testSpec.BrowserWidth);
             screen.PlayLabel = "Play";
-            screen.SubmitLabel = "Submit";
-            
-            await PopulateBrowserDimensions();
-            
-            screen.DiameterScale = ScreenSizing.DiameterScale(browserWidth);
-            screen.XScale = ScreenSizing.XScale(browserWidth);
-            screen.XMargin = ScreenSizing.XMargin(browserWidth);
-            screen.YScale = ScreenSizing.YScale(browserWidth);
-            screen.YMargin = ScreenSizing.YMargin(browserWidth);
-            screen.BorderWidth = ScreenSizing.BorderWidth(browserWidth);
-            screen.FontSize = ScreenSizing.FontSize(browserWidth);
-            screen.StrokeLabelXOffset = ScreenSizing.StrokeLabelXOffset(browserWidth);
-            screen.StrokeLabelYOffset = ScreenSizing.StrokeLabelYOffset(browserWidth);
-            screen.RowStartLabelWidth = ScreenSizing.RowStartLabelWidth(browserWidth);
-            screen.RowStartLabelHeight = ScreenSizing.RowStartLabelHeight(browserWidth);
-            screen.ChangeLabelXOffset = ScreenSizing.ChangeLabelXOffset(browserWidth);
-            screen.ChangeLabelYOffset = ScreenSizing.ChangeLabelYOffset(browserWidth);
         }
 
         protected override async void OnAfterRender(bool firstRender)
@@ -84,12 +87,12 @@ namespace StrikingInvestigation.Pages
 
         async Task TestChanged(int value)
         {
-            screen.SelectedTest = value;
+            testSpec.SelectedTest = value;
             blowSet = null;
 
-            if (screen.SelectedTest != 0 && screen.SelectedTest != -1)
+            if (testSpec.SelectedTest != 0 && testSpec.SelectedTest != -1)
             {
-                await Load(screen.SelectedTest);
+                await Load(testSpec.SelectedTest);
             }
         }
 
@@ -106,7 +109,7 @@ namespace StrikingInvestigation.Pages
                 testSpec.TenorWeight = 23;
             }
 
-            screen.TenorWeightDisabled = TenorWeightSelect.TenorWeightDisabled(testSpec.Stage);
+            testSpec.TenorWeightDisabled = TenorWeightSelect.TenorWeightDisabled(testSpec.Stage);
 
             if (blowSet != null)
             {
@@ -156,7 +159,7 @@ namespace StrikingInvestigation.Pages
 
         void ShowGapsChanged(bool value)
         {
-            screen.ShowGaps = value;
+            testSpec.ShowGaps = value;
         }
 
         void Create()
@@ -185,18 +188,18 @@ namespace StrikingInvestigation.Pages
             // When practicing in a Gap Test, gaps are rounded to the nearest 10ms so that bells will align
             // if zero gap error is selected
             int baseGap = BaseGaps.BaseGap(testSpec.Stage, testSpec.TenorWeight, 10);
-            screen.BaseGap = baseGap;
-            screen.GapMin = 20;
+            testSpec.BaseGap = baseGap;
+            testSpec.GapMin = 20;
 
             // If test bell is 1st's place of a handstroke row, need to adjust GapMax to have a higher value
             // because of the handstroke gap
             if (testSpec.NumRows % 2 == 1 && testPlace == 1)
             {
-                screen.GapMax = Convert.ToInt32(Math.Round(((double)screen.BaseGap * 3) / 50)) * 50;
+                testSpec.GapMax = Convert.ToInt32(Math.Round(((double)testSpec.BaseGap * 3) / 50)) * 50;
             }
             else
             {
-                screen.GapMax = Convert.ToInt32(Math.Round(((double)baseGap * 2) / 50)) * 50;
+                testSpec.GapMax = Convert.ToInt32(Math.Round(((double)baseGap * 2) / 50)) * 50;
             }
         }
 
@@ -225,30 +228,30 @@ namespace StrikingInvestigation.Pages
 
             // Set up test spec-dependent elements of the screen object
             int baseGap = BaseGaps.BaseGap(testSpec.Stage, testSpec.TenorWeight, 1);
-            screen.BaseGap = baseGap;
-            screen.GapMin = 20;
+            testSpec.BaseGap = baseGap;
+            testSpec.GapMin = 20;
 
             // If test bell is 1st's place of a handstroke row, need to adjust GapMax to have a higher value
             // because of the handstroke gap
             if (blowSet.Blows.Last().IsHandstroke == true && blowSet.Blows.Last().Place == 1)
             {
-                screen.GapMax = Convert.ToInt32(Math.Round(((double)screen.BaseGap * 3) / 50)) * 50;
+                testSpec.GapMax = Convert.ToInt32(Math.Round(((double)testSpec.BaseGap * 3) / 50)) * 50;
             }
             else
             {
-                screen.GapMax = Convert.ToInt32(Math.Round(((double)baseGap * 2) / 50)) * 50;
+                testSpec.GapMax = Convert.ToInt32(Math.Round(((double)baseGap * 2) / 50)) * 50;
             }
 
-            screen.ShowGaps = false;
+            testSpec.ShowGaps = false;
             StateHasChanged();
         }
 
         async Task Save()
         {
-            screen.SpinnerSaving = true;
-            screen.SaveLabel = "Wait";
-            screen.ControlsDisabled = true;
-            screen.TenorWeightDisabled = true;
+            testSpec.SpinnerSaving = true;
+            testSpec.SaveLabel = "Wait";
+            testSpec.ControlsDisabled = true;
+            testSpec.TenorWeightDisabled = true;
             screen.PlayDisabled = true;
             blowSet.Blows.Last().BellColor = Constants.DisabledUnstruckTestBellColor;
             StateHasChanged();
@@ -276,16 +279,16 @@ namespace StrikingInvestigation.Pages
             gapTestsData = (await TJBarnesService.GetHttpClient()
                     .GetFromJsonAsync<GapTestData[]>("api/gaptests")).ToList();
 
-            screen.SpinnerSaving = false;
-            screen.Saved = true;
+            testSpec.SpinnerSaving = false;
+            testSpec.Saved = true;
             StateHasChanged();
 
             await Task.Delay(1000);
 
-            screen.Saved = false;
-            screen.SaveLabel = "Save";
-            screen.ControlsDisabled = false;
-            screen.TenorWeightDisabled = TenorWeightSelect.TenorWeightDisabled(testSpec.Stage);
+            testSpec.Saved = false;
+            testSpec.SaveLabel = "Save";
+            testSpec.ControlsDisabled = false;
+            testSpec.TenorWeightDisabled = TenorWeightSelect.TenorWeightDisabled(testSpec.Stage);
             screen.PlayDisabled = false;
             blowSet.Blows.Last().BellColor = Constants.UnstruckTestBellColor;
             StateHasChanged();
@@ -307,16 +310,12 @@ namespace StrikingInvestigation.Pages
                     StateHasChanged();
                     break;
 
-                case CallbackParam.Play:
-                    if (Device.DeviceLoad == DeviceLoad.Low)
-                    {
-                        Play();
-                    }
-                    else
-                    {
-                        await PlayAsync();
-                    }
+                case CallbackParam.PlayAsync:
+                    await PlayAsync();
+                    break;
 
+                case CallbackParam.Play:
+                    Play();
                     break;
 
                 case CallbackParam.Submit:
@@ -350,8 +349,8 @@ namespace StrikingInvestigation.Pages
                 cancellationToken = cancellationTokenSource.Token;
 
                 screen.PlayLabel = "Stop";
-                screen.ControlsDisabled = true;
-                screen.TenorWeightDisabled = true;
+                testSpec.ControlsDisabled = true;
+                testSpec.TenorWeightDisabled = true;
 
                 TimeSpan delay;
                 int delayMs;
@@ -420,9 +419,9 @@ namespace StrikingInvestigation.Pages
             {
                 blowSet.Blows.Last().BellColor = Constants.UnstruckTestBellColor;
             }
-            
-            screen.ControlsDisabled = false;
-            screen.TenorWeightDisabled = TenorWeightSelect.TenorWeightDisabled(testSpec.Stage);
+
+            testSpec.ControlsDisabled = false;
+            testSpec.TenorWeightDisabled = TenorWeightSelect.TenorWeightDisabled(testSpec.Stage);
             StateHasChanged();
         }
 
@@ -442,8 +441,8 @@ namespace StrikingInvestigation.Pages
 
             screen.PlayDisabled = true;
             screen.PlayLabel = "Wait";
-            screen.ControlsDisabled = true;
-            screen.TenorWeightDisabled = true;
+            testSpec.ControlsDisabled = true;
+            testSpec.TenorWeightDisabled = true;
 
             TimeSpan delay;
             int delayMs;
@@ -479,16 +478,16 @@ namespace StrikingInvestigation.Pages
 
             // Reset screen
             blowSet.Blows.Last().BellColor = Constants.UnstruckTestBellColor;
-            screen.ControlsDisabled = false;
-            screen.TenorWeightDisabled = TenorWeightSelect.TenorWeightDisabled(testSpec.Stage);
+            testSpec.ControlsDisabled = false;
+            testSpec.TenorWeightDisabled = TenorWeightSelect.TenorWeightDisabled(testSpec.Stage);
             StateHasChanged();
         }
 
         async Task Submit()
         {
-            screen.SpinnerSubmitting = true;
-            screen.SubmitLabel = "Wait";
-            screen.ControlsDisabled = true;
+            testSpec.SpinnerSubmitting1 = true;
+            testSpec.SubmitLabel1 = "Wait";
+            testSpec.ControlsDisabled = true;
             screen.PlayDisabled = true;
             blowSet.Blows.Last().BellColor = Constants.DisabledUnstruckTestBellColor;
             StateHasChanged();
@@ -499,23 +498,23 @@ namespace StrikingInvestigation.Pages
                 UserId = string.Empty,
                 TestDate = DateTime.Now,
                 TestType = "Gap Test",
-                TestId = screen.SelectedTest,
+                TestId = testSpec.SelectedTest,
                 Gap = blowSet.Blows.Last().Gap,
-                AB = string.Empty
+                ABResult = ABResult.NA
             };
 
             // Push the testSubmission to the API in JSON format
             await TJBarnesService.GetHttpClient().PostAsJsonAsync("api/testsubmissions", testSubmission);
 
-            screen.SpinnerSubmitting = false;
-            screen.Submitted = true;
+            testSpec.SpinnerSubmitting1 = false;
+            testSpec.Submitted1 = true;
             StateHasChanged();
 
             await Task.Delay(1000);
 
-            screen.Submitted = false;
-            screen.SubmitLabel = "Submit";
-            screen.ControlsDisabled = false;
+            testSpec.Submitted1 = false;
+            testSpec.SubmitLabel1 = "Submit";
+            testSpec.ControlsDisabled = false;
             screen.PlayDisabled = false;
             blowSet.Blows.Last().BellColor = Constants.UnstruckTestBellColor;
             StateHasChanged();
@@ -523,14 +522,16 @@ namespace StrikingInvestigation.Pages
 
         void ArrowKeys(KeyboardEventArgs e)
         {
-            // Keyboard arrows only active when a blowset is populated and when in Play mode
-            if (blowSet != null && screen.PlayLabel == "Play")
+            // Keyboard arrows only active when a blowset is populated, the play button says Play (as opposed to
+            // Stop or Wait), and the Play button is not disabled
+            // The last test is needed because when submitting, the play button says Play
+            if (blowSet != null && screen.PlayLabel == "Play" && screen.PlayDisabled == false)
             {
                 if (e.Key == "ArrowLeft")
                 {
                     int newGap = blowSet.Blows.Last().Gap - Constants.Rounding;
 
-                    if (newGap >= screen.GapMin)
+                    if (newGap >= testSpec.GapMin)
                     {
                         blowSet.Blows.Last().UpdateGap(newGap);
                     }
@@ -539,19 +540,12 @@ namespace StrikingInvestigation.Pages
                 {
                     int newGap = blowSet.Blows.Last().Gap + Constants.Rounding;
 
-                    if (newGap <= screen.GapMax)
+                    if (newGap <= testSpec.GapMax)
                     {
                         blowSet.Blows.Last().UpdateGap(newGap);
                     }
                 }
             }
-        }
-
-        async Task PopulateBrowserDimensions()
-        {
-            BrowserDimensions browserDimensions = await JSRuntime.InvokeAsync<BrowserDimensions>("getDimensions");
-            browserWidth = browserDimensions.Width;
-            browserHeight = browserDimensions.Height;
         }
     }
 }

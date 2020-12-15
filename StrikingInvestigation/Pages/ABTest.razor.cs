@@ -18,45 +18,11 @@ namespace StrikingInvestigation.Pages
         readonly TestSpec testSpec;
         readonly Screen screenA;
         readonly Screen screenB;
-        int selectedTest;
-
         BlowSet blowSetA;
         BlowSet blowSetB;
 
-        bool controlsDisabled;
-        bool tenorWeightDisabled;
-        bool playDisabledA;
-        bool playDisabledB;
-
-        string saveLabel;
-        string playLabelA;
-        string playLabelB;
-        string submitLabel1;
-        string submitLabel2;
-        string submitLabel3;
-
-        bool spinnerSaving;
-        bool spinnerPlayingA;
-        bool spinnerPlayingB;
-        bool spinnerSubmitting1;
-        bool spinnerSubmitting2;
-        bool spinnerSubmitting3;
-
-        bool saved;
-        bool submitted1;
-        bool submitted2;
-        bool submitted3;
-
         CancellationTokenSource cancellationTokenSource;
         CancellationToken cancellationToken;
-
-        bool isA;
-        bool resultSound;
-        string resultSource;
-        bool resultEntered;
-
-        int browserWidth;
-        int browserHeight;
 
         public ABTest()
         {
@@ -67,12 +33,12 @@ namespace StrikingInvestigation.Pages
                 NumRows = 4,
                 ErrorType = 1,
                 ErrorSize = 60,
-                TestBellLoc = 0 // Indicates no test bell
+                TestBellLoc = 0, // Indicates no test bell
+                SelectedTest = -1
             };
 
             screenA = new Screen();
             screenB = new Screen();
-            selectedTest = -1;
         }
 
         [Inject]
@@ -88,53 +54,50 @@ namespace StrikingInvestigation.Pages
         {
             aBTestsData = (await TJBarnesService.GetHttpClient()
                     .GetFromJsonAsync<ABTestData[]>("api/abtests")).ToList();
-            saveLabel = "Save";
-            playLabelA = "Play A";
-            playLabelB = "Play B";
-            submitLabel1 = "A has errors";
-            submitLabel2 = "B has errors";
-            submitLabel3 = "I can't tell which has errors";
-            
-            await PopulateBrowserDimensions();
 
-            screenA.DiameterScale = ScreenSizing.DiameterScale(browserWidth);
-            screenA.XScale = ScreenSizing.XScale(browserWidth);
-            screenA.XMargin = ScreenSizing.XMargin(browserWidth);
-            screenA.YScale = ScreenSizing.YScale(browserWidth);
-            screenA.YMargin = ScreenSizing.YMargin(browserWidth);
-            screenA.BorderWidth = ScreenSizing.BorderWidth(browserWidth);
-            screenA.FontSize = ScreenSizing.FontSize(browserWidth);
-            screenA.StrokeLabelXOffset = ScreenSizing.StrokeLabelXOffset(browserWidth);
-            screenA.StrokeLabelYOffset = ScreenSizing.StrokeLabelYOffset(browserWidth);
-            screenA.RowStartLabelWidth = ScreenSizing.RowStartLabelWidth(browserWidth);
-            screenA.RowStartLabelHeight = ScreenSizing.RowStartLabelHeight(browserWidth);
-            screenA.ChangeLabelXOffset = ScreenSizing.ChangeLabelXOffset(browserWidth);
-            screenA.ChangeLabelYOffset = ScreenSizing.ChangeLabelYOffset(browserWidth);
+            BrowserDimensions browserDimensions = await JSRuntime.InvokeAsync<BrowserDimensions>("getDimensions");
+            testSpec.BrowserWidth = browserDimensions.Width;
+            testSpec.BrowserHeight = browserDimensions.Height;
+            testSpec.DeviceLoad = Device.DeviceLoad;
 
-            screenB.DiameterScale = ScreenSizing.DiameterScale(browserWidth);
-            screenB.XScale = ScreenSizing.XScale(browserWidth);
-            screenB.XMargin = ScreenSizing.XMargin(browserWidth);
-            screenB.YScale = ScreenSizing.YScale(browserWidth);
-            screenB.YMargin = ScreenSizing.YMarginB(browserWidth);
-            screenB.BorderWidth = ScreenSizing.BorderWidth(browserWidth);
-            screenB.FontSize = ScreenSizing.FontSize(browserWidth);
-            screenB.StrokeLabelXOffset = ScreenSizing.StrokeLabelXOffset(browserWidth);
-            screenB.StrokeLabelYOffset = ScreenSizing.StrokeLabelYOffset(browserWidth);
-            screenB.RowStartLabelWidth = ScreenSizing.RowStartLabelWidth(browserWidth);
-            screenB.RowStartLabelHeight = ScreenSizing.RowStartLabelHeight(browserWidth);
-            screenB.ChangeLabelXOffset = ScreenSizing.ChangeLabelXOffset(browserWidth);
-            screenB.ChangeLabelYOffset = ScreenSizing.ChangeLabelYOffset(browserWidth);
+            testSpec.SaveLabel = "Save";
+
+            testSpec.DiameterScale = ScreenSizing.DiameterScale(testSpec.BrowserWidth);
+            testSpec.XScale = ScreenSizing.XScale(testSpec.BrowserWidth);
+            testSpec.YScale = ScreenSizing.YScale(testSpec.BrowserWidth);
+            testSpec.BorderWidth = ScreenSizing.BorderWidth(testSpec.BrowserWidth);
+            testSpec.FontSize = ScreenSizing.FontSize(testSpec.BrowserWidth);
+            testSpec.StrokeLabelXOffset = ScreenSizing.StrokeLabelXOffset(testSpec.BrowserWidth);
+            testSpec.StrokeLabelYOffset = ScreenSizing.StrokeLabelYOffset(testSpec.BrowserWidth);
+            testSpec.RowStartLabelWidth = ScreenSizing.RowStartLabelWidth(testSpec.BrowserWidth);
+            testSpec.RowStartLabelHeight = ScreenSizing.RowStartLabelHeight(testSpec.BrowserWidth);
+            testSpec.ChangeLabelXOffset = ScreenSizing.ChangeLabelXOffset(testSpec.BrowserWidth);
+            testSpec.ChangeLabelYOffset = ScreenSizing.ChangeLabelYOffset(testSpec.BrowserWidth);
+
+            testSpec.SubmitLabel1 = "A has errors";
+            testSpec.SubmitLabel2 = "B has errors";
+            testSpec.SubmitLabel3 = "I can't tell which has errors";
+
+            screenA.IsA = true;
+            screenA.XMargin = ScreenSizing.XMargin(testSpec.BrowserWidth);
+            screenA.YMargin = ScreenSizing.YMargin(testSpec.BrowserWidth);
+            screenA.PlayLabel = "Play A";
+
+            screenB.IsA = false;
+            screenB.XMargin = ScreenSizing.XMargin(testSpec.BrowserWidth);
+            screenB.YMargin = ScreenSizing.YMarginB(testSpec.BrowserWidth);
+            screenB.PlayLabel = "Play B";
         }
 
         async Task TestChanged(int value)
         {
-            selectedTest = value;
+            testSpec.SelectedTest = value;
             blowSetA = null;
             blowSetB = null;
 
-            if (selectedTest != 0 && selectedTest != -1)
+            if (testSpec.SelectedTest != 0 && testSpec.SelectedTest != -1)
             {
-                await Load(selectedTest);
+                await Load(testSpec.SelectedTest);
             }
         }
 
@@ -151,7 +114,7 @@ namespace StrikingInvestigation.Pages
                 testSpec.TenorWeight = 23;
             }
 
-            tenorWeightDisabled = TenorWeightSelect.TenorWeightDisabled(testSpec.Stage);
+            testSpec.TenorWeightDisabled = TenorWeightSelect.TenorWeightDisabled(testSpec.Stage);
 
             if (blowSetA != null)
             {
@@ -211,22 +174,21 @@ namespace StrikingInvestigation.Pages
 
         void ShowGapsChanged(bool value)
         {
-            screenA.ShowGaps = value;
-            screenB.ShowGaps = value;
+            testSpec.ShowGaps = value;
         }
 
         void Create()
         {
             // Choose whether A or B will have the errors
             Random rand = new Random();
-            isA = rand.Next(0, 2) == 0;
+            testSpec.AHasErrors = rand.Next(0, 2) == 0;
 
             // Create the test block
             Block testBlock = new Block(testSpec.Stage, testSpec.NumRows);
             testBlock.CreateRandomBlock();
 
             blowSetA = new BlowSet(testSpec.Stage, testSpec.NumRows, testSpec.TenorWeight,
-                    testSpec.ErrorType, isA);
+                    testSpec.ErrorType, testSpec.AHasErrors);
             blowSetA.PopulateBlows(testBlock, testSpec.TestBellLoc, "a");
 
             // No rounding in an A/B test
@@ -234,14 +196,14 @@ namespace StrikingInvestigation.Pages
             blowSetA.SetUnstruck();
 
             blowSetB = new BlowSet(testSpec.Stage, testSpec.NumRows, testSpec.TenorWeight,
-                    testSpec.ErrorType, !isA);
+                    testSpec.ErrorType, !testSpec.AHasErrors);
             blowSetB.PopulateBlows(testBlock, testSpec.TestBellLoc, "b");
 
             // No rounding in an A/B test
             blowSetB.CreateEvenSpacing(1);
             blowSetB.SetUnstruck();
 
-            if (isA == true)
+            if (testSpec.AHasErrors == true)
             {
                 if (testSpec.ErrorType == 1)
                 {
@@ -266,16 +228,14 @@ namespace StrikingInvestigation.Pages
 
             // Set up test spec-dependent elements of the screen object
             int baseGap = BaseGaps.BaseGap(testSpec.Stage, testSpec.TenorWeight, 1);
-            screenA.BaseGap = baseGap;
-            screenB.BaseGap = baseGap;
+            testSpec.BaseGap = baseGap;
 
             // Set the timing for the animation (when not showing the bells)
             screenA.AnimationDuration = blowSetA.Blows.Last().GapCumulative + 1000;
             screenB.AnimationDuration = blowSetB.Blows.Last().GapCumulative + 1000;
-            resultEntered = false;
+            testSpec.ResultEntered = false;
 
-            screenA.ShowGaps = false;
-            screenB.ShowGaps = false;
+            testSpec.ShowGaps = false;
         }
 
         async Task Load(int id)
@@ -289,7 +249,7 @@ namespace StrikingInvestigation.Pages
             BlowSetCore blowSetCoreA = JsonSerializer.Deserialize<BlowSetCore>(aBTestData.ABTestSpecA);
             BlowSetCore blowSetCoreB = JsonSerializer.Deserialize<BlowSetCore>(aBTestData.ABTestSpecB);
 
-            isA = blowSetCoreA.HasErrors;
+            testSpec.AHasErrors = blowSetCoreA.HasErrors;
 
             // Create a BlowSet object from the BlowSetCore object for A
             blowSetA = new BlowSet(blowSetCoreA.Stage, blowSetCoreA.NumRows, blowSetCoreA.TenorWeight,
@@ -317,27 +277,25 @@ namespace StrikingInvestigation.Pages
 
             // Set up test spec-dependent elements of the screen object
             int baseGap = BaseGaps.BaseGap(testSpec.Stage, testSpec.TenorWeight, 1);
-            screenA.BaseGap = baseGap;
-            screenB.BaseGap = baseGap;
+            testSpec.BaseGap = baseGap;
 
             // Set the timing for the animation (when not showing the bells)
             screenA.AnimationDuration = blowSetA.Blows.Last().GapCumulative + 1000;
             screenB.AnimationDuration = blowSetB.Blows.Last().GapCumulative + 1000;
-            resultEntered = false;
+            testSpec.ResultEntered = false;
 
-            screenA.ShowGaps = false;
-            screenB.ShowGaps = false;
+            testSpec.ShowGaps = false;
             StateHasChanged();
         }
 
         async Task Save()
         {
-            spinnerSaving = true;
-            saveLabel = "Wait";
-            controlsDisabled = true;
-            tenorWeightDisabled = true;
-            playDisabledA = true;
-            playDisabledB = true;
+            testSpec.SpinnerSaving = true;
+            testSpec.SaveLabel = "Wait";
+            testSpec.ControlsDisabled = true;
+            testSpec.TenorWeightDisabled = true;
+            screenA.PlayDisabled = true;
+            screenB.PlayDisabled = true;
             StateHasChanged();
 
             // Push the created test to the API in JSON format
@@ -366,26 +324,57 @@ namespace StrikingInvestigation.Pages
             aBTestsData = (await TJBarnesService.GetHttpClient()
                     .GetFromJsonAsync<ABTestData[]>("api/abtests")).ToList();
 
-            spinnerSaving = false;
-            saved = true;
+            testSpec.SpinnerSaving = false;
+            testSpec.Saved = true;
             StateHasChanged();
 
             await Task.Delay(1000);
 
-            saved = false;
-            saveLabel = "Save";
-            controlsDisabled = false;
-            tenorWeightDisabled = TenorWeightSelect.TenorWeightDisabled(testSpec.Stage);
-            playDisabledA = false;
-            playDisabledB = false;
+            testSpec.Saved = false;
+            testSpec.SaveLabel = "Save";
+            testSpec.ControlsDisabled = false;
+            testSpec.TenorWeightDisabled = TenorWeightSelect.TenorWeightDisabled(testSpec.Stage);
+            screenA.PlayDisabled = false;
+            screenB.PlayDisabled = false;
             StateHasChanged();
+        }
+
+        async Task ProcessCallback(CallbackParam callbackParam)
+        {
+            switch (callbackParam)
+            {
+                case CallbackParam.PlayAsyncA:
+                    await PlayAsyncA();
+                    break;
+
+                case CallbackParam.PlayA:
+                    PlayA();
+                    break;
+
+                case CallbackParam.PlayAsyncB:
+                    await PlayAsyncB();
+                    break;
+
+                case CallbackParam.PlayB:
+                    PlayB();
+                    break;
+
+                case CallbackParam.AHasErrors:
+                case CallbackParam.BHasErrors:
+                case CallbackParam.DontKnow:
+                    await Submit(callbackParam);
+                    break;
+
+                default:
+                    break;
+            }
         }
 
         async Task PlayAsyncA()
         {
             int initialDelay = 1000;
 
-            if (playLabelA == "Play A")
+            if (screenA.PlayLabel == "Play A")
             {
                 DateTime strikeTime = DateTime.Now;
 
@@ -399,13 +388,13 @@ namespace StrikingInvestigation.Pages
                 cancellationTokenSource = new CancellationTokenSource();
                 cancellationToken = cancellationTokenSource.Token;
 
-                playLabelA = "Stop A";
-                controlsDisabled = true;
-                tenorWeightDisabled = true;
-                playDisabledB = true;
+                screenA.PlayLabel = "Stop A";
+                testSpec.ControlsDisabled = true;
+                testSpec.TenorWeightDisabled = true;
+                screenB.PlayDisabled = true;
 
                 // Start the animation if not showing the bells
-                if (screenA.ShowGaps == false)
+                if (testSpec.ShowGaps == false)
                 {
                     screenA.RunAnimation = true;
                 }
@@ -429,7 +418,7 @@ namespace StrikingInvestigation.Pages
                     }
 
                     // Change bell color
-                    if (Device.DeviceLoad == DeviceLoad.High && screenA.ShowGaps == true)
+                    if (Device.DeviceLoad == DeviceLoad.High && testSpec.ShowGaps == true)
                     {
                         blow.BellColor = Constants.StruckBellColor;
 
@@ -441,7 +430,7 @@ namespace StrikingInvestigation.Pages
                     await JSRuntime.InvokeVoidAsync("PlayBellAudio", blow.AudioId);
                 }
             }
-            else if (playLabelA == "Stop A")
+            else if (screenA.PlayLabel == "Stop A")
             {
                 cancellationTokenSource.Cancel();
                 initialDelay = 0;
@@ -456,16 +445,16 @@ namespace StrikingInvestigation.Pages
             else
             {
                 // Reset animation immediately when test is stopped
-                if (screenA.ShowGaps == false)
+                if (testSpec.ShowGaps == false)
                 {
                     screenA.RunAnimation = false;
                 }
             }
 
             // Start spinner
-            playDisabledA = true;
-            playLabelA = "Wait";
-            spinnerPlayingA = true;
+            screenA.PlayDisabled = true;
+            screenA.PlayLabel = "Wait";
+            screenA.SpinnerPlaying = true;
             StateHasChanged();
 
             // Wait 2.6 or 1.6 further seconds for the sound to finish, depending on whether arriving here
@@ -473,25 +462,25 @@ namespace StrikingInvestigation.Pages
             await Task.Delay(2600 - initialDelay);
 
             // Reset animation, unless it was already reset earlier after a stop
-            if (initialDelay > 0 && screenA.ShowGaps == false)
+            if (initialDelay > 0 && testSpec.ShowGaps == false)
             {
                 screenA.RunAnimation = false;
             }
 
             // Reset play button
-            spinnerPlayingA = false;
-            playLabelA = "Play A";
-            playDisabledA = false;
+            screenA.SpinnerPlaying = false;
+            screenA.PlayLabel = "Play A";
+            screenA.PlayDisabled = false;
 
             // Reset screen
-            if (Device.DeviceLoad == DeviceLoad.High && screenA.ShowGaps == true)
+            if (Device.DeviceLoad == DeviceLoad.High && testSpec.ShowGaps == true)
             {
                 blowSetA.SetUnstruck();
             }
-                        
-            controlsDisabled = false;
-            tenorWeightDisabled = TenorWeightSelect.TenorWeightDisabled(testSpec.Stage);
-            playDisabledB = false;
+
+            testSpec.ControlsDisabled = false;
+            testSpec.TenorWeightDisabled = TenorWeightSelect.TenorWeightDisabled(testSpec.Stage);
+            screenB.PlayDisabled = false;
             StateHasChanged();
         }
 
@@ -499,7 +488,7 @@ namespace StrikingInvestigation.Pages
         {
             int initialDelay = 1000;
 
-            if (playLabelB == "Play B")
+            if (screenB.PlayLabel == "Play B")
             {
                 DateTime strikeTime = DateTime.Now;
 
@@ -513,13 +502,13 @@ namespace StrikingInvestigation.Pages
                 cancellationTokenSource = new CancellationTokenSource();
                 cancellationToken = cancellationTokenSource.Token;
 
-                playLabelB = "Stop B";
-                controlsDisabled = true;
-                tenorWeightDisabled = true;
-                playDisabledA = true;
+                screenB.PlayLabel = "Stop B";
+                testSpec.ControlsDisabled = true;
+                testSpec.TenorWeightDisabled = true;
+                screenA.PlayDisabled = true;
 
                 // Start the animation if not showing the bells
-                if (screenB.ShowGaps == false)
+                if (testSpec.ShowGaps == false)
                 {
                     screenB.RunAnimation = true;
                 }
@@ -543,7 +532,7 @@ namespace StrikingInvestigation.Pages
                     }
 
                     // Change bell color
-                    if (Device.DeviceLoad == DeviceLoad.High && screenB.ShowGaps == true)
+                    if (Device.DeviceLoad == DeviceLoad.High && testSpec.ShowGaps == true)
                     {
                         blow.BellColor = Constants.StruckBellColor;
 
@@ -555,7 +544,7 @@ namespace StrikingInvestigation.Pages
                     await JSRuntime.InvokeVoidAsync("PlayBellAudio", blow.AudioId);
                 }
             }
-            else if (playLabelB == "Stop B")
+            else if (screenB.PlayLabel == "Stop B")
             {
                 cancellationTokenSource.Cancel();
                 initialDelay = 0;
@@ -570,16 +559,16 @@ namespace StrikingInvestigation.Pages
             else
             {
                 // Reset animation immediately when test is stopped
-                if (screenB.ShowGaps == false)
+                if (testSpec.ShowGaps == false)
                 {
                     screenB.RunAnimation = false;
                 }
             }
 
             // Start spinner
-            playDisabledB = true;
-            playLabelB = "Wait";
-            spinnerPlayingB = true;
+            screenB.PlayDisabled = true;
+            screenB.PlayLabel = "Wait";
+            screenB.SpinnerPlaying = true;
             StateHasChanged();
 
             // Wait 2.6 or 1.6 further seconds for the sound to finish, depending on whether arriving here
@@ -587,25 +576,25 @@ namespace StrikingInvestigation.Pages
             await Task.Delay(2600 - initialDelay);
 
             // Reset animation, unless it was already reset earlier after a stop
-            if (initialDelay > 0 && screenB.ShowGaps == false)
+            if (initialDelay > 0 && testSpec.ShowGaps == false)
             {
                 screenB.RunAnimation = false;
             }
 
             // Reset play button
-            spinnerPlayingB = false;
-            playLabelB = "Play B";
-            playDisabledB = false;
+            screenB.SpinnerPlaying = false;
+            screenB.PlayLabel = "Play B";
+            screenB.PlayDisabled = false;
 
             // Reset screen
-            if (Device.DeviceLoad == DeviceLoad.High && screenB.ShowGaps == true)
+            if (Device.DeviceLoad == DeviceLoad.High && testSpec.ShowGaps == true)
             {
                 blowSetB.SetUnstruck();
             }
 
-            controlsDisabled = false;
-            tenorWeightDisabled = TenorWeightSelect.TenorWeightDisabled(testSpec.Stage);
-            playDisabledA = false;
+            testSpec.ControlsDisabled = false;
+            testSpec.TenorWeightDisabled = TenorWeightSelect.TenorWeightDisabled(testSpec.Stage);
+            screenA.PlayDisabled = false;
             StateHasChanged();
         }
 
@@ -620,14 +609,14 @@ namespace StrikingInvestigation.Pages
                 blow.StrikeTime = strikeTime;
             }
 
-            playDisabledA = true;
-            playLabelA = "Wait";
-            controlsDisabled = true;
-            tenorWeightDisabled = true;
-            playDisabledB = true;
+            screenA.PlayDisabled = true;
+            screenA.PlayLabel = "Wait";
+            testSpec.ControlsDisabled = true;
+            testSpec.TenorWeightDisabled = true;
+            screenB.PlayDisabled = true;
 
             // Start the animation if not showing the bells
-            if (screenA.ShowGaps == false)
+            if (testSpec.ShowGaps == false)
             {
                 screenA.RunAnimation = true;
             }
@@ -653,27 +642,27 @@ namespace StrikingInvestigation.Pages
             await Task.Delay(1000);
 
             // Start spinner
-            spinnerPlayingA = true;
+            screenA.SpinnerPlaying = true;
             StateHasChanged();
 
             // Wait 1.6 further seconds for the sound to finish
             await Task.Delay(1600);
 
             // Reset animation
-            if (screenA.ShowGaps == false)
+            if (testSpec.ShowGaps == false)
             {
                 screenA.RunAnimation = false;
             }
 
             // Reset play button
-            spinnerPlayingA = false;
-            playLabelA = "Play A";
-            playDisabledA = false;
+            screenA.SpinnerPlaying = false;
+            screenA.PlayLabel = "Play A";
+            screenA.PlayDisabled = false;
 
             // Reset screen
-            controlsDisabled = false;
-            tenorWeightDisabled = TenorWeightSelect.TenorWeightDisabled(testSpec.Stage);
-            playDisabledB = false;
+            testSpec.ControlsDisabled = false;
+            testSpec.TenorWeightDisabled = TenorWeightSelect.TenorWeightDisabled(testSpec.Stage);
+            screenB.PlayDisabled = false;
             StateHasChanged();
         }
 
@@ -688,14 +677,14 @@ namespace StrikingInvestigation.Pages
                 blow.StrikeTime = strikeTime;
             }
 
-            playDisabledB = true;
-            playLabelB = "Wait";
-            controlsDisabled = true;
-            tenorWeightDisabled = true;
-            playDisabledA = true;
+            screenB.PlayDisabled = true;
+            screenB.PlayLabel = "Wait";
+            testSpec.ControlsDisabled = true;
+            testSpec.TenorWeightDisabled = true;
+            screenA.PlayDisabled = true;
 
             // Start the animation if not showing the bells
-            if (screenB.ShowGaps == false)
+            if (testSpec.ShowGaps == false)
             {
                 screenB.RunAnimation = true;
             }
@@ -721,204 +710,178 @@ namespace StrikingInvestigation.Pages
             await Task.Delay(1000);
 
             // Start spinner
-            spinnerPlayingB = true;
+            screenB.SpinnerPlaying = true;
             StateHasChanged();
 
             // Wait 1.6 further seconds for the sound to finish
             await Task.Delay(1600);
 
             // Reset animation
-            if (screenB.ShowGaps == false)
+            if (testSpec.ShowGaps == false)
             {
                 screenB.RunAnimation = false;
             }
 
             // Reset play button
-            spinnerPlayingB = false;
-            playLabelB = "Play B";
-            playDisabledB = false;
+            screenB.SpinnerPlaying = false;
+            screenB.PlayLabel = "Play B";
+            screenB.PlayDisabled = false;
 
             // Reset screen
-            controlsDisabled = false;
-            tenorWeightDisabled = TenorWeightSelect.TenorWeightDisabled(testSpec.Stage);
-            playDisabledA = false;
+            testSpec.ControlsDisabled = false;
+            testSpec.TenorWeightDisabled = TenorWeightSelect.TenorWeightDisabled(testSpec.Stage);
+            screenA.PlayDisabled = false;
             StateHasChanged();
         }
 
-        async Task AHasErrors()
+        async Task Submit(CallbackParam callbackParam)
         {
-            if (selectedTest != 0 && selectedTest != -1)
+            if (testSpec.SelectedTest != 0 && testSpec.SelectedTest != -1)
             {
-                await Submit("A has errors");
+                ABResult aBResult;
+
+                // Set the applicable submit button to Wait with a spinner
+                switch (callbackParam)
+                {
+                    case CallbackParam.AHasErrors:
+                        testSpec.SpinnerSubmitting1 = true;
+                        testSpec.SubmitLabel1 = "Wait";
+                        aBResult = ABResult.AHasErrors;
+                        break;
+
+                    case CallbackParam.BHasErrors:
+                        testSpec.SpinnerSubmitting2 = true;
+                        testSpec.SubmitLabel2 = "Wait";
+                        aBResult = ABResult.BHasErrors;
+                        break;
+
+                    case CallbackParam.DontKnow:
+                        testSpec.SpinnerSubmitting3 = true;
+                        testSpec.SubmitLabel3 = "Wait";
+                        aBResult = ABResult.DontKnow;
+                        break;
+
+                    default:
+                        aBResult = ABResult.DontKnow;
+                        break;
+                }
+
+                testSpec.ControlsDisabled = true;
+                testSpec.TenorWeightDisabled = true;
+                screenA.PlayDisabled = true;
+                screenB.PlayDisabled = true;
+                StateHasChanged();
+
+                // Create a TestSubmission object
+                TestSubmission testSubmission = new TestSubmission()
+                {
+                    UserId = string.Empty,
+                    TestDate = DateTime.Now,
+                    TestType = "A/B Test",
+                    TestId = testSpec.SelectedTest,
+                    ABResult = aBResult
+                };
+
+                // Push the testSubmission to the API in JSON format
+                await TJBarnesService.GetHttpClient().PostAsJsonAsync("api/testsubmissions", testSubmission);
+
+                switch (callbackParam)
+                {
+                    case CallbackParam.AHasErrors:
+                        testSpec.SpinnerSubmitting1 = false;
+                        testSpec.Submitted1 = true;
+                        break;
+
+                    case CallbackParam.BHasErrors:
+                        testSpec.SpinnerSubmitting2 = false;
+                        testSpec.Submitted2 = true;
+                        break;
+
+                    case CallbackParam.DontKnow:
+                        testSpec.SpinnerSubmitting3 = false;
+                        testSpec.Submitted3 = true;
+                        break;
+
+                    default:
+                        break;
+                }
+
+                StateHasChanged();
+
+                await Task.Delay(1000);
+
+                switch (callbackParam)
+                {
+                    case CallbackParam.AHasErrors:
+                        testSpec.Submitted1 = false;
+                        testSpec.SubmitLabel1 = "A has errors";
+                        break;
+
+                    case CallbackParam.BHasErrors:
+                        testSpec.Submitted2 = false;
+                        testSpec.SubmitLabel2 = "B has errors";
+                        break;
+
+                    case CallbackParam.DontKnow:
+                        testSpec.Submitted3 = false;
+                        testSpec.SubmitLabel3 = "I can't tell which has errors";
+                        break;
+
+                    default:
+                        break;
+                }
+
+                testSpec.ControlsDisabled = false;
+                testSpec.TenorWeightDisabled = TenorWeightSelect.TenorWeightDisabled(testSpec.Stage);
+                screenA.PlayDisabled = false;
+                screenB.PlayDisabled = false;
+                StateHasChanged();
             }
             else
             {
-                screenA.ShowGaps = true;
-                screenB.ShowGaps = true;
-                resultEntered = true;
-
-                if (isA == true)
+                testSpec.ShowGaps = true;
+                testSpec.ResultEntered = true;
+                
+                if (callbackParam == CallbackParam.AHasErrors || callbackParam == CallbackParam.BHasErrors)
                 {
-                    resultSource = "/audio/right.mp3";
+                    switch (callbackParam)
+                    {
+                        case CallbackParam.AHasErrors:
+                            if (testSpec.AHasErrors == true)
+                            {
+                                testSpec.ResultSource = "/audio/right.mp3";
+                            }
+                            else
+                            {
+                                testSpec.ResultSource = "/audio/wrong.mp3";
+                            }
+                        
+                            break;
+
+                        case CallbackParam.BHasErrors:
+                            if (testSpec.AHasErrors == true)
+                            {
+                                testSpec.ResultSource = "/audio/wrong.mp3";
+                            }
+                            else
+                            {
+                                testSpec.ResultSource = "/audio/right.mp3";
+                            }
+                        
+                            break;
+
+                        default:
+                            break;
+                    }
+
+                    testSpec.ResultSound = true;
+
+                    // Wait for 1.5 seconds for the sound to finish
+                    await Task.Delay(1500);
+
+                    testSpec.ResultSound = false;
                 }
-                else
-                {
-                    resultSource = "/audio/wrong.mp3";
-                }
-
-                resultSound = true;
-
-                // Wait for 1.5 seconds for the sound to finish
-                await Task.Delay(1500);
-
-                resultSound = false;
             }
-        }
-
-        async Task BHasErrors()
-        {
-            if (selectedTest != 0 && selectedTest != -1)
-            {
-                await Submit("B has errors");
-            }
-            else
-            {
-                screenA.ShowGaps = true;
-                screenB.ShowGaps = true;
-                resultEntered = true;
-
-                if (isA == true)
-                {
-                    resultSource = "/audio/wrong.mp3";
-                }
-                else
-                {
-                    resultSource = "/audio/right.mp3";
-                }
-
-                resultSound = true;
-
-                // Wait for 1.5 seconds for the sound to finish
-                await Task.Delay(1500);
-
-                resultSound = false;
-            }
-        }
-
-        async Task DontKnow()
-        {
-            if (selectedTest != 0 && selectedTest != -1)
-            {
-                await Submit("Don't know");
-            }
-            else
-            {
-                screenA.ShowGaps = true;
-                screenB.ShowGaps = true;
-                resultEntered = true;
-            }
-        }
-
-        async Task Submit(string result)
-        {
-            switch (result)
-            {
-                case "A has errors":
-                    spinnerSubmitting1 = true;
-                    submitLabel1 = "Wait";
-                    break;
-
-                case "B has errors":
-                    spinnerSubmitting2 = true;
-                    submitLabel2 = "Wait";
-                    break;
-
-                case "Don't know":
-                    spinnerSubmitting3 = true;
-                    submitLabel3 = "Wait";
-                    break;
-
-                default:
-                    break;
-            }
-
-            controlsDisabled = true;
-            tenorWeightDisabled = true;
-            playDisabledA = true;
-            playDisabledB = true;
-            StateHasChanged();
-
-            // Create a TestSubmission object
-            TestSubmission testSubmission = new TestSubmission()
-            {
-                UserId = string.Empty,
-                TestDate = DateTime.Now,
-                TestType = "A/B Test",
-                TestId = selectedTest,
-                AB = result
-            };
-
-            // Push the testSubmission to the API in JSON format
-            await TJBarnesService.GetHttpClient().PostAsJsonAsync("api/testsubmissions", testSubmission);
-
-            switch (result)
-            {
-                case "A has errors":
-                    spinnerSubmitting1 = false;
-                    submitted1 = true;
-                    break;
-
-                case "B has errors":
-                    spinnerSubmitting2 = false;
-                    submitted2 = true;
-                    break;
-
-                case "Don't know":
-                    spinnerSubmitting3 = false;
-                    submitted3 = true;
-                    break;
-
-                default:
-                    break;
-            }
-            
-            StateHasChanged();
-
-            await Task.Delay(1000);
-
-            switch (result)
-            {
-                case "A has errors":
-                    submitted1 = false;
-                    submitLabel1 = "A has errors";
-                    break;
-
-                case "B has errors":
-                    submitted2 = false;
-                    submitLabel2 = "B has errors";
-                    break;
-
-                case "Don't know":
-                    submitted3 = false;
-                    submitLabel3 = "I can't tell which has errors";
-                    break;
-
-                default:
-                    break;
-            }
-
-            controlsDisabled = false;
-            tenorWeightDisabled = TenorWeightSelect.TenorWeightDisabled(testSpec.Stage);
-            playDisabledA = false;
-            playDisabledB = false;
-            StateHasChanged();
-        }
-
-        async Task PopulateBrowserDimensions()
-        {
-            BrowserDimensions browserDimensions = await JSRuntime.InvokeAsync<BrowserDimensions>("getDimensions");
-            browserWidth = browserDimensions.Width;
-            browserHeight = browserDimensions.Height;
         }
     }
 }

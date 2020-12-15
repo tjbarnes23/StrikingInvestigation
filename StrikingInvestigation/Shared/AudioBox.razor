@@ -1,18 +1,38 @@
-﻿<div class="boundarylabel" style="--leftpos: @BoundaryLeftPos; --toppos: @BoundaryTopPos;
-        --width: @BoundaryWidth; --height: @BoundaryHeight">
+﻿@using StrikingInvestigation.Utilities
+
+<div class="boundarylabel" style="--leftpos: @boundaryLeftPos; --toppos: @boundaryTopPos;
+        --width: @boundaryWidth; --height: @boundaryHeight">
 </div>
 
-<div class="audiobar" style="--leftpos: @BarLeftPos; --toppos: @BarTopPos; --width: @BarWidth">
+<div class="audiobar" style="--leftpos: @barLeftPos; --toppos: @barTopPos; --width: @barWidth">
 </div>
 
-@if (Screen.RunAnimation == true)
+@if (TestSpec.DeviceLoad == DeviceLoad.High)
 {
-    <div class="audiodotmove" style="--leftstartpos: @DotLeftStartPos; --leftendpos: @DotLeftEndPos;
-        --toppos: @DotTopPos; --duration: @DurationStr">
-    </div>
+    @if (Screen.RunAnimation == true)
+    {
+        <div class="audiodotmove" style="--leftstartpos: @dotLeftStartPos; --leftendpos: @dotLeftEndPos;
+            --toppos: @dotTopPos; --duration: @durationStr">
+        </div>
+    }
+    else
+    {
+        <div class="audiodotinitial" style="--leftpos: @dotLeftStartPos; --toppos: @dotTopPos">
+        </div>
+    }
 }
 else
 {
-    <div class="audiodotinitial" style="--leftpos: @DotLeftStartPos; --toppos: @DotTopPos">
-    </div>
+    @if (Screen.RunAnimation == true)
+    {
+        <div class="posabs" style="--leftpos: @msgLeftPos; --toppos: @msgTopPos">
+            <i>Playing...</i>
+        </div>
+    }
+    else
+    {
+        <div class="posabs" style="--leftpos: @msgLeftPos; --toppos: @msgTopPos">
+            <i>Ready to play</i>
+        </div>
+    }
 }

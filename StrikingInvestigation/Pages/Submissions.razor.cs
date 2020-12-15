@@ -12,9 +12,12 @@ namespace StrikingInvestigation.Pages
     public partial class Submissions
     {
         IEnumerable<TestSubmission> testSubmissions;
+        readonly TestSpec testSpec;
 
-        int browserWidth;
-        int browserHeight;
+        public Submissions()
+        {
+            testSpec = new TestSpec();
+        }
 
         [Inject]
         IJSRuntime JSRuntime { get; set; }
@@ -29,14 +32,11 @@ namespace StrikingInvestigation.Pages
         {
             testSubmissions = (await TJBarnesService.GetHttpClient()
                     .GetFromJsonAsync<TestSubmission[]>("api/testsubmissions")).ToList();
-            await PopulateBrowserDimensions();
-        }
-
-        async Task PopulateBrowserDimensions()
-        {
+            
             BrowserDimensions browserDimensions = await JSRuntime.InvokeAsync<BrowserDimensions>("getDimensions");
-            browserWidth = browserDimensions.Width;
-            browserHeight = browserDimensions.Height;
+            testSpec.BrowserWidth = browserDimensions.Width;
+            testSpec.BrowserHeight = browserDimensions.Height;
+            testSpec.DeviceLoad = Device.DeviceLoad;
         }
     }
 }

@@ -1,0 +1,43 @@
+﻿<!-- Submit row -->
+@if (TestSpec.SelectedTest != 0 && TestSpec.SelectedTest != -1)
+{
+    <div class="posabs"
+            style="--leftpos: @leftPosStr;
+            --toppos: @topPosStr">
+
+        <!-- Submit button -->
+        <div style="display: inline-block">
+            <button class="btn btn-primary"
+                    @onclick="SubmitClick"
+                    style="width: 75px"
+                    disabled="@TestSpec.ControlsDisabled">
+                @TestSpec.SubmitLabel1
+            </button>
+        </div>
+
+        <!-- Submit spinner -->
+        @if (TestSpec.SpinnerSubmitting1 == true)
+        {
+            <div class="spinnerinline"
+                    style="display: inline-block;
+                    vertical-align: top;
+                    margin-left: 12px;
+                    margin-top: 7px;
+                    --borderwidth: 5px;
+                    --width: 24px;
+                    --height: 24px">
+            </div>
+        }
+
+        <!-- Submit message -->
+        @if (TestSpec.Submitted1 == true)
+        {
+            <div style="display: inline-block;
+                    vertical-align: top;
+                    margin-left: 12px;
+                    margin-top: 7px">
+                Submitted
+            </div>
+        }
+    </div>
+}

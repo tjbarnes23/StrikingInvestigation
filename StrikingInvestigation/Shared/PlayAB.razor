@@ -1,0 +1,29 @@
+﻿<!-- Button row -->
+<div class="posabs"
+     style="--leftpos: @leftPosStr;
+        --toppos: @topPosStr">
+
+    <!-- Play button -->
+    <div style="display: inline-block">
+        <button class="btn btn-primary"
+                @onclick="PlayClick"
+                style="width: 75px"
+                disabled="@Screen.PlayDisabled">
+            @Screen.PlayLabel
+        </button>
+    </div>
+
+    <!-- Play spinner -->
+    @if (Screen.SpinnerPlaying == true)
+    {
+        <div class="spinnerinline"
+             style="display: inline-block;
+                vertical-align: top;
+                margin-left: 12px;
+                margin-top: 7px;
+                --borderwidth: 5px;
+                --width: 24px;
+                --height: 24px">
+        </div>
+    }
+</div>

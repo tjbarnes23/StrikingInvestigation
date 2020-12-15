@@ -6,7 +6,7 @@ using StrikingInvestigation.Utilities;
 
 namespace StrikingInvestigation.Shared
 {
-    public partial class ControlSet
+    public partial class Play
     {
         string boundaryRowLeftPosStr;
         string boundaryRowTopPosStr;
@@ -25,8 +25,8 @@ namespace StrikingInvestigation.Shared
         readonly string gapMinusStr = "-" + Constants.Rounding.ToString() + "ms";
         readonly string gapPlusStr = "+" + Constants.Rounding.ToString() + "ms";
 
-        string submitRowLeftPosStr;
-        string submitRowTopPosStr;
+        [Parameter]
+        public TestSpec TestSpec { get; set; }
 
         [Parameter]
         public Blow Blow { get; set; }
@@ -50,19 +50,19 @@ namespace StrikingInvestigation.Shared
 
             if (Blow.IsHandstroke == true)
             {
-                xPos = (zeroGap * Screen.XScale) + Screen.XMargin;
+                xPos = (zeroGap * TestSpec.XScale) + Screen.XMargin;
             }
             else
             {
-                xPos = ((zeroGap + Screen.BaseGap) * Screen.XScale) + Screen.XMargin;
+                xPos = ((zeroGap + TestSpec.BaseGap) * TestSpec.XScale) + Screen.XMargin;
             }
 
-            yPos = (Blow.RowNum * Screen.YScale) + Screen.YMargin;
+            yPos = (Blow.RowNum * TestSpec.YScale) + Screen.YMargin;
 
-            diameter = Diam.Diameter(Blow.BellActual) * Screen.DiameterScale;
+            diameter = Diam.Diameter(Blow.BellActual) * TestSpec.DiameterScale;
 
             // xAdj adds gapMin and also allows for the width of the boundary box (which is 3px)
-            xAdj = (Screen.GapMin * Screen.XScale) - (diameter / 2) - 3;
+            xAdj = (TestSpec.GapMin * TestSpec.XScale) - (diameter / 2) - 3;
 
             // -3 is the width of the boundary box
             yAdj = ((diameter / 2) * -1) - 3;
@@ -70,53 +70,45 @@ namespace StrikingInvestigation.Shared
             boundaryRowLeftPosStr = Convert.ToInt32(xPos + xAdj).ToString() + "px";
             boundaryRowTopPosStr = Convert.ToInt32(yPos + yAdj).ToString() + "px";
 
-            boundaryLabelWidthStr = Convert.ToInt32(((Screen.GapMax - Screen.GapMin) * Screen.XScale) +
+            boundaryLabelWidthStr = Convert.ToInt32(((TestSpec.GapMax - TestSpec.GapMin) * TestSpec.XScale) +
                     diameter + 6).ToString() + "px";
             boundaryLabelHeightStr = Convert.ToInt32(diameter + 6).ToString() + "px";
 
             altGapLabelStr = Blow.AltGap.ToString() + "ms";
-            altGapLabelFontSizeStr = (Screen.FontSize - 1).ToString() + "px";
+            altGapLabelFontSizeStr = (TestSpec.FontSize - 1).ToString() + "px";
 
-            altGapLabelMarginTop = Math.Max((diameter / 2) - Screen.FontSize, 0);
+            altGapLabelMarginTop = Math.Max((diameter / 2) - TestSpec.FontSize, 0);
             altGapLabelMarginTopStr = Convert.ToInt32(altGapLabelMarginTop).ToString() + "px";
 
-            // Button and submit rows
-            int midGap = Blow.GapCumulativeRow - Blow.Gap + Convert.ToInt32((Screen.GapMax - Screen.GapMin) /
-                    (double)2) + Screen.GapMin;
+            // Button row
+            int midGap = Blow.GapCumulativeRow - Blow.Gap + Convert.ToInt32((TestSpec.GapMax - TestSpec.GapMin) /
+                    (double)2) + TestSpec.GapMin;
 
             if (Blow.IsHandstroke == true)
             {
-                xPos = (midGap * Screen.XScale) + Screen.XMargin;
+                xPos = (midGap * TestSpec.XScale) + Screen.XMargin;
             }
             else
             {
-                xPos = ((midGap + Screen.BaseGap) * Screen.XScale) + Screen.XMargin;
+                xPos = ((midGap + TestSpec.BaseGap) * TestSpec.XScale) + Screen.XMargin;
             }
 
-            yPos = (Blow.RowNum * Screen.YScale) + Screen.YMargin;
+            yPos = (Blow.RowNum * TestSpec.YScale) + Screen.YMargin;
 
-            diameter = Diam.Diameter(Blow.BellActual) * Screen.DiameterScale;
+            diameter = Diam.Diameter(Blow.BellActual) * TestSpec.DiameterScale;
 
-            // Button row
             xAdj = -160;
-            yAdj = (diameter / 2) + (13 * Screen.DiameterScale) + 5;
+            yAdj = (diameter / 2) + (13 * TestSpec.DiameterScale) + 5;
 
             buttonRowLeftPosStr = Convert.ToInt32(xPos + xAdj).ToString() + "px";
             buttonRowTopPosStr = Convert.ToInt32(yPos + yAdj).ToString() + "px";
-
-            // Submit row
-            xAdj = -70;
-            yAdj = (diameter / 2) + (13 * Screen.DiameterScale) + 58;
-
-            submitRowLeftPosStr = Convert.ToInt32(xPos + xAdj).ToString() + "px";
-            submitRowTopPosStr = Convert.ToInt32(yPos + yAdj).ToString() + "px";
         }
 
         async Task GapMinusClick()
         {
             int newGap = Blow.Gap - Constants.Rounding;
 
-            if (newGap >= Screen.GapMin)
+            if (newGap >= TestSpec.GapMin)
             {
                 Blow.UpdateGap(newGap);
                 await Callback.InvokeAsync(CallbackParam.GapMinus);
@@ -127,7 +119,7 @@ namespace StrikingInvestigation.Shared
         {
             int newGap = Blow.Gap + Constants.Rounding;
 
-            if (newGap <= Screen.GapMax)
+            if (newGap <= TestSpec.GapMax)
             {
                 Blow.UpdateGap(newGap);
                 await Callback.InvokeAsync(CallbackParam.GapPlus);
@@ -136,12 +128,14 @@ namespace StrikingInvestigation.Shared
 
         async Task PlayClick()
         {
-            await Callback.InvokeAsync(CallbackParam.Play);
-        }
-
-        async Task SubmitClick()
-        {
-            await Callback.InvokeAsync(CallbackParam.Submit);
+            if (TestSpec.DeviceLoad == DeviceLoad.Low)
+            {
+                await Callback.InvokeAsync(CallbackParam.Play);
+            }
+            else
+            {
+                await Callback.InvokeAsync(CallbackParam.PlayAsync);
+            }
         }
     }
 }

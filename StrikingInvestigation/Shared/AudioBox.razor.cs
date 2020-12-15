@@ -6,65 +6,60 @@ namespace StrikingInvestigation.Shared
 {
     public partial class AudioBox
     {
+        string boundaryLeftPos;
+        string boundaryTopPos;
+        string boundaryWidth;
+        string boundaryHeight;
+        string barLeftPos;
+        string barTopPos;
+        string barWidth;
+        string dotLeftStartPos;
+        string dotLeftEndPos;
+        string dotTopPos;
+        string durationStr;
+        string msgLeftPos;
+        string msgTopPos;
+
         [Parameter]
         public TestSpec TestSpec { get; set; }
 
         [Parameter]
         public Screen Screen { get; set; }
 
-        string BoundaryLeftPos { get; set; }
-
-        string BoundaryTopPos { get; set; }
-
-        string BoundaryWidth { get; set; }
-
-        string BoundaryHeight { get; set; }
-
-        string BarLeftPos { get; set; }
-
-        string BarTopPos { get; set; }
-
-        string BarWidth { get; set; }
-
-        string DotLeftStartPos { get; set; }
-
-        string DotLeftEndPos { get; set; }
-
-        string DotTopPos { get; set; }
-
-        string DurationStr { get; set; }
-
         protected override void OnParametersSet()
         {
             int numBells = TestSpec.Stage + (TestSpec.Stage % 2);
 
-            int x1Pos = Convert.ToInt32(Screen.BaseGap * Screen.XScale) + Screen.XMargin + 30;
+            int x1Pos = Convert.ToInt32(TestSpec.BaseGap * TestSpec.XScale) + Screen.XMargin + 30;
             int y1Pos = Screen.YMargin + 50;
 
-            int x2Pos = Convert.ToInt32(Screen.BaseGap * (numBells + 2) * Screen.XScale) + Screen.XMargin - 30;
-            int y2Pos = Convert.ToInt32((TestSpec.NumRows + 1) * Screen.YScale) + Screen.YMargin - 50 ;
+            int x2Pos = Convert.ToInt32(TestSpec.BaseGap * (numBells + 2) * TestSpec.XScale) + Screen.XMargin - 30;
+            int y2Pos = Convert.ToInt32((TestSpec.NumRows + 1) * TestSpec.YScale) + Screen.YMargin - 50 ;
 
-            BoundaryLeftPos = x1Pos.ToString() + "px";
-            BoundaryTopPos = y1Pos.ToString() + "px";
+            boundaryLeftPos = x1Pos.ToString() + "px";
+            boundaryTopPos = y1Pos.ToString() + "px";
 
-            BoundaryWidth = (x2Pos - x1Pos).ToString() + "px";
-            BoundaryHeight = (y2Pos - y1Pos).ToString() + "px";
+            boundaryWidth = (x2Pos - x1Pos).ToString() + "px";
+            boundaryHeight = (y2Pos - y1Pos).ToString() + "px";
 
             int x3Pos = x1Pos + 50;
             int y3Pos = (y1Pos + y2Pos) / 2;
 
             int x4Pos = x2Pos - 50;
 
-            BarLeftPos = x3Pos.ToString() + "px";
-            BarTopPos = y3Pos.ToString() + "px";
+            barLeftPos = x3Pos.ToString() + "px";
+            barTopPos = y3Pos.ToString() + "px";
 
-            BarWidth = (x4Pos - x3Pos).ToString() + "px";
+            barWidth = (x4Pos - x3Pos).ToString() + "px";
 
-            DotLeftStartPos = (x3Pos - 14).ToString() + "px";
-            DotLeftEndPos = (x4Pos - 14).ToString() + "px";
-            DotTopPos = (y3Pos - 14).ToString() + "px";
+            dotLeftStartPos = (x3Pos - 14).ToString() + "px";
+            dotLeftEndPos = (x4Pos - 14).ToString() + "px";
+            dotTopPos = (y3Pos - 14).ToString() + "px";
 
-            DurationStr = Screen.AnimationDuration.ToString() + "ms";
+            durationStr = Screen.AnimationDuration.ToString() + "ms";
+
+            msgLeftPos = x3Pos.ToString() + "px";
+            msgTopPos = (y3Pos + 6).ToString() + "px";
         }
     }
 }

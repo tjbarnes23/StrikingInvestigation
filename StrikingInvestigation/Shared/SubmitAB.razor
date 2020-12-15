@@ -1,0 +1,123 @@
+﻿<!-- Submit row -->
+<div class="posabs"
+        style="--leftpos: @leftPosStr;
+        --toppos: @topPosStr">
+
+    <!-- Message -->
+    <label>
+        Play the two blocks above and then click one of these 3 buttons:
+    </label>
+
+    <!-- A has errors -->
+    <div>
+        <div style="display: inline-block">
+            <button class="btn btn-primary"
+                    @onclick="AHasErrors"
+                    style="width: 120px"
+                    disabled="@TestSpec.ControlsDisabled">
+                @TestSpec.SubmitLabel1
+            </button>
+        </div>
+
+        @if (TestSpec.SpinnerSubmitting1 == true)
+        {
+            <div class="spinnerinline"
+                    style="display: inline-block;
+                    vertical-align: top;
+                    margin-left: 12px;
+                    margin-top: 7px;
+                    --borderwidth: 5px;
+                    --width: 24px;
+                    --height: 24px">
+            </div>
+        }
+
+        @if (TestSpec.Submitted1 == true)
+        {
+            <div style="display: inline-block;
+                    vertical-align: top;
+                    margin-left: 12px;
+                    margin-top: 7px">
+                Submitted
+            </div>
+        }
+    </div>
+
+    <!-- B has errors -->
+    <div>
+        <div style="display: inline-block">
+            <button class="btn btn-primary"
+                    @onclick="BHasErrors"
+                    style="width: 120px"
+                    disabled="@TestSpec.ControlsDisabled">
+                @TestSpec.SubmitLabel2
+            </button>
+        </div>
+
+        @if (TestSpec.SpinnerSubmitting2 == true)
+        {
+            <div class="spinnerinline"
+                    style="display: inline-block;
+                    vertical-align: top;
+                    margin-left: 12px;
+                    margin-top: 7px;
+                    --borderwidth: 5px;
+                    --width: 24px;
+                    --height: 24px">
+            </div>
+        }
+
+        @if (TestSpec.Submitted2 == true)
+        {
+            <div style="display: inline-block;
+                    vertical-align: top;
+                    margin-left: 12px;
+                    margin-top: 7px">
+                Submitted
+            </div>
+        }
+    </div>
+
+    <!-- Don't know -->
+    <div>
+        <div style="display: inline-block">
+            <button class="btn btn-primary"
+                    @onclick="DontKnow"
+                    style="width: 120px"
+                    disabled="@TestSpec.ControlsDisabled">
+                @TestSpec.SubmitLabel3
+            </button>
+        </div>
+
+        @if (TestSpec.SpinnerSubmitting3 == true)
+        {
+            <div class="spinnerinline"
+                 style="display: inline-block;
+                    vertical-align: top;
+                    margin-left: 12px;
+                    margin-top: 7px;
+                    --borderwidth: 5px;
+                    --width: 24px;
+                    --height: 24px">
+            </div>
+        }
+
+        @if (TestSpec.Submitted3 == true)
+        {
+            <div style="display: inline-block;
+                    vertical-align: top;
+                    margin-left: 12px;
+                    margin-top: 7px">
+                Submitted
+            </div>
+        }
+    </div>
+
+    <!-- Result sound -->
+    @if (TestSpec.ResultSound == true)
+    {
+        <audio id="sound" autoplay>
+            <source src="@TestSpec.ResultSource" />
+        </audio>
+    }
+</div>

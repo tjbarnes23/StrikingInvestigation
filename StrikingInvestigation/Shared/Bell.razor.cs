@@ -9,7 +9,6 @@ namespace StrikingInvestigation.Shared
 {
     public partial class Bell
     {
-        // The first two fields below correspond to values in the bell CSS class
         string borderWidthStr;
         string diameterStr;
         string bellLeftPosStr;
@@ -22,6 +21,9 @@ namespace StrikingInvestigation.Shared
         string gapLabelFontSizeStr;
         string bgColor;
         string gapStr;
+
+        [Parameter]
+        public TestSpec TestSpec { get; set; }
 
         [Parameter]
         public Blow Blow { get; set; }
@@ -40,34 +42,34 @@ namespace StrikingInvestigation.Shared
             double bellTopPos;
             double padding;
             
-            borderWidthStr = Screen.BorderWidth.ToString() + "px";
+            borderWidthStr = TestSpec.BorderWidth.ToString() + "px";
 
-            diameter = Diam.Diameter(Blow.BellActual) * Screen.DiameterScale;
+            diameter = Diam.Diameter(Blow.BellActual) * TestSpec.DiameterScale;
             diameterStr = Convert.ToInt32(diameter).ToString() + "px";
 
             if (Blow.IsHandstroke)
             {
-                bellLeftPos = (Blow.GapCumulativeRow * Screen.XScale) - (diameter / 2) +
+                bellLeftPos = (Blow.GapCumulativeRow * TestSpec.XScale) - (diameter / 2) +
                         Screen.XMargin;
             }
             else
             {
-                bellLeftPos = (Blow.GapCumulativeRow * Screen.XScale) - (diameter / 2) +
-                        (Screen.BaseGap * Screen.XScale) + Screen.XMargin;
+                bellLeftPos = (Blow.GapCumulativeRow * TestSpec.XScale) - (diameter / 2) +
+                        (TestSpec.BaseGap * TestSpec.XScale) + Screen.XMargin;
             }
 
             bellLeftPosStr = Convert.ToInt32(bellLeftPos).ToString() + "px";
 
-            bellTopPos = (Blow.RowNum * Screen.YScale) - (diameter / 2) +
+            bellTopPos = (Blow.RowNum * TestSpec.YScale) - (diameter / 2) +
                     Screen.YMargin;
             bellTopPosStr = Convert.ToInt32(bellTopPos).ToString() + "px";
 
-            bellFontSizeStr = Screen.FontSize.ToString() + "px";
+            bellFontSizeStr = TestSpec.FontSize.ToString() + "px";
 
             // Need logic here for centering the bell number inside the bell.
             // For now, use a default of -3
             // Check whether alignment is baseline - may need to change that
-            padding = ((diameter - (Screen.BorderWidth * 2) - Screen.FontSize) / 2) - 3;
+            padding = ((diameter - (TestSpec.BorderWidth * 2) - TestSpec.FontSize) / 2) - 3;
             paddingStr = Convert.ToInt32(padding).ToString() + "px";
 
             // Calculations for gap label
@@ -77,27 +79,27 @@ namespace StrikingInvestigation.Shared
             double gapLabelLeftPos;
             double gapLabelTopPos;
 
-            tenorDiameter = Diam.Diameter("T") * Screen.DiameterScale;
+            tenorDiameter = Diam.Diameter("T") * TestSpec.DiameterScale;
 
             if (Blow.IsHandstroke)
             {
-                xPos = (Blow.GapCumulativeRow * Screen.XScale) + Screen.XMargin;
+                xPos = (Blow.GapCumulativeRow * TestSpec.XScale) + Screen.XMargin;
             }
             else
             {
-                xPos = ((Blow.GapCumulativeRow + Screen.BaseGap) * Screen.XScale) + Screen.XMargin;
+                xPos = ((Blow.GapCumulativeRow + TestSpec.BaseGap) * TestSpec.XScale) + Screen.XMargin;
             }
 
             gapLabelLeftPos = xPos - (tenorDiameter / 2) - 11;
 
             gapLabelLeftPosStr = Convert.ToInt32(gapLabelLeftPos).ToString() + "px";
 
-            yPos = (Blow.RowNum * Screen.YScale) + Screen.YMargin;
+            yPos = (Blow.RowNum * TestSpec.YScale) + Screen.YMargin;
 
             gapLabelTopPos = yPos + (tenorDiameter / 2) + 1;
             gapLabelTopPosStr = Convert.ToInt32(gapLabelTopPos).ToString() + "px";
 
-            gapLabelFontSizeStr = (Screen.FontSize - 2).ToString() + "px";
+            gapLabelFontSizeStr = (TestSpec.FontSize - 2).ToString() + "px";
 
             if (Blow.IsHighlighted == true)
             {
@@ -114,20 +116,22 @@ namespace StrikingInvestigation.Shared
 
         async Task TestBellMouseDown(MouseEventArgs e)
         {
-            if (e.Buttons == 1)
+            // Mouse movement only active when the play button says Play (as opposed to
+            // Stop or Wait), and the Play button is not disabled
+            // The latter test is needed because when submitting, the play button says Play
+            if (e.Buttons == 1 && Screen.PlayLabel == "Play" && Screen.PlayDisabled == false)
             {
-                // Mouse movement only active in Play mode
-                if (Screen.PlayLabel == "Play")
-                {
-                    // Call TestBellMouseMove to center the bell on where the mouse is clicked
-                    await TestBellMouseMove(e);
-                }
+                // Call TestBellMouseMove to center the bell on where the mouse is clicked
+                await TestBellMouseMove(e);
             }
         }
 
         async Task TestBellMouseMove(MouseEventArgs e)
         {
-            if (e.Buttons == 1 && Screen.PlayLabel == "Play")
+            // Mouse movement only active when the play button says Play (as opposed to
+            // Stop or Wait), and the Play button is not disabled
+            // The latter test is needed because when submitting, the play button says Play
+            if (e.Buttons == 1 && Screen.PlayLabel == "Play" && Screen.PlayDisabled == false)
             {
                 int clientX = Convert.ToInt32(e.ClientX);
 
@@ -135,18 +139,18 @@ namespace StrikingInvestigation.Shared
 
                 if (Blow.IsHandstroke)
                 {
-                    newGapCumulativeRow = Convert.ToInt32((clientX - Screen.XMargin) / Screen.XScale);
+                    newGapCumulativeRow = Convert.ToInt32((clientX - Screen.XMargin) / TestSpec.XScale);
                 }
                 else
                 {
-                    newGapCumulativeRow = Convert.ToInt32((clientX - Screen.XMargin) / Screen.XScale) -
-                             Screen.BaseGap;
+                    newGapCumulativeRow = Convert.ToInt32((clientX - Screen.XMargin) / TestSpec.XScale) -
+                             TestSpec.BaseGap;
                 }
 
                 int newGap = Blow.Gap + (newGapCumulativeRow - Blow.GapCumulativeRow);
                 int newGapRounded = Convert.ToInt32((double)newGap / Constants.Rounding) * Constants.Rounding;
 
-                if (newGapRounded >= Screen.GapMin && newGapRounded <= Screen.GapMax &&
+                if (newGapRounded >= TestSpec.GapMin && newGapRounded <= TestSpec.GapMax &&
                         newGapRounded != Blow.Gap)
                 {
                     Blow.UpdateGap(newGapRounded);

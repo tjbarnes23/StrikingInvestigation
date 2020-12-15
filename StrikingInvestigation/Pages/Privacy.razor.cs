@@ -1,14 +1,19 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
+using StrikingInvestigation.Models;
 using StrikingInvestigation.Utilities;
 
 namespace StrikingInvestigation.Pages
 {
     public partial class Privacy
     {
-        int browserWidth;
-        int browserHeight;
+        readonly TestSpec testSpec;
+
+        public Privacy()
+        {
+            testSpec = new TestSpec();
+        }
 
         [Inject]
         IJSRuntime JSRuntime { get; set; }
@@ -18,14 +23,10 @@ namespace StrikingInvestigation.Pages
 
         protected override async Task OnInitializedAsync()
         {
-            await PopulateBrowserDimensions();
-        }
-
-        async Task PopulateBrowserDimensions()
-        {
             BrowserDimensions browserDimensions = await JSRuntime.InvokeAsync<BrowserDimensions>("getDimensions");
-            browserWidth = browserDimensions.Width;
-            browserHeight = browserDimensions.Height;
+            testSpec.BrowserWidth = browserDimensions.Width;
+            testSpec.BrowserHeight = browserDimensions.Height;
+            testSpec.DeviceLoad = Device.DeviceLoad;
         }
     }
 }

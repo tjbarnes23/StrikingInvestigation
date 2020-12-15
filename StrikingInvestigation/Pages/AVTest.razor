@@ -3,7 +3,7 @@
 @using StrikingInvestigation.Utilities
 
 <div class="container mx-0 mx-md-2 my-1 my-md-3">
-    <div style="float: right">(@browserWidth, @browserHeight)</div>
+    <div style="float: right">(@testSpec.BrowserWidth, @testSpec.BrowserHeight)</div>
     
     <h1>A/V Test</h1>
 
@@ -15,18 +15,18 @@
     }
     else
     {
-        <EditForm Model="@aVTestsData">
+        <EditForm Model="@testSpec">
             <div style="display: inline-block">
                 <div class="form-group">
                     <label>
                         Select Test
                     </label>
 
-                    <CustomInputSelect Value="screen.SelectedTest"
+                    <CustomInputSelect Value="testSpec.SelectedTest"
                                        ValueChanged="@( (int value) => TestChanged(value) )"
-                                       ValueExpression="@( () => screen.SelectedTest )"
+                                       ValueExpression="@( () => testSpec.SelectedTest )"
                                        class="form-control"
-                                       disabled="@screen.ControlsDisabled">
+                                       disabled="@testSpec.ControlsDisabled">
                         <option value="-1">Select test...</option>
                         <option value="0">Practice</option>
 
@@ -37,13 +37,13 @@
                     </CustomInputSelect>
                 </div>
             </div>
-        </EditForm>
 
-        @if (screen.SelectedTest == 0)
-        {
-            <EditForm Model="@screen.ShowGaps">
+            @if (testSpec.SelectedTest == 0)
+            {
                 <div style="display: inline-block">
-                    <button class="btn btn-primary" @onclick="Create" disabled="@screen.ControlsDisabled">
+                    <button class="btn btn-primary"
+                            @onclick="Create"
+                            disabled="@testSpec.ControlsDisabled">
                         Create A/V Test
                     </button>
                 </div>
@@ -56,11 +56,11 @@
                                 Show audio gap time
                             </label>
 
-                            <InputCheckbox Value="@screen.ShowGaps"
+                            <InputCheckbox Value="@testSpec.ShowGaps"
                                            ValueChanged="@( (bool value) => ShowGapsChanged(value) )"
-                                           ValueExpression="@( () => screen.ShowGaps )"
+                                           ValueExpression="@( () => testSpec.ShowGaps )"
                                            class="form-control"
-                                           disabled="@screen.ControlsDisabled" />
+                                           disabled="@testSpec.ControlsDisabled" />
                         </div>
                     </div>
 
@@ -70,37 +70,47 @@
                                 Save test
                             </label>
 
-                            <button class="btn btn-primary" @onclick="Save" disabled="@screen.ControlsDisabled">
-                                @screen.SaveLabel
+                            <button class="btn btn-primary"
+                                    @onclick="Save"
+                                    disabled="@testSpec.ControlsDisabled">
+                                @testSpec.SaveLabel
                             </button>
 
-                            @if (screen.SpinnerSaving == true)
+                            @if (testSpec.SpinnerSaving == true)
                             {
-                                <div class="spinnerinline" style="display: inline-block; vertical-align: top;
-                                margin-left: 12px; margin-top: 7px;
-                                --borderwidth: 5px; --width: 24px; --height: 24px">
+                                <div class="spinnerinline"
+                                        style="display: inline-block;
+                                        vertical-align: top;
+                                        margin-left: 12px;
+                                        margin-top: 7px;
+                                        --borderwidth: 5px;
+                                        --width: 24px;
+                                        --height: 24px">
                                 </div>
                             }
 
-                            @if (screen.Saved == true)
+                            @if (testSpec.Saved == true)
                             {
-                                <div style="display: inline-block; vertical-align: top; margin-left: 12px;
-                                margin-top: 7px">
+                                <div style="display: inline-block;
+                                        vertical-align: top;
+                                        margin-left: 12px;
+                                        margin-top: 7px">
                                     Saved
                                 </div>
                             }
                         </div>
                     </div>
                 }
-            </EditForm>
-        }
+            }
+        </EditForm>
     }
 </div>
 
 <div style="position: relative" tabindex="0" @onkeydown="ArrowKeys" @ref="mainDiv">
     @if (blow != null)
     {
-        <Bell Blow="@blow"
+        <Bell TestSpec="@testSpec"
+                Blow="@blow"
                 Screen="@screen"
                 Callback="ProcessCallback" />
 
@@ -108,7 +118,13 @@
             <source src="@blow.BellSound" type="audio/mpeg" />
         </audio>
 
-        <ControlSet Blow="@blow"
+        <Play TestSpec="@testSpec"
+                Blow="@blow"
+                Screen="@screen"
+                Callback="ProcessCallback" />
+
+        <Submit TestSpec="@testSpec"
+                Blow="@blow"
                 Screen="@screen"
                 Callback="ProcessCallback" />
     }

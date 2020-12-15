@@ -16,6 +16,7 @@ namespace StrikingInvestigation.Pages
     public partial class AVTest
     {
         IEnumerable<AVTestData> aVTestsData;
+        readonly TestSpec testSpec;
         readonly Screen screen;
         Blow blow;
                 
@@ -23,13 +24,14 @@ namespace StrikingInvestigation.Pages
         CancellationToken cancellationToken;
         ElementReference mainDiv;
 
-        int browserWidth;
-        int browserHeight;
-
         public AVTest()
         {
+            testSpec = new TestSpec
+            {
+                SelectedTest = -1
+            };
+
             screen = new Screen();
-            screen.SelectedTest = -1;
         }
 
         [Inject]
@@ -45,21 +47,27 @@ namespace StrikingInvestigation.Pages
         {
             aVTestsData = (await TJBarnesService.GetHttpClient()
                     .GetFromJsonAsync<AVTestData[]>("api/avtests")).ToList();
-            screen.SaveLabel = "Save";
+
+            BrowserDimensions browserDimensions = await JSRuntime.InvokeAsync<BrowserDimensions>("getDimensions");
+            testSpec.BrowserWidth = browserDimensions.Width;
+            testSpec.BrowserHeight = browserDimensions.Height;
+            testSpec.DeviceLoad = Device.DeviceLoad;
+
+            testSpec.SaveLabel = "Save";
+
+            testSpec.DiameterScale = ScreenSizing.DiameterScale(testSpec.BrowserWidth) * 1.5;
+            testSpec.XScale = ScreenSizing.XScale(testSpec.BrowserWidth);
+            testSpec.YScale = ScreenSizing.YScale(testSpec.BrowserWidth);
+            testSpec.BorderWidth = ScreenSizing.BorderWidth(testSpec.BrowserWidth);
+            testSpec.FontSize = ScreenSizing.FontSize(testSpec.BrowserWidth);
+            testSpec.GapMin = 200;
+            testSpec.GapMax = 1200;
+
+            testSpec.SubmitLabel1 = "Submit";
+
+            screen.XMargin = ScreenSizing.XMargin(testSpec.BrowserWidth);
+            screen.YMargin = ScreenSizing.YMargin(testSpec.BrowserWidth) + 50;
             screen.PlayLabel = "Play";
-            screen.SubmitLabel = "Submit";
-
-            await PopulateBrowserDimensions();
-
-            screen.DiameterScale = ScreenSizing.DiameterScale(browserWidth) * 1.5;
-            screen.XScale = ScreenSizing.XScale(browserWidth);
-            screen.XMargin = ScreenSizing.XMargin(browserWidth);
-            screen.YScale = ScreenSizing.YScale(browserWidth);
-            screen.YMargin = ScreenSizing.YMargin(browserWidth) + 50;
-            screen.BorderWidth = ScreenSizing.BorderWidth(browserWidth);
-            screen.FontSize = ScreenSizing.FontSize(browserWidth);
-            screen.GapMin = 200;
-            screen.GapMax = 1200;
         }
 
         protected override async void OnAfterRender(bool firstRender)
@@ -69,18 +77,18 @@ namespace StrikingInvestigation.Pages
 
         async Task TestChanged(int value)
         {
-            screen.SelectedTest = value;
+            testSpec.SelectedTest = value;
             blow = null;
 
-            if (screen.SelectedTest != 0 && screen.SelectedTest != -1)
+            if (testSpec.SelectedTest != 0 && testSpec.SelectedTest != -1)
             {
-                await Load(screen.SelectedTest);
+                await Load(testSpec.SelectedTest);
             }
         }
 
         void ShowGapsChanged(bool value)
         {
-            screen.ShowGaps = value;
+            testSpec.ShowGaps = value;
         }
 
         void Create()
@@ -123,15 +131,15 @@ namespace StrikingInvestigation.Pages
             
             blow.BellColor = Constants.UnstruckTestBellColor;
 
-            screen.ShowGaps = false;
+            testSpec.ShowGaps = false;
             StateHasChanged();
         }
 
         async Task Save()
         {
-            screen.SpinnerSaving = true;
-            screen.SaveLabel = "Wait";
-            screen.ControlsDisabled = true;
+            testSpec.SpinnerSaving = true;
+            testSpec.SaveLabel = "Wait";
+            testSpec.ControlsDisabled = true;
             screen.PlayDisabled = true;
             blow.BellColor = Constants.DisabledUnstruckTestBellColor;
             StateHasChanged();
@@ -155,15 +163,15 @@ namespace StrikingInvestigation.Pages
             aVTestsData = (await TJBarnesService.GetHttpClient()
                     .GetFromJsonAsync<AVTestData[]>("api/avtests")).ToList();
 
-            screen.SpinnerSaving = false;
-            screen.Saved = true;
+            testSpec.SpinnerSaving = false;
+            testSpec.Saved = true;
             StateHasChanged();
 
             await Task.Delay(1000);
 
-            screen.Saved = false;
-            screen.SaveLabel = "Save";
-            screen.ControlsDisabled = false;
+            testSpec.Saved = false;
+            testSpec.SaveLabel = "Save";
+            testSpec.ControlsDisabled = false;
             screen.PlayDisabled = false;
             blow.BellColor = Constants.UnstruckTestBellColor;
             StateHasChanged();
@@ -185,16 +193,12 @@ namespace StrikingInvestigation.Pages
                     StateHasChanged();
                     break;
 
-                case CallbackParam.Play:
-                    if (Device.DeviceLoad == DeviceLoad.Low)
-                    {
-                        Play();
-                    }
-                    else
-                    {
-                        await PlayAsync();
-                    }
+                case CallbackParam.PlayAsync:
+                    await PlayAsync();
+                    break;
 
+                case CallbackParam.Play:
+                    Play();
                     break;
 
                 case CallbackParam.Submit:
@@ -227,7 +231,7 @@ namespace StrikingInvestigation.Pages
                 cancellationToken = cancellationTokenSource.Token;
 
                 screen.PlayLabel = "Stop";
-                screen.ControlsDisabled = true;
+                testSpec.ControlsDisabled = true;
 
                 TimeSpan delay;
                 int delayMs;
@@ -340,7 +344,7 @@ namespace StrikingInvestigation.Pages
 
             // Reset screen
             blow.BellColor = Constants.UnstruckTestBellColor;
-            screen.ControlsDisabled = false;
+            testSpec.ControlsDisabled = false;
             StateHasChanged();
         }
 
@@ -359,7 +363,7 @@ namespace StrikingInvestigation.Pages
 
             screen.PlayDisabled = true;
             screen.PlayLabel = "Wait";
-            screen.ControlsDisabled = true;
+            testSpec.ControlsDisabled = true;
 
             TimeSpan delay;
             int delayMs;
@@ -440,15 +444,15 @@ namespace StrikingInvestigation.Pages
 
             // Reset screen
             blow.BellColor = Constants.UnstruckTestBellColor;
-            screen.ControlsDisabled = false;
+            testSpec.ControlsDisabled = false;
             StateHasChanged();
         }
 
         async Task Submit()
         {
-            screen.SpinnerSubmitting = true;
-            screen.SubmitLabel = "Wait";
-            screen.ControlsDisabled = true;
+            testSpec.SpinnerSubmitting1 = true;
+            testSpec.SubmitLabel1 = "Wait";
+            testSpec.ControlsDisabled = true;
             screen.PlayDisabled = true;
             blow.BellColor = Constants.DisabledUnstruckTestBellColor;
             StateHasChanged();
@@ -459,23 +463,23 @@ namespace StrikingInvestigation.Pages
                 UserId = string.Empty,
                 TestDate = DateTime.Now,
                 TestType = "A/V Test",
-                TestId = screen.SelectedTest,
+                TestId = testSpec.SelectedTest,
                 Gap = blow.Gap,
-                AB = string.Empty
+                ABResult = ABResult.NA
             };
 
             // Push the testSubmission to the API in JSON format
             await TJBarnesService.GetHttpClient().PostAsJsonAsync("api/testsubmissions", testSubmission);
 
-            screen.SpinnerSubmitting = false;
-            screen.Submitted = true;
+            testSpec.SpinnerSubmitting1 = false;
+            testSpec.Submitted1 = true;
             StateHasChanged();
 
             await Task.Delay(1000);
 
-            screen.Submitted = false;
-            screen.SubmitLabel = "Submit";
-            screen.ControlsDisabled = false;
+            testSpec.Submitted1 = false;
+            testSpec.SubmitLabel1 = "Submit";
+            testSpec.ControlsDisabled = false;
             screen.PlayDisabled = false;
             blow.BellColor = Constants.UnstruckTestBellColor;
             StateHasChanged();
@@ -483,14 +487,16 @@ namespace StrikingInvestigation.Pages
 
         void ArrowKeys(KeyboardEventArgs e)
         {
-            // Keyboard arrows only active when a blow is populated and when in Play mode
-            if (blow != null && screen.PlayLabel == "Play")
+            // Keyboard arrows only active when a blow is populated, the play button says Play (as opposed to
+            // Stop or Wait), and the Play button is not disabled
+            // The last test is needed because when submitting, the play button says Play
+            if (blow != null && screen.PlayLabel == "Play" && screen.PlayDisabled == false)
             {
                 if (e.Key == "ArrowLeft")
                 {
                     int newGap = blow.Gap - Constants.Rounding;
 
-                    if (newGap >= screen.GapMin)
+                    if (newGap >= testSpec.GapMin)
                     {
                         blow.UpdateGap(newGap);
                     }
@@ -499,19 +505,12 @@ namespace StrikingInvestigation.Pages
                 {
                     int newGap = blow.Gap + Constants.Rounding;
 
-                    if (newGap <= screen.GapMax)
+                    if (newGap <= testSpec.GapMax)
                     {
                         blow.UpdateGap(newGap);
                     }
                 }
             }
-        }
-
-        async Task PopulateBrowserDimensions()
-        {
-            BrowserDimensions browserDimensions = await JSRuntime.InvokeAsync<BrowserDimensions>("getDimensions");
-            browserWidth = browserDimensions.Width;
-            browserHeight = browserDimensions.Height;
         }
     }
 }

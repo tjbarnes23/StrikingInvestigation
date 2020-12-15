@@ -1,4 +1,5 @@
 ﻿using System;
+using StrikingInvestigation.Utilities;
 
 namespace StrikingInvestigation.Models
 {
@@ -16,6 +17,6 @@ namespace StrikingInvestigation.Models
 
         public int Gap { get; set; }
 
-        public string AB { get; set; }
+        public ABResult ABResult { get; set; }
     }
 }

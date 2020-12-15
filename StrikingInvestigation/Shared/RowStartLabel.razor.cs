@@ -4,7 +4,7 @@ using StrikingInvestigation.Models;
 
 namespace StrikingInvestigation.Shared
 {
-    public partial class StartOfRowLabel
+    public partial class RowStartLabel
     {
         string strokeFontSizeStr;
         string strokeLabelLeftPosStr;
@@ -18,6 +18,9 @@ namespace StrikingInvestigation.Shared
         string changeLabelTopPosStr;
 
         [Parameter]
+        public TestSpec TestSpec { get; set; }
+
+        [Parameter]
         public Blow Blow { get; set; }
 
         [Parameter]
@@ -25,13 +28,12 @@ namespace StrikingInvestigation.Shared
 
         protected override void OnInitialized()
         {
-            double strokeLabelXPos = Screen.XMargin + Screen.StrokeLabelXOffset;
-            double strokeLabelYPos = (Blow.RowNum * Screen.YScale) + Screen.YMargin + Screen.StrokeLabelYOffset;
+            double strokeLabelXPos = Screen.XMargin + TestSpec.StrokeLabelXOffset;
+            double strokeLabelYPos = (Blow.RowNum * TestSpec.YScale) + Screen.YMargin + TestSpec.StrokeLabelYOffset;
 
-            strokeFontSizeStr = Convert.ToInt32((double)Screen.FontSize * 1.5).ToString() + "px";
+            strokeFontSizeStr = Convert.ToInt32((double)TestSpec.FontSize * 1.5).ToString() + "px";
             strokeLabelLeftPosStr = Convert.ToInt32(strokeLabelXPos).ToString() + "px";
             strokeLabelTopPosStr = Convert.ToInt32(strokeLabelYPos).ToString() + "px";
-            
 
             double rowStartLabelXPos;
 
@@ -42,23 +44,23 @@ namespace StrikingInvestigation.Shared
             }
             else
             {
-                rowStartLabelXPos = (Screen.BaseGap * Screen.XScale) + Screen.XMargin;
+                rowStartLabelXPos = (TestSpec.BaseGap * TestSpec.XScale) + Screen.XMargin;
             }
             
-            double rowStartLabelYPos = (Blow.RowNum * Screen.YScale) + Screen.YMargin;
+            double rowStartLabelYPos = (Blow.RowNum * TestSpec.YScale) + Screen.YMargin;
 
-            rowStartLabelWidthStr = Screen.RowStartLabelWidth.ToString() + "px";
-            rowStartLabelLeftPosStr = Convert.ToInt32(rowStartLabelXPos - (Screen.RowStartLabelWidth / 2))
+            rowStartLabelWidthStr = TestSpec.RowStartLabelWidth.ToString() + "px";
+            rowStartLabelLeftPosStr = Convert.ToInt32(rowStartLabelXPos - (TestSpec.RowStartLabelWidth / 2))
                     .ToString() + "px";
-            rowStartLabelTopPosStr = Convert.ToInt32(rowStartLabelYPos - (Screen.RowStartLabelHeight / 2))
+            rowStartLabelTopPosStr = Convert.ToInt32(rowStartLabelYPos - (TestSpec.RowStartLabelHeight / 2))
                     .ToString() + "px";
-            rowStartLabelHeightStr = Screen.RowStartLabelHeight.ToString() + "px";
+            rowStartLabelHeightStr = TestSpec.RowStartLabelHeight.ToString() + "px";
 
 
-            double changeLabelXPos = Screen.XMargin + Screen.ChangeLabelXOffset;
-            double changeLabelYPos = (Blow.RowNum * Screen.YScale) + Screen.YMargin + Screen.ChangeLabelYOffset;
+            double changeLabelXPos = Screen.XMargin + TestSpec.ChangeLabelXOffset;
+            double changeLabelYPos = (Blow.RowNum * TestSpec.YScale) + Screen.YMargin + TestSpec.ChangeLabelYOffset;
 
-            changeFontSizeStr = Screen.FontSize.ToString() + "px";
+            changeFontSizeStr = TestSpec.FontSize.ToString() + "px";
             changeLabelLeftPosStr = Convert.ToInt32(changeLabelXPos).ToString() + "px";
             changeLabelTopPosStr = Convert.ToInt32(changeLabelYPos).ToString() + "px";
         }
