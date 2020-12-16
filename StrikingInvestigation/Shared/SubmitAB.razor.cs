@@ -24,10 +24,8 @@ namespace StrikingInvestigation.Shared
 
         protected override void OnParametersSet()
         {
-            int numBells = TestSpec.Stage + (TestSpec.Stage % 2);
-
-            int xPos = Convert.ToInt32(TestSpec.BaseGap * (numBells + 2) * TestSpec.XScale) + Screen.XMargin - 160;
-            int yPos = Convert.ToInt32((TestSpec.NumRows + 1) * TestSpec.YScale) + Screen.YMargin - 10;
+            int xPos = Convert.ToInt32((TestSpec.BaseGap / (double)2) * TestSpec.XScale) + Screen.XMargin;
+            int yPos = Convert.ToInt32((TestSpec.NumRows + 1) * TestSpec.YScale) + Screen.YMargin;
 
             leftPosStr = xPos.ToString() + "px";
             topPosStr = yPos.ToString() + "px";

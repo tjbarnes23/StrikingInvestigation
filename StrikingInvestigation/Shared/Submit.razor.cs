@@ -28,30 +28,57 @@ namespace StrikingInvestigation.Shared
         protected override void OnParametersSet()
         {
             double diameter;
-            double xPos;
+            double x1Pos;
+            double x2Pos;
             double yPos;
+            double xPos;
             double xAdj;
             double yAdj;
+            double tenorDiameter;
 
-            // Submit row
-            int midGap = Blow.GapCumulativeRow - Blow.Gap + Convert.ToInt32((TestSpec.GapMax - TestSpec.GapMin) /
-                    (double)2) + TestSpec.GapMin;
+            // Work out x coordinate of previous blow (i.e. zero gap)
+            int zeroGap = Blow.GapCumulativeRow - Blow.Gap;
 
             if (Blow.IsHandstroke == true)
             {
-                xPos = (midGap * TestSpec.XScale) + Screen.XMargin;
+                x1Pos = (zeroGap * TestSpec.XScale) + Screen.XMargin;
             }
             else
             {
-                xPos = ((midGap + TestSpec.BaseGap) * TestSpec.XScale) + Screen.XMargin;
+                x1Pos = ((zeroGap + TestSpec.BaseGap) * TestSpec.XScale) + Screen.XMargin;
             }
 
             yPos = (Blow.RowNum * TestSpec.YScale) + Screen.YMargin;
 
             diameter = Diam.Diameter(Blow.BellActual) * TestSpec.DiameterScale;
-            
-            xAdj = -70;
-            yAdj = (diameter / 2) + (13 * TestSpec.DiameterScale) + 58;
+
+            // Adjust x1Pos for gapMin, the diameter of the bell, and the width of the boundary box (which is 3px)
+            x1Pos += (TestSpec.GapMin * TestSpec.XScale) - (diameter / 2) - 3;
+
+            // Calculate x coordinate of right side of boundary box
+            x2Pos = x1Pos + ((TestSpec.GapMax - TestSpec.GapMin) * TestSpec.XScale) +
+                    diameter + 6;
+
+            // Submit row
+            tenorDiameter = Diam.Diameter("T") * TestSpec.DiameterScale;
+
+            if (TestSpec.ButtonsCentered == true)
+            {
+                xPos = x1Pos + ((x2Pos - x1Pos) / 2);
+
+                // Controls are 307px wide. -81 will center the submit button on the current gap label
+                xAdj = -81;
+            }
+            else
+            {
+                xPos = x2Pos;
+
+                // Controls are 307px wide. -234 will center the submit button on the current gap label
+                xAdj = -234;
+            }
+
+            // 48 is height of buttons in previous row (39) + margin of 9
+            yAdj = (tenorDiameter / 2) + 1 + (TestSpec.FontSize - 2) + 5 + 48;
 
             leftPosStr = Convert.ToInt32(xPos + xAdj).ToString() + "px";
             topPosStr = Convert.ToInt32(yPos + yAdj).ToString() + "px";

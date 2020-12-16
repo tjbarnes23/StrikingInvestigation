@@ -66,6 +66,8 @@ namespace StrikingInvestigation.Models
 
         public bool AHasErrors { get; set; }
 
+        public bool ButtonsCentered { get; set; }
+
         public string SubmitLabel1 { get; set; }
 
         public string SubmitLabel2 { get; set; }

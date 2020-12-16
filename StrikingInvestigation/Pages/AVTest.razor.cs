@@ -63,6 +63,7 @@ namespace StrikingInvestigation.Pages
             testSpec.GapMin = 200;
             testSpec.GapMax = 1200;
 
+            testSpec.ButtonsCentered = true;
             testSpec.SubmitLabel1 = "Submit";
 
             screen.XMargin = ScreenSizing.XMargin(testSpec.BrowserWidth);

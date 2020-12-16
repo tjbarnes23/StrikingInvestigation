@@ -72,7 +72,8 @@ namespace StrikingInvestigation.Pages
             testSpec.RowStartLabelHeight = ScreenSizing.RowStartLabelHeight(testSpec.BrowserWidth);
             testSpec.ChangeLabelXOffset = ScreenSizing.ChangeLabelXOffset(testSpec.BrowserWidth);
             testSpec.ChangeLabelYOffset = ScreenSizing.ChangeLabelYOffset(testSpec.BrowserWidth);
-            
+
+            testSpec.ButtonsCentered = false;
             testSpec.SubmitLabel1 = "Submit";
 
             screen.XMargin = ScreenSizing.XMargin(testSpec.BrowserWidth);

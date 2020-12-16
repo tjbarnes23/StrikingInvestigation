@@ -40,65 +40,82 @@ namespace StrikingInvestigation.Shared
         protected override void OnParametersSet()
         {
             double diameter;
-            double xPos;
+            double x1Pos;
+            double x2Pos;
             double yPos;
+            double y1Pos;
+            double y2Pos;
+            double xPos;
+            double boundaryLabelWidth;
+            double boundaryLabelHeight;
             double xAdj;
             double yAdj;
+            double tenorDiameter;
 
-            // Boundary row
+            // Work out x coordinate of previous blow (i.e. zero gap)
             int zeroGap = Blow.GapCumulativeRow - Blow.Gap;
-
+            
             if (Blow.IsHandstroke == true)
             {
-                xPos = (zeroGap * TestSpec.XScale) + Screen.XMargin;
+                x1Pos = (zeroGap * TestSpec.XScale) + Screen.XMargin;
             }
             else
             {
-                xPos = ((zeroGap + TestSpec.BaseGap) * TestSpec.XScale) + Screen.XMargin;
+                x1Pos = ((zeroGap + TestSpec.BaseGap) * TestSpec.XScale) + Screen.XMargin;
             }
 
             yPos = (Blow.RowNum * TestSpec.YScale) + Screen.YMargin;
-
+            
             diameter = Diam.Diameter(Blow.BellActual) * TestSpec.DiameterScale;
 
-            // xAdj adds gapMin and also allows for the width of the boundary box (which is 3px)
-            xAdj = (TestSpec.GapMin * TestSpec.XScale) - (diameter / 2) - 3;
+            // Adjust x1Pos for gapMin, the diameter of the bell, and the width of the boundary box (which is 3px)
+            x1Pos += (TestSpec.GapMin * TestSpec.XScale) - (diameter / 2) - 3;
 
-            // -3 is the width of the boundary box
-            yAdj = ((diameter / 2) * -1) - 3;
+            // Set y1Pos from the diameter of the bell, and the width of the boundary box (which is 3px)
+            y1Pos = yPos - ((diameter / 2) + 3);
+            
+            // Calculate coordinates of bottom right corner of boundary box
+            x2Pos = x1Pos + ((TestSpec.GapMax - TestSpec.GapMin) * TestSpec.XScale) +
+                    diameter + 6;
+            y2Pos = yPos + ((diameter / 2) + 3);
 
-            boundaryRowLeftPosStr = Convert.ToInt32(xPos + xAdj).ToString() + "px";
-            boundaryRowTopPosStr = Convert.ToInt32(yPos + yAdj).ToString() + "px";
+            // Boundary row
+            boundaryRowLeftPosStr = Convert.ToInt32(x1Pos).ToString() + "px";
+            boundaryRowTopPosStr = Convert.ToInt32(y1Pos).ToString() + "px";
 
-            boundaryLabelWidthStr = Convert.ToInt32(((TestSpec.GapMax - TestSpec.GapMin) * TestSpec.XScale) +
-                    diameter + 6).ToString() + "px";
-            boundaryLabelHeightStr = Convert.ToInt32(diameter + 6).ToString() + "px";
+            // Calculate width and height of boundary box
+            boundaryLabelWidth = x2Pos - x1Pos;
+            boundaryLabelHeight = y2Pos - y1Pos;
 
+            boundaryLabelWidthStr = Convert.ToInt32(boundaryLabelWidth).ToString() + "px";
+            boundaryLabelHeightStr = Convert.ToInt32(boundaryLabelHeight).ToString() + "px";
+
+            // Alt gap label
             altGapLabelStr = Blow.AltGap.ToString() + "ms";
             altGapLabelFontSizeStr = (TestSpec.FontSize - 1).ToString() + "px";
 
             altGapLabelMarginTop = Math.Max((diameter / 2) - TestSpec.FontSize, 0);
             altGapLabelMarginTopStr = Convert.ToInt32(altGapLabelMarginTop).ToString() + "px";
 
-            // Button row
-            int midGap = Blow.GapCumulativeRow - Blow.Gap + Convert.ToInt32((TestSpec.GapMax - TestSpec.GapMin) /
-                    (double)2) + TestSpec.GapMin;
+            // Buttons
+            tenorDiameter = Diam.Diameter("T") * TestSpec.DiameterScale;
 
-            if (Blow.IsHandstroke == true)
+            if (TestSpec.ButtonsCentered == true)
             {
-                xPos = (midGap * TestSpec.XScale) + Screen.XMargin;
+                xPos = x1Pos + ((x2Pos - x1Pos) / 2);
+
+                // Controls are 307px wide. When centering, adjust by half this amount
+                xAdj = -154;
             }
             else
             {
-                xPos = ((midGap + TestSpec.BaseGap) * TestSpec.XScale) + Screen.XMargin;
+                xPos = x2Pos;
+
+                // Controls are 307px wide. When aligning right, adjust by this amount
+                xAdj = -307;
             }
 
-            yPos = (Blow.RowNum * TestSpec.YScale) + Screen.YMargin;
-
-            diameter = Diam.Diameter(Blow.BellActual) * TestSpec.DiameterScale;
-
-            xAdj = -160;
-            yAdj = (diameter / 2) + (13 * TestSpec.DiameterScale) + 5;
+            yAdj = (tenorDiameter / 2) + 1 + (TestSpec.FontSize - 2) + 5;
 
             buttonRowLeftPosStr = Convert.ToInt32(xPos + xAdj).ToString() + "px";
             buttonRowTopPosStr = Convert.ToInt32(yPos + yAdj).ToString() + "px";

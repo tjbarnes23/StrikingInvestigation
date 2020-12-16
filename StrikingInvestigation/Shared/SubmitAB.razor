@@ -1,16 +1,18 @@
 ﻿<!-- Submit row -->
 <div class="posabs"
-        style="--leftpos: @leftPosStr;
+     style="--leftpos: @leftPosStr;
         --toppos: @topPosStr">
 
     <!-- Message -->
-    <label>
-        Play the two blocks above and then click one of these 3 buttons:
-    </label>
-
-    <!-- A has errors -->
     <div>
-        <div style="display: inline-block">
+        Play the two blocks above and then click one of these 3 buttons:
+    </div>
+
+    <div>
+        <!-- A has errors -->
+        <div style="display: inline-block;
+                margin-right: 7px;
+                margin-top: 7px">
             <button class="btn btn-primary"
                     @onclick="AHasErrors"
                     style="width: 120px"
@@ -22,10 +24,11 @@
         @if (TestSpec.SpinnerSubmitting1 == true)
         {
             <div class="spinnerinline"
-                    style="display: inline-block;
+                 style="display: inline-block;
                     vertical-align: top;
-                    margin-left: 12px;
-                    margin-top: 7px;
+                    margin-left: 5px;
+                    margin-right: 12px;
+                    margin-top: 14px;
                     --borderwidth: 5px;
                     --width: 24px;
                     --height: 24px">
@@ -36,16 +39,17 @@
         {
             <div style="display: inline-block;
                     vertical-align: top;
-                    margin-left: 12px;
-                    margin-top: 7px">
+                    margin-left: 5px;
+                    margin-right: 12px;
+                    margin-top: 14px">
                 Submitted
             </div>
         }
-    </div>
 
-    <!-- B has errors -->
-    <div>
-        <div style="display: inline-block">
+        <!-- B has errors -->
+        <div style="display: inline-block;
+                margin-right: 7px;
+                margin-top: 7px">
             <button class="btn btn-primary"
                     @onclick="BHasErrors"
                     style="width: 120px"
@@ -57,10 +61,11 @@
         @if (TestSpec.SpinnerSubmitting2 == true)
         {
             <div class="spinnerinline"
-                    style="display: inline-block;
+                 style="display: inline-block;
                     vertical-align: top;
-                    margin-left: 12px;
-                    margin-top: 7px;
+                    margin-left: 5px;
+                    margin-right: 12px;
+                    margin-top: 14px;
                     --borderwidth: 5px;
                     --width: 24px;
                     --height: 24px">
@@ -71,19 +76,26 @@
         {
             <div style="display: inline-block;
                     vertical-align: top;
-                    margin-left: 12px;
-                    margin-top: 7px">
+                    margin-left: 5px;
+                    margin-right: 12px;
+                    margin-top: 14px">
                 Submitted
             </div>
         }
-    </div>
 
-    <!-- Don't know -->
-    <div>
-        <div style="display: inline-block">
+        <!-- Start a new row on smaller screens -->
+        @if (TestSpec.BrowserWidth < 768)
+        {
+            <div>
+            </div>
+        }
+
+        <!-- Don't know -->
+        <div style="display: inline-block;
+                margin-top: 7px">
             <button class="btn btn-primary"
                     @onclick="DontKnow"
-                    style="width: 120px"
+                    style="width: 220px"
                     disabled="@TestSpec.ControlsDisabled">
                 @TestSpec.SubmitLabel3
             </button>
@@ -95,7 +107,7 @@
                  style="display: inline-block;
                     vertical-align: top;
                     margin-left: 12px;
-                    margin-top: 7px;
+                    margin-top: 14px;
                     --borderwidth: 5px;
                     --width: 24px;
                     --height: 24px">
@@ -107,7 +119,7 @@
             <div style="display: inline-block;
                     vertical-align: top;
                     margin-left: 12px;
-                    margin-top: 7px">
+                    margin-top: 14px">
                 Submitted
             </div>
         }
@@ -121,3 +133,5 @@
         </audio>
     }
 </div>
+
+
