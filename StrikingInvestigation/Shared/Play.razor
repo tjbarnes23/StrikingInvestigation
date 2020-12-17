@@ -10,68 +10,68 @@
             --width: @boundaryLabelWidthStr;
             --height: @boundaryLabelHeightStr">
     </div>
-
-    <!-- Alt gap label -->
-    @if (TestSpec.ShowGaps == true && Blow.AltGap != 0)
-    {
-        <div style="display: inline-block;
-                font-size: @altGapLabelFontSizeStr;
-                vertical-align: top;
-                margin-left: 10px;
-                margin-top: @altGapLabelMarginTopStr;
-                z-index: -1">
-            <div>
-                Audio gap
-            </div>
-
-            <div style="padding-left: 10px">
-                @altGapLabelStr
-            </div>
-        </div>
-    }
 </div>
 
-<!-- Button row -->
-<div class="posabs"
-     style="--leftpos: @buttonRowLeftPosStr;
-        --toppos: @buttonRowTopPosStr">
+<!-- Alt gap label -->
+@if (TestSpec.ShowGaps == true && Blow.AltGap != 0)
+{
+    <div class="posabs"
+            style="--leftpos: @altGapLeftPosStr;
+            --toppos: @altGapTopPosStr;
+            font-size: @altGapLabelFontSizeStr">
+        <div style="white-space: nowrap">
+            Audio gap
+        </div>
 
-    <!-- Gap minus button -->
-    <div style="display: inline-block;
-            margin-right: 6px">
-        <button class="btn btn-primary"
-                @onclick="GapMinusClick"
-                style="width: 75px"
-                disabled="@TestSpec.ControlsDisabled">
-            @gapMinusStr
-        </button>
+        <div style="padding-left: 7px">
+            @altGapLabelStr
+        </div>
     </div>
+}
 
-    <!-- Current gap label -->
-    <div style="display: inline-block;
-            margin-right: 6px;
+<!-- Gap minus button -->
+<div class="posabs"
+        style="--leftpos: @gapMinusLeftPosStr;
+        --toppos: @gapMinusTopPosStr">
+    <button class="btn btn-primary"
+            @onclick="GapMinusClick"
+            style="width: 75px"
+            disabled="@TestSpec.ControlsDisabled">
+        @gapMinusStr
+    </button>
+</div>
+
+<!-- Current gap label -->
+<div class="posabs"
+        style="--leftpos: @gapCurrLeftPosStr;
+            --toppos: @gapCurrTopPosStr;
             width: 50px;
             height: 38px;
             border: 1px solid black;
+            border-radius: 4px;
             text-align: center;
             padding-top: 6px">
-        <label>
-            @Blow.GapStr
-        </label>
-    </div>
+    <label>
+        @Blow.GapStr
+    </label>
+</div>
 
-    <!-- Gap plus button -->
-    <div style="display: inline-block;
-            margin-right: 6px">
-        <button class="btn btn-primary"
-                @onclick="GapPlusClick"
-                style="width: 75px"
-                disabled="@TestSpec.ControlsDisabled">
-            @gapPlusStr
-        </button>
-    </div>
+<!-- Gap plus button -->
+<div class="posabs"
+    style="--leftpos: @gapPlusLeftPosStr;
+    --toppos: @gapPlusTopPosStr">
+    <button class="btn btn-primary"
+            @onclick="GapPlusClick"
+            style="width: 75px"
+            disabled="@TestSpec.ControlsDisabled">
+        @gapPlusStr
+    </button>
+</div>
 
-    <!-- Play button -->
+<!-- Play button -->
+<div class="posabs"
+        style="--leftpos: @playLeftPosStr;
+        --toppos: @playTopPosStr">
     <div style="display: inline-block">
         <button class="btn btn-primary"
                 @onclick="PlayClick"

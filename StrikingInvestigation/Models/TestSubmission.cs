@@ -9,11 +9,11 @@ namespace StrikingInvestigation.Models
 
         public string UserId { get; set; }
 
-        public DateTime TestDate { get; set; }
-
         public string TestType { get; set; }
 
         public int TestId { get; set; }
+
+        public DateTime TestDate { get; set; }
 
         public int Gap { get; set; }
 

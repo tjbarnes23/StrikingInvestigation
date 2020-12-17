@@ -497,9 +497,9 @@ namespace StrikingInvestigation.Pages
             TestSubmission testSubmission = new TestSubmission()
             {
                 UserId = string.Empty,
-                TestDate = DateTime.Now,
                 TestType = "Gap Test",
                 TestId = testSpec.SelectedTest,
+                TestDate = DateTime.Now,
                 Gap = blowSet.Blows.Last().Gap,
                 ABResult = ABResult.NA
             };

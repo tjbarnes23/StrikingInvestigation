@@ -7,9 +7,9 @@ namespace StrikingInvestigation.Utilities
 {
     public enum ABResult
     {
+        NA,
         AHasErrors,
         BHasErrors,
-        DontKnow,
-        NA
+        DontKnow
     }
 }

@@ -32,8 +32,6 @@ namespace StrikingInvestigation.Shared
             double x2Pos;
             double yPos;
             double xPos;
-            double xAdj;
-            double yAdj;
             double tenorDiameter;
 
             // Work out x coordinate of previous blow (i.e. zero gap)
@@ -66,22 +64,28 @@ namespace StrikingInvestigation.Shared
             {
                 xPos = x1Pos + ((x2Pos - x1Pos) / 2);
 
-                // Controls are 307px wide. -81 will center the submit button on the current gap label
-                xAdj = -81;
+                // Controls are 293px wide. -78 will center the submit button on the current gap label
+                xPos += -78;
             }
             else
             {
                 xPos = x2Pos;
 
-                // Controls are 307px wide. -234 will center the submit button on the current gap label
-                xAdj = -234;
+                // Controls are 293px wide. -224 will center the submit button on the current gap label
+                xPos += -224;
             }
 
-            // 48 is height of buttons in previous row (39) + margin of 9
-            yAdj = (tenorDiameter / 2) + 1 + (TestSpec.FontSize - 2) + 5 + 48;
+            // Make sure xPos isn't too close to left hand edge of screen
+            if (xPos < 10)
+            {
+                xPos = 10;
+            }
 
-            leftPosStr = Convert.ToInt32(xPos + xAdj).ToString() + "px";
-            topPosStr = Convert.ToInt32(yPos + yAdj).ToString() + "px";
+            // 45 is height of buttons in previous row (39) + margin of 6
+            yPos += (tenorDiameter / 2) + 1 + (TestSpec.FontSize - 2) + 5 + 45;
+
+            leftPosStr = Convert.ToInt32(xPos).ToString() + "px";
+            topPosStr = Convert.ToInt32(yPos).ToString() + "px";
         }
 
         async Task SubmitClick()

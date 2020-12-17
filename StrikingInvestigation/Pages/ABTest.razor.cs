@@ -776,9 +776,10 @@ namespace StrikingInvestigation.Pages
                 TestSubmission testSubmission = new TestSubmission()
                 {
                     UserId = string.Empty,
-                    TestDate = DateTime.Now,
                     TestType = "A/B Test",
                     TestId = testSpec.SelectedTest,
+                    TestDate = DateTime.Now,
+                    Gap = 0,
                     ABResult = aBResult
                 };
 

@@ -10,17 +10,25 @@ namespace StrikingInvestigation.Shared
     {
         string boundaryRowLeftPosStr;
         string boundaryRowTopPosStr;
-        
         string boundaryLabelWidthStr;
         string boundaryLabelHeightStr;
 
+        string altGapLeftPosStr;
+        string altGapTopPosStr;
         string altGapLabelStr;
         string altGapLabelFontSizeStr;
-        double altGapLabelMarginTop;
-        string altGapLabelMarginTopStr;
 
-        string buttonRowLeftPosStr;
-        string buttonRowTopPosStr;
+        string gapMinusLeftPosStr;
+        string gapMinusTopPosStr;
+
+        string gapCurrLeftPosStr;
+        string gapCurrTopPosStr;
+
+        string gapPlusLeftPosStr;
+        string gapPlusTopPosStr;
+
+        string playLeftPosStr;
+        string playTopPosStr;
 
         readonly string gapMinusStr = "-" + Constants.Rounding.ToString() + "ms";
         readonly string gapPlusStr = "+" + Constants.Rounding.ToString() + "ms";
@@ -48,8 +56,8 @@ namespace StrikingInvestigation.Shared
             double xPos;
             double boundaryLabelWidth;
             double boundaryLabelHeight;
-            double xAdj;
-            double yAdj;
+            double altGapLeftPos;
+            double altGapTopPos;
             double tenorDiameter;
 
             // Work out x coordinate of previous blow (i.e. zero gap)
@@ -91,11 +99,14 @@ namespace StrikingInvestigation.Shared
             boundaryLabelHeightStr = Convert.ToInt32(boundaryLabelHeight).ToString() + "px";
 
             // Alt gap label
+            altGapLeftPos = x2Pos + 10;
+            altGapTopPos = yPos - TestSpec.FontSize - 4;
+
+            altGapLeftPosStr = Convert.ToInt32(altGapLeftPos).ToString() + "px";
+            altGapTopPosStr = Convert.ToInt32(altGapTopPos).ToString() + "px";
+            
             altGapLabelStr = Blow.AltGap.ToString() + "ms";
             altGapLabelFontSizeStr = (TestSpec.FontSize - 1).ToString() + "px";
-
-            altGapLabelMarginTop = Math.Max((diameter / 2) - TestSpec.FontSize, 0);
-            altGapLabelMarginTopStr = Convert.ToInt32(altGapLabelMarginTop).ToString() + "px";
 
             // Buttons
             tenorDiameter = Diam.Diameter("T") * TestSpec.DiameterScale;
@@ -104,21 +115,36 @@ namespace StrikingInvestigation.Shared
             {
                 xPos = x1Pos + ((x2Pos - x1Pos) / 2);
 
-                // Controls are 307px wide. When centering, adjust by half this amount
-                xAdj = -154;
+                // Controls are 293px wide. When centering, adjust by half this amount
+                xPos += -146;
             }
             else
             {
                 xPos = x2Pos;
 
-                // Controls are 307px wide. When aligning right, adjust by this amount
-                xAdj = -307;
+                // Controls are 293px wide. When aligning right, adjust by this amount
+                xPos += -293;
             }
 
-            yAdj = (tenorDiameter / 2) + 1 + (TestSpec.FontSize - 2) + 5;
+            // Make sure xPos isn't too close to left hand edge of screen
+            if (xPos < 10)
+            {
+                xPos = 10;
+            }
 
-            buttonRowLeftPosStr = Convert.ToInt32(xPos + xAdj).ToString() + "px";
-            buttonRowTopPosStr = Convert.ToInt32(yPos + yAdj).ToString() + "px";
+            yPos += (tenorDiameter / 2) + 1 + (TestSpec.FontSize - 2) + 5;
+
+            gapMinusLeftPosStr = Convert.ToInt32(xPos).ToString() + "px";
+            gapMinusTopPosStr = Convert.ToInt32(yPos).ToString() + "px";
+
+            gapCurrLeftPosStr = Convert.ToInt32(xPos + 81).ToString() + "px";
+            gapCurrTopPosStr = Convert.ToInt32(yPos).ToString() + "px";
+
+            gapPlusLeftPosStr = Convert.ToInt32(xPos + 81 + 56).ToString() + "px";
+            gapPlusTopPosStr = Convert.ToInt32(yPos).ToString() + "px";
+
+            playLeftPosStr = Convert.ToInt32(xPos + 81 + 56 + 81).ToString() + "px";
+            playTopPosStr = Convert.ToInt32(yPos).ToString() + "px";
         }
 
         async Task GapMinusClick()
