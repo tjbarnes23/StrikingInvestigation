@@ -2,12 +2,12 @@
 @using StrikingInvestigation.Models
 @using StrikingInvestigation.Utilities
 
-<div class="container mx-0 mx-md-2 my-1 my-md-3">
-    <div style="float: right">(@testSpec.BrowserWidth, @testSpec.BrowserHeight)</div>
+<div>
+    <div style="margin-right: 10px; float: right">(@testSpec.BrowserWidth, @testSpec.BrowserHeight)</div>
     
-    <h1>A/V Test</h1>
+    <h1 style="margin-left: 10px">A/V Test</h1>
 
-    <p>Adjust the test bell until it strikes at the same time that it changes color.</p>
+    <p style="margin-left: 10px">Adjust the test bell until it strikes at the same time that it changes color.</p>
 
     @if (aVTestsData == null)
     {
@@ -16,7 +16,8 @@
     else
     {
         <EditForm Model="@testSpec">
-            <div style="display: inline-block">
+            <div style="display: inline-block;
+                    margin-left: 10px">
                 <div class="form-group">
                     <label>
                         Select Test
@@ -40,7 +41,8 @@
 
             @if (testSpec.SelectedTest == 0)
             {
-                <div style="display: inline-block">
+                <div style="display: inline-block;
+                        margin-left: 10px">
                     <button class="btn btn-primary"
                             @onclick="Create"
                             disabled="@testSpec.ControlsDisabled">
@@ -50,82 +52,94 @@
 
                 @if (blow != null)
                 {
-                    <div style="display: inline-block">
+                    <div style="display: inline-block;
+                            margin-left: 10px;
+                            margin-top: 1px;
+                            vertical-align: top">
                         <div class="form-group">
                             <label>
                                 Show audio gap time
                             </label>
 
-                            <InputCheckbox Value="@testSpec.ShowGaps"
-                                           ValueChanged="@( (bool value) => ShowGapsChanged(value) )"
-                                           ValueExpression="@( () => testSpec.ShowGaps )"
-                                           class="form-control"
-                                           disabled="@testSpec.ControlsDisabled" />
+                            <div>
+                                <InputCheckbox Value="@testSpec.ShowGaps"
+                                        ValueChanged="@( (bool value) => ShowGapsChanged(value) )"
+                                        ValueExpression="@( () => testSpec.ShowGaps )"
+                                        class="form-check-input"
+                                        style="margin-left: 65px;
+                                                margin-top: 8px;
+                                                width: 22px;
+                                                height: 22px"
+                                        disabled="@testSpec.ControlsDisabled" />
+                            </div>
                         </div>
                     </div>
 
-                    <div style="display: inline-block">
+                    <div style="display: inline-block;
+                            margin-left: 10px">
                         <div class="form-group">
                             <label>
                                 Save test
                             </label>
 
-                            <button class="btn btn-primary"
-                                    @onclick="Save"
-                                    disabled="@testSpec.ControlsDisabled">
-                                @testSpec.SaveLabel
-                            </button>
+                            <div>
+                                <button class="btn btn-primary"
+                                        @onclick="Save"
+                                        disabled="@testSpec.ControlsDisabled">
+                                    @testSpec.SaveLabel
+                                </button>
 
-                            @if (testSpec.SpinnerSaving == true)
-                            {
-                                <div class="spinnerinline"
-                                        style="display: inline-block;
-                                        vertical-align: top;
-                                        margin-left: 12px;
-                                        margin-top: 7px;
-                                        --borderwidth: 5px;
-                                        --width: 24px;
-                                        --height: 24px">
-                                </div>
-                            }
+                                @if (testSpec.SpinnerSaving == true)
+                                {
+                                    <div class="spinnerinline"
+                                            style="display: inline-block;
+                                            vertical-align: top;
+                                            margin-left: 12px;
+                                            margin-top: 7px;
+                                            --borderwidth: 5px;
+                                            --width: 24px;
+                                            --height: 24px">
+                                    </div>
+                                }
 
-                            @if (testSpec.Saved == true)
-                            {
-                                <div style="display: inline-block;
-                                        vertical-align: top;
-                                        margin-left: 12px;
-                                        margin-top: 7px">
-                                    Saved
-                                </div>
-                            }
+                                @if (testSpec.Saved == true)
+                                {
+                                    <div style="display: inline-block;
+                                            vertical-align: top;
+                                            margin-left: 12px;
+                                            margin-top: 7px">
+                                        Saved
+                                    </div>
+                                }
+                            </div>
                         </div>
                     </div>
                 }
             }
         </EditForm>
     }
-</div>
 
-<div style="position: relative" tabindex="0" @onkeydown="ArrowKeys" @ref="mainDiv">
-    @if (blow != null)
-    {
-        <Bell TestSpec="@testSpec"
-                Blow="@blow"
-                Screen="@screen"
-                Callback="ProcessCallback" />
+    <div style="position: relative" tabindex="0" @onkeydown="ArrowKeys" @ref="mainDiv">
+        @if (blow != null)
+        {
+            <Bell TestSpec="@testSpec"
+                    Blow="@blow"
+                    Screen="@screen"
+                    Callback="ProcessCallback" />
 
-        <audio id="@blow.AudioId" preload="auto">
-            <source src="@blow.BellSound" type="audio/mpeg" />
-        </audio>
+            <audio id="@blow.AudioId" preload="auto">
+                <source src="@blow.BellSound" type="audio/mpeg" />
+            </audio>
 
-        <Play TestSpec="@testSpec"
-                Blow="@blow"
-                Screen="@screen"
-                Callback="ProcessCallback" />
+            <Play TestSpec="@testSpec"
+                    Blow="@blow"
+                    Screen="@screen"
+                    Callback="ProcessCallback" />
 
-        <Submit TestSpec="@testSpec"
-                Blow="@blow"
-                Screen="@screen"
-                Callback="ProcessCallback" />
-    }
+            <Submit TestSpec="@testSpec"
+                    Blow="@blow"
+                    Screen="@screen"
+                    Callback="ProcessCallback" />
+        }
+    </div>
 </div>
