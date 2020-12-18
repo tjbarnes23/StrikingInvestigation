@@ -11,23 +11,23 @@ namespace StrikingInvestigation.Utilities
         {
             if (browserWidth < 576)
             {
-                return 0.46;
+                return 0.4;
             }
             else if (browserWidth < 768)
             {
-                return 0.61;
+                return 0.55;
             }
             else if (browserWidth < 992)
             {
-                return 0.80;
+                return 0.7;
             }
             else if (browserWidth < 1200)
             {
-                return 0.98;
+                return 0.85;
             }
             else
             {
-                return 1.22;
+                return 1;
             }
         }
 
@@ -35,23 +35,23 @@ namespace StrikingInvestigation.Utilities
         {
             if (browserWidth < 576)
             {
-                return 0.15;
+                return 0.11;
             }
             else if (browserWidth < 768)
             {
-                return 0.2;
+                return 0.16;
             }
             else if (browserWidth < 992)
             {
-                return 0.26;
+                return 0.22;
             }
             else if (browserWidth < 1200)
             {
-                return 0.32;
+                return 0.29;
             }
             else
             {
-                return 0.4;
+                return 0.35;
             }
         }
 
@@ -59,19 +59,19 @@ namespace StrikingInvestigation.Utilities
         {
             if (browserWidth < 576)
             {
-                return 40;
+                return 30;
             }
             else if (browserWidth < 768)
             {
-                return 45;
+                return 35;
             }
             else if (browserWidth < 992)
             {
-                return 50;
+                return 42;
             }
             else if (browserWidth < 1200)
             {
-                return 55;
+                return 50;
             }
             else
             {
@@ -87,19 +87,19 @@ namespace StrikingInvestigation.Utilities
             }
             else if (browserWidth < 768)
             {
-                return 60;
+                return 58;
             }
             else if (browserWidth < 992)
             {
-                return 70;
+                return 66;
             }
             else if (browserWidth < 1200)
             {
-                return 80;
+                return 74;
             }
             else
             {
-                return 90;
+                return 82;
             }
         }
 
@@ -129,49 +129,39 @@ namespace StrikingInvestigation.Utilities
 
         public static int YMarginB(int browserWidth)
         {
-            if (browserWidth < 576)
-            {
-                return 250;
-            }
-            else if (browserWidth < 768)
-            {
-                return 300;
-            }
-            else if (browserWidth < 992)
-            {
-                return 350;
-            }
-            else if (browserWidth < 1200)
-            {
-                return 400;
-            }
-            else
-            {
-                return 450;
-            }
+            double margin;
+            double tenorDiameter;
+
+            margin = (YScale(browserWidth) * 4) + YMargin(browserWidth);
+
+            tenorDiameter = Diam.Diameter("T") * DiameterScale(browserWidth);
+
+            margin += (tenorDiameter / 2) + 1 + (FontSize(browserWidth) - 2) + FontPaddingTop(browserWidth) + 10 + 45;
+
+            return Convert.ToInt32(margin);
         }
 
         public static int BorderWidth(int browserWidth)
         {
             if (browserWidth < 576)
             {
-                return 4;
+                return 3;
             }
             else if (browserWidth < 768)
             {
-                return 5;
+                return 4;
             }
             else if (browserWidth < 992)
             {
-                return 6;
+                return 4;
             }
             else if (browserWidth < 1200)
             {
-                return 7;
+                return 5;
             }
             else
             {
-                return 8;
+                return 5;
             }
         }
 
@@ -196,6 +186,31 @@ namespace StrikingInvestigation.Utilities
             else
             {
                 return 14;
+            }
+        }
+
+        public static int FontPaddingTop(int browserWidth)
+        {
+            // Font padding top is about 25% of font size
+            if (browserWidth < 576)
+            {
+                return 3;
+            }
+            else if (browserWidth < 768)
+            {
+                return 3;
+            }
+            else if (browserWidth < 992)
+            {
+                return 3;
+            }
+            else if (browserWidth < 1200)
+            {
+                return 3;
+            }
+            else
+            {
+                return 4;
             }
         }
 
@@ -225,25 +240,33 @@ namespace StrikingInvestigation.Utilities
 
         public static int StrokeLabelYOffset(int browserWidth)
         {
+            // Stroke label is 150% of font size. Fonts have a top padding of about 25% of the font size
+            // So StrokeLabelYOffset is 50% of (150% of font size) + 25% of (150 % of font size)
+            // = 112.5% of font size
             if (browserWidth < 576)
             {
-                return -14;
+                // Font size is 10
+                return -10;
             }
             else if (browserWidth < 768)
             {
-                return -15;
+                // Font size is 11
+                return -11;
             }
             else if (browserWidth < 992)
             {
-                return -16;
+                // Font size is 12
+                return -13;
             }
             else if (browserWidth < 1200)
             {
-                return -17;
+                // Font size is 13
+                return -14;
             }
             else
             {
-                return -18;
+                // Font size is 14
+                return -15;
             }
         }
 
@@ -251,7 +274,7 @@ namespace StrikingInvestigation.Utilities
         {
             if (browserWidth < 576)
             {
-                return 4;
+                return 3;
             }
             else if (browserWidth < 768)
             {
@@ -259,7 +282,7 @@ namespace StrikingInvestigation.Utilities
             }
             else if (browserWidth < 992)
             {
-                return 5;
+                return 4;
             }
             else if (browserWidth < 1200)
             {
@@ -267,80 +290,35 @@ namespace StrikingInvestigation.Utilities
             }
             else
             {
-                return 6;
+                return 5;
             }
         }
 
         public static int RowStartLabelHeight(int browserWidth)
         {
-            if (browserWidth < 576)
-            {
-                return 30;
-            }
-            else if (browserWidth < 768)
-            {
-                return 35;
-            }
-            else if (browserWidth < 992)
-            {
-                return 40;
-            }
-            else if (browserWidth < 1200)
-            {
-                return 45;
-            }
-            else
-            {
-                return 50;
-            }
+            double height;
+            
+            // Row start label has the same height as the tenor
+            height = Diam.Diameter("T") * DiameterScale(browserWidth);
+            return Convert.ToInt32(height);
         }
 
         public static int ChangeLabelXOffset(int browserWidth)
         {
-            if (browserWidth < 576)
-            {
-                return -10;
-            }
-            else if (browserWidth < 768)
-            {
-                return -15;
-            }
-            else if (browserWidth < 992)
-            {
-                return -20;
-            }
-            else if (browserWidth < 1200)
-            {
-                return -25;
-            }
-            else
-            {
-                return -30;
-            }
+            double offset;
+
+            // ChangeLabelXOffset is (RowStartLabelWidth / 2) + 10
+            offset = (RowStartLabelWidth(browserWidth) / (double)2) + 10;
+            return Convert.ToInt32(offset);
         }
 
         public static int ChangeLabelYOffset(int browserWidth)
         {
-            if (browserWidth < 576)
-            {
-                return -22;
-            }
-            else if (browserWidth < 768)
-            {
-                return -32;
-            }
-            else if (browserWidth < 992)
-            {
-                return -42;
-            }
-            else if (browserWidth < 1200)
-            {
-                return -52;
-            }
-            else
-            {
-                return -62;
-            }
+            double offset;
+
+            // ChangeLabelYOffset is (50% of YScale) + (50% of font size) + FontPaddingTop
+            offset = (((YScale(browserWidth) + FontSize(browserWidth)) * 0.5) + FontPaddingTop(browserWidth)) * -1;
+            return Convert.ToInt32(offset);
         }
     }
 }

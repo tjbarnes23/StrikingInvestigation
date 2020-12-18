@@ -132,7 +132,7 @@ namespace StrikingInvestigation.Shared
                 xPos = 10;
             }
 
-            yPos += (tenorDiameter / 2) + 1 + (TestSpec.FontSize - 2) + 5;
+            yPos += (tenorDiameter / 2) + 1 + (TestSpec.FontSize - 2) + TestSpec.FontPaddingTop + 10;
 
             gapMinusLeftPosStr = Convert.ToInt32(xPos).ToString() + "px";
             gapMinusTopPosStr = Convert.ToInt32(yPos).ToString() + "px";

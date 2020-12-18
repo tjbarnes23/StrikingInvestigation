@@ -32,7 +32,7 @@ namespace StrikingInvestigation.Pages
                 TenorWeight = 23,
                 NumRows = 4,
                 ErrorType = 0,
-                ErrorSize = 80,
+                ErrorSize = 60,
                 TestBellLoc = 1,
                 SelectedTest = -1
             };
@@ -66,6 +66,7 @@ namespace StrikingInvestigation.Pages
             testSpec.YScale = ScreenSizing.YScale(testSpec.BrowserWidth);
             testSpec.BorderWidth = ScreenSizing.BorderWidth(testSpec.BrowserWidth);
             testSpec.FontSize = ScreenSizing.FontSize(testSpec.BrowserWidth);
+            testSpec.FontPaddingTop = ScreenSizing.FontPaddingTop(testSpec.BrowserWidth);
             testSpec.StrokeLabelXOffset = ScreenSizing.StrokeLabelXOffset(testSpec.BrowserWidth);
             testSpec.StrokeLabelYOffset = ScreenSizing.StrokeLabelYOffset(testSpec.BrowserWidth);
             testSpec.RowStartLabelWidth = ScreenSizing.RowStartLabelWidth(testSpec.BrowserWidth);

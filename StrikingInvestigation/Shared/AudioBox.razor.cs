@@ -1,6 +1,7 @@
 ﻿using System;
 using Microsoft.AspNetCore.Components;
 using StrikingInvestigation.Models;
+using StrikingInvestigation.Utilities;
 
 namespace StrikingInvestigation.Shared
 {
@@ -28,33 +29,49 @@ namespace StrikingInvestigation.Shared
 
         protected override void OnParametersSet()
         {
-            int numBells = TestSpec.Stage + (TestSpec.Stage % 2);
+            int numBells;
+            double x1Pos;
+            double y1Pos;
+            double x2Pos;
+            double y2Pos;
+            double tenorDiameter;
 
-            int x1Pos = Convert.ToInt32(TestSpec.BaseGap * TestSpec.XScale) + Screen.XMargin + 30;
-            int y1Pos = Screen.YMargin + 50;
+            // Set audio box coordinates
+            numBells = TestSpec.Stage + (TestSpec.Stage % 2);
 
-            int x2Pos = Convert.ToInt32(TestSpec.BaseGap * (numBells + 2) * TestSpec.XScale) + Screen.XMargin - 30;
-            int y2Pos = Convert.ToInt32((TestSpec.NumRows + 1) * TestSpec.YScale) + Screen.YMargin - 50 ;
+            x1Pos = (TestSpec.BaseGap * TestSpec.XScale) + Screen.XMargin;
+            y1Pos = TestSpec.YScale + Screen.YMargin;
 
-            boundaryLeftPos = x1Pos.ToString() + "px";
-            boundaryTopPos = y1Pos.ToString() + "px";
+            x2Pos = (TestSpec.BaseGap * (numBells + 2) * TestSpec.XScale) + Screen.XMargin;
+            y2Pos = (TestSpec.NumRows * TestSpec.YScale) + Screen.YMargin;
 
-            boundaryWidth = (x2Pos - x1Pos).ToString() + "px";
-            boundaryHeight = (y2Pos - y1Pos).ToString() + "px";
+            // Adjust y coordinates
+            tenorDiameter = Diam.Diameter("T") * TestSpec.DiameterScale;
+            y1Pos -= (tenorDiameter / 2) + 1 + (TestSpec.FontSize - 2) + TestSpec.FontPaddingTop + 4;
+            y2Pos += (tenorDiameter / 2) + 1 + (TestSpec.FontSize - 2) + TestSpec.FontPaddingTop + 4;
 
-            int x3Pos = x1Pos + 50;
-            int y3Pos = (y1Pos + y2Pos) / 2;
+            boundaryLeftPos = Convert.ToInt32(x1Pos).ToString() + "px";
+            boundaryTopPos = Convert.ToInt32(y1Pos).ToString() + "px";
 
-            int x4Pos = x2Pos - 50;
+            boundaryWidth = Convert.ToInt32(x2Pos - x1Pos).ToString() + "px";
+            boundaryHeight = Convert.ToInt32(y2Pos - y1Pos).ToString() + "px";
 
-            barLeftPos = x3Pos.ToString() + "px";
-            barTopPos = y3Pos.ToString() + "px";
+            // Set audio bar coordinates
+            double x3Pos = x1Pos + 50;
+            double x4Pos = x2Pos - 50;
+            double y3Pos = (y1Pos + y2Pos) / 2;
 
-            barWidth = (x4Pos - x3Pos).ToString() + "px";
+            barLeftPos = Convert.ToInt32(x3Pos).ToString() + "px";
 
-            dotLeftStartPos = (x3Pos - 14).ToString() + "px";
-            dotLeftEndPos = (x4Pos - 14).ToString() + "px";
-            dotTopPos = (y3Pos - 14).ToString() + "px";
+            // 3 is half the width of the audio bar
+            barTopPos = Convert.ToInt32(y3Pos - 3).ToString() + "px";
+
+            barWidth = Convert.ToInt32(x4Pos - x3Pos).ToString() + "px";
+
+            // Set audio dot coordinates
+            dotLeftStartPos = (x3Pos - 12).ToString() + "px";
+            dotLeftEndPos = (x4Pos - 12).ToString() + "px";
+            dotTopPos = (y3Pos - 12).ToString() + "px";
 
             durationStr = Screen.AnimationDuration.ToString() + "ms";
 

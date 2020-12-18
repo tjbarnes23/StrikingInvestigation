@@ -22,12 +22,19 @@ namespace StrikingInvestigation.Shared
 
         protected override void OnParametersSet()
         {
+            int numBells;
             double xPos;
             double yPos;
-            int numBells = TestSpec.Stage + (TestSpec.Stage % 2);
+            double tenorDiameter;
 
-            xPos = (TestSpec.BaseGap * (numBells + 2) * TestSpec.XScale) + Screen.XMargin - 105;
-            yPos = ((TestSpec.NumRows + 1) * TestSpec.YScale) + Screen.YMargin - 45;
+            numBells = TestSpec.Stage + (TestSpec.Stage % 2);
+
+            xPos = (TestSpec.BaseGap * (numBells + 2) * TestSpec.XScale) + Screen.XMargin - 75;
+            yPos = (TestSpec.NumRows * TestSpec.YScale) + Screen.YMargin;
+
+            tenorDiameter = Diam.Diameter("T") * TestSpec.DiameterScale;
+            
+            yPos += (tenorDiameter / 2) + 1 + (TestSpec.FontSize - 2) + TestSpec.FontPaddingTop + 10;
 
             leftPosStr = Convert.ToInt32(xPos).ToString() + "px";
             topPosStr = Convert.ToInt32(yPos).ToString() + "px";

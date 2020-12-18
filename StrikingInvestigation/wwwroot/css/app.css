@@ -205,11 +205,12 @@ h6 {
     top: var(--toppos);
     width: var(--diameter);
     height: var(--diameter);
-    user-select: none;
     font-size: var(--fontsize);
     font-weight: bold;
+    vertical-align: top;
     text-align: center;
-    padding-top: var(--padding);
+    padding-top: var(--paddingtop);
+    user-select: none;
 }
 
 .strokelabel {
@@ -219,6 +220,7 @@ h6 {
     position: absolute;
     left: var(--leftpos);
     top: var(--toppos);
+    vertical-align: top;
     user-select: none;
 }
 
@@ -284,7 +286,9 @@ h6 {
 
 .audiobar {
     box-sizing: content-box;
-    border-top: 6px solid silver;
+    border-top-width: 6px;
+    border-top-style: solid;
+    border-top-color: silver;
     position: absolute;
     left: var(--leftpos);
     top: var(--toppos);
@@ -298,8 +302,8 @@ h6 {
     position: absolute;
     left: var(--leftpos);
     top: var(--toppos);
-    width: 32px;
-    height: 32px;
+    width: 24px;
+    height: 24px;
     background-color: gray;
 }
 
@@ -309,8 +313,8 @@ h6 {
     position: absolute;
     left: var(--leftendpos);
     top: var(--toppos);
-    width: 32px;
-    height: 32px;
+    width: 24px;
+    height: 24px;
     background-color: #A00000;
     animation-name: slide;
     animation-duration: var(--duration);

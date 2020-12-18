@@ -24,11 +24,19 @@ namespace StrikingInvestigation.Shared
 
         protected override void OnParametersSet()
         {
-            int xPos = Convert.ToInt32((TestSpec.BaseGap / (double)2) * TestSpec.XScale) + Screen.XMargin;
-            int yPos = Convert.ToInt32((TestSpec.NumRows + 1) * TestSpec.YScale) + Screen.YMargin;
+            double xPos;
+            double yPos;
+            double tenorDiameter;
 
-            leftPosStr = xPos.ToString() + "px";
-            topPosStr = yPos.ToString() + "px";
+            xPos = ((TestSpec.BaseGap / (double)2) * TestSpec.XScale) + Screen.XMargin;
+            yPos = (TestSpec.NumRows * TestSpec.YScale) + Screen.YMargin;
+
+            tenorDiameter = Diam.Diameter("T") * TestSpec.DiameterScale;
+
+            yPos += (tenorDiameter / 2) + 1 + (TestSpec.FontSize - 2) + TestSpec.FontPaddingTop + 10 + 44;
+
+            leftPosStr = Convert.ToInt32(xPos).ToString() + "px";
+            topPosStr = Convert.ToInt32(yPos).ToString() + "px";
         }
 
         async Task AHasErrors()

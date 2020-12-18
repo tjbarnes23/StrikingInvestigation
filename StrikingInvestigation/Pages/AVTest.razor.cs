@@ -60,6 +60,7 @@ namespace StrikingInvestigation.Pages
             testSpec.YScale = ScreenSizing.YScale(testSpec.BrowserWidth);
             testSpec.BorderWidth = ScreenSizing.BorderWidth(testSpec.BrowserWidth);
             testSpec.FontSize = ScreenSizing.FontSize(testSpec.BrowserWidth);
+            testSpec.FontPaddingTop = ScreenSizing.FontPaddingTop(testSpec.BrowserWidth);
             testSpec.GapMin = 200;
             testSpec.GapMax = 1200;
 

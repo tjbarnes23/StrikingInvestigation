@@ -81,8 +81,8 @@ namespace StrikingInvestigation.Shared
                 xPos = 10;
             }
 
-            // 45 is height of buttons in previous row (39) + margin of 6
-            yPos += (tenorDiameter / 2) + 1 + (TestSpec.FontSize - 2) + 5 + 45;
+            // 44 is height of buttons in previous row (38) + margin of 6
+            yPos += (tenorDiameter / 2) + 1 + (TestSpec.FontSize - 2) + TestSpec.FontPaddingTop + 10 + 44;
 
             leftPosStr = Convert.ToInt32(xPos).ToString() + "px";
             topPosStr = Convert.ToInt32(yPos).ToString() + "px";

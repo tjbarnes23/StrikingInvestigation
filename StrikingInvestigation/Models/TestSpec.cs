@@ -42,6 +42,8 @@ namespace StrikingInvestigation.Models
 
         public int FontSize { get; set; }
 
+        public int FontPaddingTop { get; set; }
+
         public int StrokeLabelXOffset { get; set; }
 
         public int StrokeLabelYOffset { get; set; }

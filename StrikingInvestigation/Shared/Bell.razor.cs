@@ -14,7 +14,7 @@ namespace StrikingInvestigation.Shared
         string bellLeftPosStr;
         string bellTopPosStr;
         string bellFontSizeStr;
-        string paddingStr;
+        string paddingTopStr;
 
         string gapLabelLeftPosStr;
         string gapLabelTopPosStr;
@@ -38,13 +38,24 @@ namespace StrikingInvestigation.Shared
         {
             // Calculations for bell
             double diameter;
+            double diameterMin;
             double bellLeftPos;
             double bellTopPos;
-            double padding;
+            double paddingTop;
             
             borderWidthStr = TestSpec.BorderWidth.ToString() + "px";
 
             diameter = Diam.Diameter(Blow.BellActual) * TestSpec.DiameterScale;
+
+            // Test to see if diameter is too small to fit bell number - if so set diameter to minimum value that
+            // will fit the bell number
+            diameterMin = ((TestSpec.FontSize / (double)2) + TestSpec.FontPaddingTop + TestSpec.BorderWidth) * 2;
+
+            if (diameter < diameterMin)
+            {
+                diameter = diameterMin;
+            }
+
             diameterStr = Convert.ToInt32(diameter).ToString() + "px";
 
             if (Blow.IsHandstroke)
@@ -66,11 +77,16 @@ namespace StrikingInvestigation.Shared
 
             bellFontSizeStr = TestSpec.FontSize.ToString() + "px";
 
-            // Need logic here for centering the bell number inside the bell.
-            // For now, use a default of -3
-            // Check whether alignment is baseline - may need to change that
-            padding = ((diameter - (TestSpec.BorderWidth * 2) - TestSpec.FontSize) / 2) - 3;
-            paddingStr = Convert.ToInt32(padding).ToString() + "px";
+            // First set paddingTop to half the interior diameter
+            paddingTop = (diameter - (TestSpec.BorderWidth * 2)) / 2;
+
+            // Fonts seem to insert padding above of about 25% of font size, so subtract this
+            paddingTop -= TestSpec.FontPaddingTop;
+
+            // Now subtract half of the font size
+            paddingTop -= TestSpec.FontSize / (double)2;
+
+            paddingTopStr = Convert.ToInt32(paddingTop).ToString() + "px";
 
             // Calculations for gap label
             double tenorDiameter;
