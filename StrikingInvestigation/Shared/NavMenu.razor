@@ -1,63 +1,105 @@
-﻿<div class="topbar navbar">
-    <a class="navbar-brand posabs" style="--leftpos: 10px; --toppos: 8px" href="">
+﻿@using StrikingInvestigation.Utilities
+
+<div style="width: auto;
+            height: 50px;
+            background-image: linear-gradient(90deg, rgba(58, 6, 71, 0.9), rgba(5, 39, 103, 1))">
+    
+    <button class="menutitle"
+            style="--leftpos: 10px;
+                --toppos: 7px;
+                --width: 185px;
+                --height: 36px"
+            tabindex="0"
+            @ref="title"
+            @onclick="@(e => MenuClick(Menu.Title))">
         Striking Investigation
-    </a>
+    </button>
 
-    <ul class="nav">
-        <li class="nav-item">
-            <NavLink class="nav-link posabswh"
-                     style="--leftpos: 200px; --toppos: 7px; --width: 110px; height: 36px"
-                     href="" Match="NavLinkMatch.All">
-                <span class="oi oi-home" aria-hidden="true"></span> Home
-            </NavLink>
-        </li>
+    <button class="menuitem"
+            style="--leftpos: 200px;
+                --toppos: 7px;
+                --width: 110px;
+                --height: 36px;
+                --bgcolor: @bgColor[(int)Menu.Home];
+                --color: @color[(int)Menu.Home]"
+            tabindex="-1"
+            @onclick="@(e => MenuClick(Menu.Home))">
+        <span class="oi oi-home oistyle">
+        </span>
+        Home
+    </button>
 
-        <li class="nav-item">
-            <NavLink class="nav-link posabswh"
-                     style="--leftpos: 325px; --toppos: 7px; --width: 125px; height: 36px"
-                     href="gaptest" Match="NavLinkMatch.All">
-                <span class="oi oi-random" aria-hidden="true"></span> Gap Test
-            </NavLink>
-        </li>
+    <button class="menuitem"
+            style="--leftpos: 325px;
+                --toppos: 7px;
+                --width: 125px;
+                --height: 36px;
+                --bgcolor: @bgColor[(int)Menu.Tests];
+                --color: @color[(int)Menu.Tests]"
+            tabindex="-1"
+            @onclick="@(e => MenuClick(Menu.Tests))">
+        <span class="oi oi-random oistyle">
+        </span>
+        Tests
+    </button>
 
-        <li class="nav-item">
-            <NavLink class="nav-link posabswh"
-                     style="--leftpos: 465px; --toppos: 7px; --width: 120px; height: 36px"
-                     href="abtest" Match="NavLinkMatch.All">
-                <span class="oi oi-media-play" aria-hidden="true"></span> A/B Test
-            </NavLink>
-        </li>
+    <button class="menuitem"
+            style="--leftpos: 465px;
+                --toppos: 7px;
+                --width: 120px;
+                --height: 36px;
+                --bgcolor: @bgColor[(int)Menu.Data];
+                --color: @color[(int)Menu.Data]"
+            tabindex="-1"
+            @onclick="@(e => MenuClick(Menu.Data))">
+        <span class="oi oi-media-play oistyle">
+        </span>
+        Data
+    </button>
 
-        <li class="nav-item">
-            <NavLink class="nav-link posabswh"
-                     style="--leftpos: 600px; --toppos: 7px; --width: 120px; height: 36px"
-                     href="avtest" Match="NavLinkMatch.All">
-                <span class="oi oi-eye" aria-hidden="true"></span> A/V Test
-            </NavLink>
-        </li>
+    <button class="menuitem"
+            style="--leftpos: 600px;
+                --toppos: 7px;
+                --width: 120px;
+                --height: 36px;
+                --bgcolor: @bgColor[(int)Menu.Admin];
+                --color: @color[(int)Menu.Admin]"
+            tabindex="-1"
+            @onclick="@(e => MenuClick(Menu.Admin))">
+        <span class="oi oi-eye oistyle">
+        </span>
+        Admin
+    </button>
 
-        <li class="nav-item">
-            <NavLink class="nav-link posabswh"
-                     style="--leftpos: 735px; --toppos: 7px; --width: 145px; height: 36px"
-                     href="submissions" Match="NavLinkMatch.All">
-                <span class="oi oi-data-transfer-upload" aria-hidden="true"></span> Submissions
-            </NavLink>
-        </li>
+    <!--
+    <div class="d-none d-lg-block">
+        
+            <div class="dropdown-menu">
+                <NavLink class="dropdown-item"
+                        href="gaptest"
+                        Match="NavLinkMatch.All">
+                    Gap Tests
+                </NavLink>
 
-        <li class="nav-item">
-            <NavLink class="nav-link posabswh"
-                     style="--leftpos: 895px; --toppos: 7px; --width: 120px; height: 36px"
-                     href="privacy" Match="NavLinkMatch.All">
-                <span class="oi oi-document" aria-hidden="true"></span> Privacy
-            </NavLink>
-        </li>
+                <NavLink class="dropdown-item"
+                        href="abtest"
+                        Match="NavLinkMatch.All">
+                    A/B Tests
+                </NavLink>
+              
+                <NavLink class="dropdown-item"
+                        href="avtest"
+                        Match="NavLinkMatch.All">
+                    A/V Tests
+                </NavLink>
+            </div>
+        
+    </div>
+    -->
 
-        <li class="nav-item">
-            <NavLink class="nav-link posabswh"
-                     style="--leftpos: 1030px; --toppos: 7px; --width: 120px; height: 36px"
-                     href="account" Match="NavLinkMatch.All">
-                <span class="oi oi-account-login" aria-hidden="true"></span> Account
-            </NavLink>
-        </li>
-    </ul>
+    <button class="d-lg-none"
+            style="float: right"
+            @onclick="ToggleNavMenu">
+        <span class="navbar-toggler-icon"></span>
+    </button>
 </div>

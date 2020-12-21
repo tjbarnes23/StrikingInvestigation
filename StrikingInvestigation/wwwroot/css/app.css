@@ -77,45 +77,107 @@ h6 {
     font-size: 15px;
 }
 
-/* topbar is used in NavMenu.razor */
-.topbar {
-    height: 50px;
-    width: auto;
-    background-image: linear-gradient(90deg, rgba(58, 6, 71, 0.9), rgba(5, 39, 103, 1));
+button.menutitle {
+    position: absolute;
+    left: var(--leftpos);
+    top: var(--toppos);
+    width: var(--width);
+    height: var(--height);
+    background-color: transparent;
+    color: white;
+    border-style: none;
+    border-radius: 0px;
+    box-shadow: none;
+    outline: none;
+    vertical-align: top;
+    padding-left: 0px;
+    padding-right: 0px;
+    padding-top: 2px;
+    font-size: 18px;
+    font-weight: 400;
+    line-height: 1.5;
+    text-align: left;
+    user-select: none;
 }
 
-    .topbar .navbar-brand {
-        font-size: 18px;
-        color: white;
-    }
+button:hover.menutitle {
+    background-color: transparent;
+    color: white;
+    border-style: none;
+    box-shadow: none;
+    outline: none;
+}
 
-    .topbar .nav-item {
-        font-size: 14px;
-        padding-bottom: 8px;
-    }
+button:focus.menuitem {
+    background-color: transparent;
+    color: white;
+    border-style: none;
+    box-shadow: none;
+    outline: none;
+}
 
-        .topbar .nav-item .oi {
-            width: 27px;
-            font-size: 18px;
-            vertical-align: text-top;
-            top: -2px;
-        }
+button:active.menuitem {
+    background-color: transparent;
+    color: white;
+    border-style: none;
+    box-shadow: none;
+    outline: none;
+}
 
-        .topbar .nav-item a {
-            color: #d7d7d7;
-            border-radius: 4px;
-            align-items: center;
-        }
+button.menuitem {
+    position: absolute;
+    left: var(--leftpos);
+    top: var(--toppos);
+    width: var(--width);
+    height: var(--height);
+    background-color: var(--bgcolor);
+    color: var(--color);
+    border-style: none;
+    border-radius: 4px;
+    box-shadow: none;
+    outline: none;
+    vertical-align: top;
+    padding-left: 16px;
+    padding-top: 2px;
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 1.5;
+    text-align: left;
+    transition-property: color, background-color;
+    transition-duration: 0.15s, 0.15s;
+    transition-timing-function: ease-in-out, ease-in-out;
+    transition-delay: 0s, 0s;
+    user-select: none;
+}
 
-            .topbar .nav-item a.active {
-                background-color: rgba(255, 255, 255, 0.3);
-                color: white;
-            }
+button:hover.menuitem {
+    background-color: rgba(255, 255, 255, 0.15);
+    color: white;
+    border-style: none;
+    box-shadow: none;
+    outline: none;
+}
 
-            .topbar .nav-item a:hover {
-                background-color: rgba(255, 255, 255, 0.15);
-                color: white;
-            }
+button:focus.menuitem {
+    border-style: none;
+    box-shadow: none;
+    outline: none;
+}
+
+button:active.menuitem {
+    border-style: none;
+    box-shadow: none;
+    outline: none;
+}
+
+span.oistyle {
+    position: relative;
+    top: 0px;
+    width: 27px;
+    font-size: 18px;
+    text-align: left;
+    vertical-align: top;
+}
 
 .spinner {
     border: 16px solid silver;
@@ -127,6 +189,7 @@ h6 {
     width: 80px;
     height: 80px;
     animation: spin 700ms linear infinite;
+    user-select: none;
 }
 
 .spinnerinline {
@@ -141,6 +204,7 @@ h6 {
     width: var(--width);
     height: var(--height);
     animation: spin 700ms linear infinite;
+    user-select: none;
 }
 
 .spinnerabs {
@@ -158,6 +222,7 @@ h6 {
     width: 24px;
     height: 24px;
     animation: spin 700ms linear infinite;
+    user-select: none;
 }
 
 @keyframes spin {
@@ -242,6 +307,7 @@ h6 {
     top: var(--toppos);
     width: 0px;
     height: var(--height);
+    user-select: none;
 }
 
 .boundarylabel {
@@ -253,6 +319,7 @@ h6 {
     width: var(--width);
     height: var(--height);
     z-index: -1;
+    user-select: none;
 }
 
 .boundarylabelinline {
@@ -263,6 +330,7 @@ h6 {
     width: var(--width);
     height: var(--height);
     z-index: -1;
+    user-select: none;
 }
 
 .gaplabel {
@@ -294,6 +362,7 @@ h6 {
     top: var(--toppos);
     width: var(--width);
     height: 0px;
+    user-select: none;
 }
 
 .audiodotinitial {
@@ -305,6 +374,7 @@ h6 {
     width: 24px;
     height: 24px;
     background-color: gray;
+    user-select: none;
 }
 
 .audiodotmove {
@@ -320,6 +390,7 @@ h6 {
     animation-duration: var(--duration);
     animation-timing-function: linear;
     animation-iteration-count: 1;
+    user-select: none;
 }
 
 @keyframes slide {
