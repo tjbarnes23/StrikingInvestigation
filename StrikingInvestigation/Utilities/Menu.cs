@@ -7,9 +7,11 @@ namespace StrikingInvestigation.Utilities
 {
     public enum Menu
     {
-        Title,
         Home,
         Tests,
+        GapTests,
+        ABTests,
+        AVTests,
         Data,
         Admin
     }

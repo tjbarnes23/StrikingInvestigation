@@ -11,7 +11,7 @@
                 --height: 36px"
             tabindex="0"
             @ref="title"
-            @onclick="@(e => MenuClick(Menu.Title))">
+            @onclick="@(e => MenuClick(Menu.Home))">
         Striking Investigation
     </button>
 
@@ -43,6 +43,53 @@
         Tests
     </button>
 
+    @if (subMenuActive[(int)Menu.Tests] == true)
+    {
+        <div class="posabs"
+                style="--leftpos: 325px;
+                    --toppos: 50px;
+                    background-image: linear-gradient(90deg, rgba(58, 6, 71, 0.9), rgba(5, 39, 103, 1))">
+            <div>
+                <button class="dropdownitem"
+                        style="--height: 36px;
+                            --bgcolor: @bgColor[(int)Menu.GapTests];
+                            --color: @color[(int)Menu.GapTests]"
+                        tabindex="-1"
+                        @onclick="@(e => MenuClick(Menu.GapTests))">
+                    <span class="oi oi-home oistyle">
+                    </span>
+                    Gap Tests
+                </button>
+            </div>
+
+            <div>
+                <button class="dropdownitem"
+                        style="--height: 36px;
+                            --bgcolor: @bgColor[(int)Menu.ABTests];
+                            --color: @color[(int)Menu.ABTests]"
+                        tabindex="-1"
+                        @onclick="@(e => MenuClick(Menu.ABTests))">
+                    <span class="oi oi-home oistyle">
+                    </span>
+                    A/B Tests
+                </button>
+            </div>
+
+            <div>
+                <button class="dropdownitem"
+                        style="--height: 36px;
+                            --bgcolor: @bgColor[(int)Menu.AVTests];
+                            --color: @color[(int)Menu.AVTests]"
+                        tabindex="-1"
+                        @onclick="@(e => MenuClick(Menu.AVTests))">
+                    <span class="oi oi-home oistyle">
+                    </span>
+                    A/V Tests
+                </button>
+            </div>
+        </div>
+    }
+
     <button class="menuitem"
             style="--leftpos: 465px;
                 --toppos: 7px;
@@ -70,32 +117,6 @@
         </span>
         Admin
     </button>
-
-    <!--
-    <div class="d-none d-lg-block">
-        
-            <div class="dropdown-menu">
-                <NavLink class="dropdown-item"
-                        href="gaptest"
-                        Match="NavLinkMatch.All">
-                    Gap Tests
-                </NavLink>
-
-                <NavLink class="dropdown-item"
-                        href="abtest"
-                        Match="NavLinkMatch.All">
-                    A/B Tests
-                </NavLink>
-              
-                <NavLink class="dropdown-item"
-                        href="avtest"
-                        Match="NavLinkMatch.All">
-                    A/V Tests
-                </NavLink>
-            </div>
-        
-    </div>
-    -->
 
     <button class="d-lg-none"
             style="float: right"

@@ -77,6 +77,7 @@ h6 {
     font-size: 15px;
 }
 
+/* These style the menu title button */
 button.menutitle {
     position: absolute;
     left: var(--leftpos);
@@ -108,7 +109,7 @@ button:hover.menutitle {
     outline: none;
 }
 
-button:focus.menuitem {
+button:focus.menutitle {
     background-color: transparent;
     color: white;
     border-style: none;
@@ -116,7 +117,7 @@ button:focus.menuitem {
     outline: none;
 }
 
-button:active.menuitem {
+button:active.menutitle {
     background-color: transparent;
     color: white;
     border-style: none;
@@ -124,6 +125,7 @@ button:active.menuitem {
     outline: none;
 }
 
+/* These style menu item buttons */
 button.menuitem {
     position: absolute;
     left: var(--leftpos);
@@ -170,6 +172,56 @@ button:active.menuitem {
     outline: none;
 }
 
+/* These style dropdown menu item buttons */
+button.dropdownitem {
+    height: var(--height);
+    background-color: var(--bgcolor);
+    color: var(--color);
+    z-index: 1;
+    margin-left: 6px;
+    margin-right: 6px;
+    margin-top: 6px;
+    margin-bottom: 6px;
+    border-style: none;
+    border-radius: 4px;
+    box-shadow: none;
+    outline: none;
+    vertical-align: top;
+    padding-left: 16px;
+    padding-right: 16px;
+    padding-top: 2px;
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 1.5;
+    text-align: left;
+    transition-property: color, background-color;
+    transition-duration: 0.15s, 0.15s;
+    transition-timing-function: ease-in-out, ease-in-out;
+    transition-delay: 0s, 0s;
+    user-select: none;
+}
+
+button:hover.dropdownitem {
+    background-color: rgba(255, 255, 255, 0.15);
+    color: white;
+    border-style: none;
+    box-shadow: none;
+    outline: none;
+}
+
+button:focus.dropdownitem {
+    border-style: none;
+    box-shadow: none;
+    outline: none;
+}
+
+button:active.dropdownitem {
+    border-style: none;
+    box-shadow: none;
+    outline: none;
+}
+
+/* This styles menu button icons */
 span.oistyle {
     position: relative;
     top: 0px;
@@ -179,6 +231,7 @@ span.oistyle {
     vertical-align: top;
 }
 
+/* The main screen spinner */
 .spinner {
     border: 16px solid silver;
     border-top: 16px solid #337AB7;
@@ -192,6 +245,7 @@ span.oistyle {
     user-select: none;
 }
 
+/* Spinner for displaying next to a button */
 .spinnerinline {
     box-sizing: border-box;
     border-width: var(--borderwidth);
@@ -207,6 +261,7 @@ span.oistyle {
     user-select: none;
 }
 
+/*** Think this is no longer used - check then remove ***/
 .spinnerabs {
     box-sizing: border-box;
     border-width: 5px;
