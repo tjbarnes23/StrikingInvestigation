@@ -18,9 +18,9 @@ namespace StrikingInvestigation.Shared
 
         public NavMenu()
         {
-            bgColor = new string[10];
-            color = new string[10];
-            subMenuActive = new bool[10];
+            bgColor = new string[12];
+            color = new string[12];
+            subMenuActive = new bool[12];
         }
 
         [Inject]
@@ -44,22 +44,20 @@ namespace StrikingInvestigation.Shared
             switch (menu)
             {
                 case Menu.Home:
-                    ResetMenus();
-                    bgColor[(int)Menu.Home] = "rgba(255, 255, 255, 0.3)";
-                    color[(int)Menu.Home] = "white";
+                    SetMenus(menu);
                     NavManager.NavigateTo("/");
                     break;
 
                 case Menu.Tests:
                     if (subMenuActive[(int)Menu.Tests] == true)
                     {
-                        // Tests menu click for a second time - close the dropdown list
+                        // Menu clicked for a second time - close the dropdown list
                         subMenuActive[(int)Menu.Tests] = false;
                     }
                     else
                     {
                         // Close all dropdown lists
-                        for (int i = 0; i < 10; i++)
+                        for (int i = 0; i < 12; i++)
                         {
                             subMenuActive[i] = false;
                         }
@@ -71,68 +69,124 @@ namespace StrikingInvestigation.Shared
                     break;
 
                 case Menu.GapTests:
-                    ResetMenus();
+                    SetMenus(menu);
                     bgColor[(int)Menu.Tests] = "rgba(255, 255, 255, 0.3)";
                     color[(int)Menu.Tests] = "white";
-                    bgColor[(int)Menu.GapTests] = "rgba(255, 255, 255, 0.3)";
-                    color[(int)Menu.GapTests] = "white";
                     NavManager.NavigateTo("/gaptest");
                     break;
 
                 case Menu.ABTests:
-                    ResetMenus();
+                    SetMenus(menu);
                     bgColor[(int)Menu.Tests] = "rgba(255, 255, 255, 0.3)";
                     color[(int)Menu.Tests] = "white";
-                    bgColor[(int)Menu.ABTests] = "rgba(255, 255, 255, 0.3)";
-                    color[(int)Menu.ABTests] = "white";
                     NavManager.NavigateTo("/abtest");
                     break;
 
                 case Menu.AVTests:
                     // Set all colors to unselected and close all dropdowns
-                    ResetMenus();
+                    SetMenus(menu);
                     bgColor[(int)Menu.Tests] = "rgba(255, 255, 255, 0.3)";
                     color[(int)Menu.Tests] = "white";
-                    bgColor[(int)Menu.AVTests] = "rgba(255, 255, 255, 0.3)";
-                    color[(int)Menu.AVTests] = "white";
                     NavManager.NavigateTo("/avtest");
                     break;
 
                 case Menu.Data:
+                    if (subMenuActive[(int)Menu.Data] == true)
+                    {
+                        // Menu clicked for a second time - close the dropdown list
+                        subMenuActive[(int)Menu.Data] = false;
+                    }
+                    else
+                    {
+                        // Close all dropdown lists
+                        for (int i = 0; i < 12; i++)
+                        {
+                            subMenuActive[i] = false;
+                        }
+
+                        // Open dropdown list
+                        subMenuActive[(int)Menu.Data] = true;
+                    }
+
+                    break;
+
+                case Menu.Submissions:
                     // Set all colors to unselected and close all dropdowns
-                    ResetMenus();
+                    SetMenus(menu);
                     bgColor[(int)Menu.Data] = "rgba(255, 255, 255, 0.3)";
                     color[(int)Menu.Data] = "white";
                     NavManager.NavigateTo("/submissions");
                     break;
 
+                case Menu.Results:
+                    // Set all colors to unselected and close all dropdowns
+                    SetMenus(menu);
+                    bgColor[(int)Menu.Data] = "rgba(255, 255, 255, 0.3)";
+                    color[(int)Menu.Data] = "white";
+                    NavManager.NavigateTo("/results");
+                    break;
+
                 case Menu.Admin:
-                    ResetMenus();
+                    if (subMenuActive[(int)Menu.Admin] == true)
+                    {
+                        // Menu clicked for a second time - close the dropdown list
+                        subMenuActive[(int)Menu.Admin] = false;
+                    }
+                    else
+                    {
+                        // Close all dropdown lists
+                        for (int i = 0; i < 12; i++)
+                        {
+                            subMenuActive[i] = false;
+                        }
+
+                        // Open dropdown list
+                        subMenuActive[(int)Menu.Admin] = true;
+                    }
+
+                    break;
+
+                case Menu.Account:
+                    SetMenus(menu);
                     bgColor[(int)Menu.Admin] = "rgba(255, 255, 255, 0.3)";
                     color[(int)Menu.Admin] = "white";
                     NavManager.NavigateTo("/account");
                     break;
 
+                case Menu.Settings:
+                    SetMenus(menu);
+                    bgColor[(int)Menu.Admin] = "rgba(255, 255, 255, 0.3)";
+                    color[(int)Menu.Admin] = "white";
+                    NavManager.NavigateTo("/settings");
+                    break;
+
+                case Menu.Privacy:
+                    SetMenus(menu);
+                    bgColor[(int)Menu.Admin] = "rgba(255, 255, 255, 0.3)";
+                    color[(int)Menu.Admin] = "white";
+                    NavManager.NavigateTo("/privacy");
+                    break;
+
                 default:
-                    ResetMenus();
-                    bgColor[(int)Menu.Home] = "rgba(255, 255, 255, 0.3)";
-                    color[(int)Menu.Home] = "white";
+                    SetMenus(Menu.Home);
                     NavManager.NavigateTo("/");
                     break;
             }
-
-            StateHasChanged();
         }
 
-        void ResetMenus()
+        void SetMenus(Menu menu)
         {
             // Set all colors to unselected and close all dropdowns
-            for (int i = 0; i < 10; i++)
+            for (int i = 0; i < 12; i++)
             {
                 bgColor[i] = "transparent";
                 color[i] = "#d7d7d7";
                 subMenuActive[i] = false;
             }
+
+            // Set colors for selected menu item
+            bgColor[(int)menu] = "rgba(255, 255, 255, 0.3)";
+            color[(int)menu] = "white";
         }
 
         void ToggleNavMenu()

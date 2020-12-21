@@ -15,108 +15,191 @@
         Striking Investigation
     </button>
 
-    <button class="menuitem"
-            style="--leftpos: 200px;
-                --toppos: 7px;
-                --width: 110px;
-                --height: 36px;
-                --bgcolor: @bgColor[(int)Menu.Home];
-                --color: @color[(int)Menu.Home]"
-            tabindex="-1"
-            @onclick="@(e => MenuClick(Menu.Home))">
-        <span class="oi oi-home oistyle">
-        </span>
-        Home
-    </button>
+    <div class="d-none d-lg-inline-block">
+        <button class="menuitem"
+                style="--leftpos: 200px;
+                    --toppos: 7px;
+                    --width: 110px;
+                    --height: 36px;
+                    --bgcolor: @bgColor[(int)Menu.Home];
+                    --color: @color[(int)Menu.Home]"
+                tabindex="-1"
+                @onclick="@(e => MenuClick(Menu.Home))">
+            <span class="oi oi-home oistyle">
+            </span>
+            Home
+        </button>
 
-    <button class="menuitem"
-            style="--leftpos: 325px;
-                --toppos: 7px;
-                --width: 125px;
-                --height: 36px;
-                --bgcolor: @bgColor[(int)Menu.Tests];
-                --color: @color[(int)Menu.Tests]"
-            tabindex="-1"
-            @onclick="@(e => MenuClick(Menu.Tests))">
-        <span class="oi oi-random oistyle">
-        </span>
-        Tests
-    </button>
-
-    @if (subMenuActive[(int)Menu.Tests] == true)
-    {
-        <div class="posabs"
+        <button class="menuitem"
                 style="--leftpos: 325px;
+                    --toppos: 7px;
+                    --width: 125px;
+                    --height: 36px;
+                    --bgcolor: @bgColor[(int)Menu.Tests];
+                    --color: @color[(int)Menu.Tests]"
+                tabindex="-1"
+                @onclick="@(e => MenuClick(Menu.Tests))">
+            <span class="oi oi-random oistyle">
+            </span>
+            Tests
+        </button>
+
+        @if (subMenuActive[(int)Menu.Tests] == true)
+        {
+            <div class="posabs"
+                 style="--leftpos: 325px;
                     --toppos: 50px;
                     background-image: linear-gradient(90deg, rgba(58, 6, 71, 0.9), rgba(5, 39, 103, 1))">
-            <div>
-                <button class="dropdownitem"
-                        style="--height: 36px;
-                            --bgcolor: @bgColor[(int)Menu.GapTests];
-                            --color: @color[(int)Menu.GapTests]"
-                        tabindex="-1"
-                        @onclick="@(e => MenuClick(Menu.GapTests))">
-                    <span class="oi oi-home oistyle">
-                    </span>
-                    Gap Tests
-                </button>
+                <div>
+                    <button class="dropdownitem"
+                            style="--height: 36px;
+                                --bgcolor: @bgColor[(int)Menu.GapTests];
+                                --color: @color[(int)Menu.GapTests]"
+                            tabindex="-1"
+                            @onclick="@(e => MenuClick(Menu.GapTests))">
+                        <span class="oi oi-home oistyle">
+                        </span>
+                        Gap Tests
+                    </button>
+                </div>
+
+                <div>
+                    <button class="dropdownitem"
+                            style="--height: 36px;
+                                --bgcolor: @bgColor[(int)Menu.ABTests];
+                                --color: @color[(int)Menu.ABTests]"
+                            tabindex="-1"
+                            @onclick="@(e => MenuClick(Menu.ABTests))">
+                        <span class="oi oi-home oistyle">
+                        </span>
+                        A/B Tests
+                    </button>
+                </div>
+
+                <div>
+                    <button class="dropdownitem"
+                            style="--height: 36px;
+                                --bgcolor: @bgColor[(int)Menu.AVTests];
+                                --color: @color[(int)Menu.AVTests]"
+                            tabindex="-1"
+                            @onclick="@(e => MenuClick(Menu.AVTests))">
+                        <span class="oi oi-home oistyle">
+                        </span>
+                        A/V Tests
+                    </button>
+                </div>
             </div>
+        }
 
-            <div>
-                <button class="dropdownitem"
-                        style="--height: 36px;
-                            --bgcolor: @bgColor[(int)Menu.ABTests];
-                            --color: @color[(int)Menu.ABTests]"
-                        tabindex="-1"
-                        @onclick="@(e => MenuClick(Menu.ABTests))">
-                    <span class="oi oi-home oistyle">
-                    </span>
-                    A/B Tests
-                </button>
+        <button class="menuitem"
+                style="--leftpos: 465px;
+                    --toppos: 7px;
+                    --width: 120px;
+                    --height: 36px;
+                    --bgcolor: @bgColor[(int)Menu.Data];
+                    --color: @color[(int)Menu.Data]"
+                tabindex="-1"
+                @onclick="@(e => MenuClick(Menu.Data))">
+            <span class="oi oi-media-play oistyle">
+            </span>
+            Data
+        </button>
+
+        @if (subMenuActive[(int)Menu.Data] == true)
+        {
+            <div class="posabs"
+                 style="--leftpos: 465px;
+                        --toppos: 50px;
+                        background-image: linear-gradient(90deg, rgba(58, 6, 71, 0.9), rgba(5, 39, 103, 1))">
+                <div>
+                    <button class="dropdownitem"
+                            style="--height: 36px;
+                                --bgcolor: @bgColor[(int)Menu.Submissions];
+                                --color: @color[(int)Menu.Submissions]"
+                            tabindex="-1"
+                            @onclick="@(e => MenuClick(Menu.Submissions))">
+                        <span class="oi oi-home oistyle">
+                        </span>
+                        Submissions
+                    </button>
+                </div>
+
+                <div>
+                    <button class="dropdownitem"
+                            style="--height: 36px;
+                                --bgcolor: @bgColor[(int)Menu.Results];
+                                --color: @color[(int)Menu.Results]"
+                            tabindex="-1"
+                            @onclick="@(e => MenuClick(Menu.Results))">
+                        <span class="oi oi-home oistyle">
+                        </span>
+                        Results
+                    </button>
+                </div>
             </div>
+        }
 
-            <div>
-                <button class="dropdownitem"
-                        style="--height: 36px;
-                            --bgcolor: @bgColor[(int)Menu.AVTests];
-                            --color: @color[(int)Menu.AVTests]"
-                        tabindex="-1"
-                        @onclick="@(e => MenuClick(Menu.AVTests))">
-                    <span class="oi oi-home oistyle">
-                    </span>
-                    A/V Tests
-                </button>
+        <button class="menuitem"
+                style="--leftpos: 600px;
+                    --toppos: 7px;
+                    --width: 120px;
+                    --height: 36px;
+                    --bgcolor: @bgColor[(int)Menu.Admin];
+                    --color: @color[(int)Menu.Admin]"
+                tabindex="-1"
+                @onclick="@(e => MenuClick(Menu.Admin))">
+            <span class="oi oi-eye oistyle">
+            </span>
+            Admin
+        </button>
+
+        @if (subMenuActive[(int)Menu.Admin] == true)
+        {
+            <div class="posabs"
+                 style="--leftpos: 600px;
+                        --toppos: 50px;
+                        background-image: linear-gradient(90deg, rgba(58, 6, 71, 0.9), rgba(5, 39, 103, 1))">
+                <div>
+                    <button class="dropdownitem"
+                            style="--height: 36px;
+                                --bgcolor: @bgColor[(int)Menu.Account];
+                                --color: @color[(int)Menu.Account]"
+                            tabindex="-1"
+                            @onclick="@(e => MenuClick(Menu.Account))">
+                        <span class="oi oi-home oistyle">
+                        </span>
+                        Account
+                    </button>
+                </div>
+
+                <div>
+                    <button class="dropdownitem"
+                            style="--height: 36px;
+                                --bgcolor: @bgColor[(int)Menu.Settings];
+                                --color: @color[(int)Menu.Settings]"
+                            tabindex="-1"
+                            @onclick="@(e => MenuClick(Menu.Settings))">
+                        <span class="oi oi-home oistyle">
+                        </span>
+                        Settings
+                    </button>
+                </div>
+
+                <div>
+                    <button class="dropdownitem"
+                            style="--height: 36px;
+                                --bgcolor: @bgColor[(int)Menu.Privacy];
+                                --color: @color[(int)Menu.Privacy]"
+                            tabindex="-1"
+                            @onclick="@(e => MenuClick(Menu.Privacy))">
+                        <span class="oi oi-home oistyle">
+                        </span>
+                        Privacy
+                    </button>
+                </div>
             </div>
-        </div>
-    }
-
-    <button class="menuitem"
-            style="--leftpos: 465px;
-                --toppos: 7px;
-                --width: 120px;
-                --height: 36px;
-                --bgcolor: @bgColor[(int)Menu.Data];
-                --color: @color[(int)Menu.Data]"
-            tabindex="-1"
-            @onclick="@(e => MenuClick(Menu.Data))">
-        <span class="oi oi-media-play oistyle">
-        </span>
-        Data
-    </button>
-
-    <button class="menuitem"
-            style="--leftpos: 600px;
-                --toppos: 7px;
-                --width: 120px;
-                --height: 36px;
-                --bgcolor: @bgColor[(int)Menu.Admin];
-                --color: @color[(int)Menu.Admin]"
-            tabindex="-1"
-            @onclick="@(e => MenuClick(Menu.Admin))">
-        <span class="oi oi-eye oistyle">
-        </span>
-        Admin
-    </button>
+        }
+    </div>
 
     <button class="d-lg-none"
             style="float: right"

@@ -1,0 +1,48 @@
+﻿@page "/Settings"
+@using StrikingInvestigation.Utilities
+
+<div>
+    <h1 style="margin-left: 10px">Settings</h1>
+
+    <br />
+
+    <h2 style="margin-left: 10px">Device Load</h2>
+
+    <br />
+
+    <p style="margin-left: 10px;
+            max-width: 800px">
+        If playback is not producing even striking when it should, reduce the device load setting
+        below from high to medium or low.
+    </p>
+
+    <p style="margin-left: 10px;
+            max-width: 800px">
+        This will reduce the processing load on your device, but some of the screen visualizations will
+        be turned off.
+    </p>
+
+    <p style="margin-left: 10px;
+            max-width: 800px">
+        With the low setting, you won't be able to stop a test while it's playing -- you will need to wait for it
+        to finish (or close the browser tab).
+    </p>
+
+    <p style="margin-left: 10px; padding-top: 16px">
+        <EditForm Model="@Device">
+            <InputRadioGroup @bind-Value="Device.DeviceLoad">
+                <u>Device Load:</u>
+                <br />
+                <br />
+
+                @foreach (var deviceLoad in (DeviceLoad[])Enum.GetValues(typeof(DeviceLoad)))
+                {
+                    <InputRadio Value="deviceLoad" />
+                    <span>&nbsp;&nbsp;</span>@deviceLoad
+                    <br />
+                    <br />
+                }
+            </InputRadioGroup>
+        </EditForm>
+    </p>
+</div>

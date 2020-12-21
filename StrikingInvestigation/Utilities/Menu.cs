@@ -13,6 +13,11 @@ namespace StrikingInvestigation.Utilities
         ABTests,
         AVTests,
         Data,
-        Admin
+        Submissions,
+        Results,
+        Admin,
+        Account,
+        Settings,
+        Privacy
     }
 }
