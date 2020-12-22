@@ -221,6 +221,86 @@ button:active.dropdownitem {
     outline: none;
 }
 
+/* These style the menu toggler */
+button.toggler {
+    float: right;
+    background-color: rgba(255, 255, 255, 0.1);
+    color: rgba(255, 255, 255, 0.5);
+    border-color: rgba(255, 255, 255, 0.1);
+    border-radius: 4px;
+    box-shadow: none;
+    outline: none;
+    transition-property: color, background-color;
+    transition-duration: 0.15s, 0.15s;
+    transition-timing-function: ease-in-out, ease-in-out;
+    transition-delay: 0s, 0s;
+    user-select: none;
+}
+
+button:hover.toggler {
+    background-color: rgba(255, 255, 255, 0.2);
+    box-shadow: none;
+    outline: none;
+}
+
+button:focus.toggler {
+    box-shadow: none;
+    outline: none;
+}
+
+button:active.toggler {
+    box-shadow: none;
+    outline: none;
+}
+
+/* These style expanded menu item buttons */
+button.expmenuitem {
+    height: var(--height);
+    background-color: var(--bgcolor);
+    color: var(--color);
+    margin-left: var(--leftmargin);
+    margin-right: 16px;
+    margin-top: 6px;
+    margin-bottom: 6px;
+    border-style: none;
+    border-radius: 4px;
+    box-shadow: none;
+    outline: none;
+    vertical-align: top;
+    padding-left: 16px;
+    padding-right: 16px;
+    padding-top: 2px;
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 1.5;
+    text-align: left;
+    transition-property: color, background-color;
+    transition-duration: 0.15s, 0.15s;
+    transition-timing-function: ease-in-out, ease-in-out;
+    transition-delay: 0s, 0s;
+    user-select: none;
+}
+
+button:hover.expmenuitem {
+    background-color: rgba(255, 255, 255, 0.15);
+    color: white;
+    border-style: none;
+    box-shadow: none;
+    outline: none;
+}
+
+button:focus.expmenuitem {
+    border-style: none;
+    box-shadow: none;
+    outline: none;
+}
+
+button:active.expmenuitem {
+    border-style: none;
+    box-shadow: none;
+    outline: none;
+}
+
 /* This styles menu button icons */
 span.oistyle {
     position: relative;

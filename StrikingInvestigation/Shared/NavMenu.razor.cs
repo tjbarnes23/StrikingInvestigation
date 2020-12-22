@@ -13,7 +13,7 @@ namespace StrikingInvestigation.Shared
         readonly string[] bgColor;
         readonly string[] color;
         readonly bool[] subMenuActive;
-        bool collapseNavMenu = true;
+        bool expandNavMenu;
         ElementReference title;
 
         public NavMenu()
@@ -70,23 +70,17 @@ namespace StrikingInvestigation.Shared
 
                 case Menu.GapTests:
                     SetMenus(menu);
-                    bgColor[(int)Menu.Tests] = "rgba(255, 255, 255, 0.3)";
-                    color[(int)Menu.Tests] = "white";
                     NavManager.NavigateTo("/gaptest");
                     break;
 
                 case Menu.ABTests:
                     SetMenus(menu);
-                    bgColor[(int)Menu.Tests] = "rgba(255, 255, 255, 0.3)";
-                    color[(int)Menu.Tests] = "white";
                     NavManager.NavigateTo("/abtest");
                     break;
 
                 case Menu.AVTests:
                     // Set all colors to unselected and close all dropdowns
                     SetMenus(menu);
-                    bgColor[(int)Menu.Tests] = "rgba(255, 255, 255, 0.3)";
-                    color[(int)Menu.Tests] = "white";
                     NavManager.NavigateTo("/avtest");
                     break;
 
@@ -113,16 +107,12 @@ namespace StrikingInvestigation.Shared
                 case Menu.Submissions:
                     // Set all colors to unselected and close all dropdowns
                     SetMenus(menu);
-                    bgColor[(int)Menu.Data] = "rgba(255, 255, 255, 0.3)";
-                    color[(int)Menu.Data] = "white";
                     NavManager.NavigateTo("/submissions");
                     break;
 
                 case Menu.Results:
                     // Set all colors to unselected and close all dropdowns
                     SetMenus(menu);
-                    bgColor[(int)Menu.Data] = "rgba(255, 255, 255, 0.3)";
-                    color[(int)Menu.Data] = "white";
                     NavManager.NavigateTo("/results");
                     break;
 
@@ -148,22 +138,16 @@ namespace StrikingInvestigation.Shared
 
                 case Menu.Account:
                     SetMenus(menu);
-                    bgColor[(int)Menu.Admin] = "rgba(255, 255, 255, 0.3)";
-                    color[(int)Menu.Admin] = "white";
                     NavManager.NavigateTo("/account");
                     break;
 
                 case Menu.Settings:
                     SetMenus(menu);
-                    bgColor[(int)Menu.Admin] = "rgba(255, 255, 255, 0.3)";
-                    color[(int)Menu.Admin] = "white";
                     NavManager.NavigateTo("/settings");
                     break;
 
                 case Menu.Privacy:
                     SetMenus(menu);
-                    bgColor[(int)Menu.Admin] = "rgba(255, 255, 255, 0.3)";
-                    color[(int)Menu.Admin] = "white";
                     NavManager.NavigateTo("/privacy");
                     break;
 
@@ -187,23 +171,31 @@ namespace StrikingInvestigation.Shared
             // Set colors for selected menu item
             bgColor[(int)menu] = "rgba(255, 255, 255, 0.3)";
             color[(int)menu] = "white";
+
+            // Set menu group colors if applicable
+            if (menu == Menu.GapTests || menu == Menu.ABTests || menu == Menu.AVTests)
+            {
+                bgColor[(int)Menu.Tests] = "rgba(255, 255, 255, 0.3)";
+                color[(int)Menu.Tests] = "white";
+            }
+            else if (menu == Menu.Submissions || menu == Menu.Results)
+            {
+                bgColor[(int)Menu.Data] = "rgba(255, 255, 255, 0.3)";
+                color[(int)Menu.Data] = "white";
+            }
+            else if (menu == Menu.Account || menu == Menu.Settings || menu == Menu.Privacy)
+            {
+                bgColor[(int)Menu.Admin] = "rgba(255, 255, 255, 0.3)";
+                color[(int)Menu.Admin] = "white";
+            }
+
+            // Set the menu togger to closed
+            expandNavMenu = false;
         }
 
         void ToggleNavMenu()
         {
-            collapseNavMenu = !collapseNavMenu;
-        }
-
-        string NavMenuCssClass()
-        {
-            if (collapseNavMenu == true)
-            {
-                return "collapse";
-            }
-            else
-            {
-                return null;
-            }
+            expandNavMenu = !expandNavMenu;
         }
     }
 }

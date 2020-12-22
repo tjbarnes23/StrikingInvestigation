@@ -39,7 +39,7 @@
                     --color: @color[(int)Menu.Tests]"
                 tabindex="-1"
                 @onclick="@(e => MenuClick(Menu.Tests))">
-            <span class="oi oi-random oistyle">
+            <span class="oi oi-audio-spectrum oistyle">
             </span>
             Tests
         </button>
@@ -57,7 +57,7 @@
                                 --color: @color[(int)Menu.GapTests]"
                             tabindex="-1"
                             @onclick="@(e => MenuClick(Menu.GapTests))">
-                        <span class="oi oi-home oistyle">
+                        <span class="oi oi-bell oistyle">
                         </span>
                         Gap Tests
                     </button>
@@ -70,7 +70,7 @@
                                 --color: @color[(int)Menu.ABTests]"
                             tabindex="-1"
                             @onclick="@(e => MenuClick(Menu.ABTests))">
-                        <span class="oi oi-home oistyle">
+                        <span class="oi oi-media-play oistyle">
                         </span>
                         A/B Tests
                     </button>
@@ -83,7 +83,7 @@
                                 --color: @color[(int)Menu.AVTests]"
                             tabindex="-1"
                             @onclick="@(e => MenuClick(Menu.AVTests))">
-                        <span class="oi oi-home oistyle">
+                        <span class="oi oi-eye oistyle">
                         </span>
                         A/V Tests
                     </button>
@@ -100,7 +100,7 @@
                     --color: @color[(int)Menu.Data]"
                 tabindex="-1"
                 @onclick="@(e => MenuClick(Menu.Data))">
-            <span class="oi oi-media-play oistyle">
+            <span class="oi oi-hard-drive oistyle">
             </span>
             Data
         </button>
@@ -118,7 +118,7 @@
                                 --color: @color[(int)Menu.Submissions]"
                             tabindex="-1"
                             @onclick="@(e => MenuClick(Menu.Submissions))">
-                        <span class="oi oi-home oistyle">
+                        <span class="oi oi-data-transfer-upload oistyle">
                         </span>
                         Submissions
                     </button>
@@ -131,7 +131,7 @@
                                 --color: @color[(int)Menu.Results]"
                             tabindex="-1"
                             @onclick="@(e => MenuClick(Menu.Results))">
-                        <span class="oi oi-home oistyle">
+                        <span class="oi oi-data-transfer-download oistyle">
                         </span>
                         Results
                     </button>
@@ -148,7 +148,7 @@
                     --color: @color[(int)Menu.Admin]"
                 tabindex="-1"
                 @onclick="@(e => MenuClick(Menu.Admin))">
-            <span class="oi oi-eye oistyle">
+            <span class="oi oi-spreadsheet oistyle">
             </span>
             Admin
         </button>
@@ -166,7 +166,7 @@
                                 --color: @color[(int)Menu.Account]"
                             tabindex="-1"
                             @onclick="@(e => MenuClick(Menu.Account))">
-                        <span class="oi oi-home oistyle">
+                        <span class="oi oi-account-login oistyle">
                         </span>
                         Account
                     </button>
@@ -179,7 +179,7 @@
                                 --color: @color[(int)Menu.Settings]"
                             tabindex="-1"
                             @onclick="@(e => MenuClick(Menu.Settings))">
-                        <span class="oi oi-home oistyle">
+                        <span class="oi oi-cog oistyle">
                         </span>
                         Settings
                     </button>
@@ -192,7 +192,7 @@
                                 --color: @color[(int)Menu.Privacy]"
                             tabindex="-1"
                             @onclick="@(e => MenuClick(Menu.Privacy))">
-                        <span class="oi oi-home oistyle">
+                        <span class="oi oi-document oistyle">
                         </span>
                         Privacy
                     </button>
@@ -201,9 +201,203 @@
         }
     </div>
 
-    <button class="d-lg-none"
-            style="float: right"
+    <button class="d-lg-none mr-2 mt-2 toggler"
             @onclick="ToggleNavMenu">
-        <span class="navbar-toggler-icon"></span>
+        <svg xmlns="http://www.w3.org/2000/svg"
+                width="30"
+                height="30"
+                viewBox="0 0 30 30">
+            <path stroke="rgba(255, 255, 255, 0.5)"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-miterlimit="10"
+                    d="M 4,7 h22
+                       M 4,15 h22
+                       M 4,23 h22" />
+        </svg>
     </button>
 </div>
+
+<!-- This section is displayed on smaller screens when the nav menu toggler is clicked -->
+@if (expandNavMenu == true)
+{
+    <div style="width: auto;
+                background-image: linear-gradient(90deg, rgba(58, 6, 71, 0.9), rgba(5, 39, 103, 1))">
+        <div>
+            <button class="expmenuitem"
+                    style="--height: 36px;
+                        --bgcolor: @bgColor[(int)Menu.Home];
+                        --color: @color[(int)Menu.Home];
+                        --leftmargin: 16px"
+                    tabindex="-1"
+                    @onclick="@(e => MenuClick(Menu.Home))">
+                <span class="oi oi-home oistyle">
+                </span>
+                Home
+            </button>
+        </div>
+
+        <div>
+            <button class="expmenuitem"
+                    style="--height: 36px;
+                        --bgcolor: @bgColor[(int)Menu.Tests];
+                        --color: @color[(int)Menu.Tests];
+                        --leftmargin: 16px"
+                    tabindex="-1"
+                    @onclick="@(e => MenuClick(Menu.Tests))">
+                <span class="oi oi-audio-spectrum oistyle">
+                </span>
+                Tests
+            </button>
+        </div>
+
+        @if (subMenuActive[(int)Menu.Tests] == true)
+        {
+            <div>
+                <button class="expmenuitem"
+                        style="--height: 36px;
+                            --bgcolor: @bgColor[(int)Menu.GapTests];
+                            --color: @color[(int)Menu.GapTests];
+                            --leftmargin: 48px"
+                        tabindex="-1"
+                        @onclick="@(e => MenuClick(Menu.GapTests))">
+                    <span class="oi oi-bell oistyle">
+                    </span>
+                    Gap Tests
+                </button>
+            </div>
+
+            <div>
+                <button class="expmenuitem"
+                        style="--height: 36px;
+                            --bgcolor: @bgColor[(int)Menu.ABTests];
+                            --color: @color[(int)Menu.ABTests];
+                            --leftmargin: 48px"
+                        tabindex="-1"
+                        @onclick="@(e => MenuClick(Menu.ABTests))">
+                    <span class="oi oi-media-play oistyle">
+                    </span>
+                    A/B Tests
+                </button>
+            </div>
+
+            <div>
+                <button class="expmenuitem"
+                        style="--height: 36px;
+                            --bgcolor: @bgColor[(int)Menu.AVTests];
+                            --color: @color[(int)Menu.AVTests];
+                            --leftmargin: 48px"
+                        tabindex="-1"
+                        @onclick="@(e => MenuClick(Menu.AVTests))">
+                    <span class="oi oi-eye oistyle">
+                    </span>
+                    A/V Tests
+                </button>
+            </div>
+        }
+
+        <div>
+            <button class="expmenuitem"
+                    style="--height: 36px;
+                        --bgcolor: @bgColor[(int)Menu.Data];
+                        --color: @color[(int)Menu.Data];
+                        --leftmargin: 16px"
+                    tabindex="-1"
+                    @onclick="@(e => MenuClick(Menu.Data))">
+                <span class="oi oi-hard-drive oistyle">
+                </span>
+                Data
+            </button>
+        </div>
+
+        @if (subMenuActive[(int)Menu.Data] == true)
+        {
+            <div>
+                <button class="expmenuitem"
+                        style="--height: 36px;
+                            --bgcolor: @bgColor[(int)Menu.Submissions];
+                            --color: @color[(int)Menu.Submissions];
+                            --leftmargin: 48px"
+                        tabindex="-1"
+                        @onclick="@(e => MenuClick(Menu.Submissions))">
+                    <span class="oi oi-data-transfer-upload oistyle">
+                    </span>
+                    Submissions
+                </button>
+            </div>
+
+            <div>
+                <button class="expmenuitem"
+                        style="--height: 36px;
+                            --bgcolor: @bgColor[(int)Menu.Results];
+                            --color: @color[(int)Menu.Results];
+                            --leftmargin: 48px"
+                        tabindex="-1"
+                        @onclick="@(e => MenuClick(Menu.Results))">
+                    <span class="oi oi-data-transfer-download oistyle">
+                    </span>
+                    Results
+                </button>
+            </div>
+        }
+
+        <div>
+            <button class="expmenuitem"
+                    style="--height: 36px;
+                        --bgcolor: @bgColor[(int)Menu.Admin];
+                        --color: @color[(int)Menu.Admin];
+                        --leftmargin: 16px"
+                    tabindex="-1"
+                    @onclick="@(e => MenuClick(Menu.Admin))">
+                <span class="oi oi-spreadsheet oistyle">
+                </span>
+                Admin
+            </button>
+        </div>
+
+        @if (subMenuActive[(int)Menu.Admin] == true)
+        {
+            <div>
+                <button class="expmenuitem"
+                        style="--height: 36px;
+                            --bgcolor: @bgColor[(int)Menu.Account];
+                            --color: @color[(int)Menu.Account];
+                            --leftmargin: 48px"
+                        tabindex="-1"
+                        @onclick="@(e => MenuClick(Menu.Account))">
+                    <span class="oi oi-account-login oistyle">
+                    </span>
+                    Account
+                </button>
+            </div>
+
+            <div>
+                <button class="expmenuitem"
+                        style="--height: 36px;
+                            --bgcolor: @bgColor[(int)Menu.Settings];
+                            --color: @color[(int)Menu.Settings];
+                            --leftmargin: 48px"
+                        tabindex="-1"
+                        @onclick="@(e => MenuClick(Menu.Settings))">
+                    <span class="oi oi-cog oistyle">
+                    </span>
+                    Settings
+                </button>
+            </div>
+
+            <div>
+                <button class="expmenuitem"
+                        style="--height: 36px;
+                            --bgcolor: @bgColor[(int)Menu.Privacy];
+                            --color: @color[(int)Menu.Privacy];
+                            --leftmargin: 48px"
+                        tabindex="-1"
+                        @onclick="@(e => MenuClick(Menu.Privacy))">
+                    <span class="oi oi-document oistyle">
+                    </span>
+                    Privacy
+                </button>
+            </div>
+        }
+    </div>
+}
