@@ -2,32 +2,61 @@
 
 <div>
     <h1 style="margin-left: 10px">Striking Investigation</h1>
+    <br />
 
+    <h3 style="margin-left: 10px"><i>Draft</i></h3>
     <br />
 
     <p style="margin-left: 10px;
             max-width: 800px">
-        The aim of this website is to collect striking data from the method ringing community in order to investigate
-        whether there is a general purpose algorithm for measuring how accurately a bell has been struck,
-        including when the preceding blows are not evenly struck.
+        The aim of the project supported by this website is to collect striking data from the method ringing community
+        in order to investigate whether there is a general purpose algorithm for measuring how accurately a bell
+        has been struck, including, and especially, when the preceding blows have not been evenly struck.
     </p>
+
+    <p style="margin-left: 10px;
+            max-width: 800px">
+        When striking is very good, it's clear when the next bell should strike. When striking is less good but
+        not bad, it may be the case (to be tested in this project) that experienced ringers still agree where the
+        next bell should strike.
+        Presumably there comes a point where the striking has deteriorated enough that experienced ringers wouldn't
+        be sure when the next bell should strike.
+        Part of this project is to investigate the striking error level at which this tipping point occurs.
+    </p>
+
+    <p style="margin-left: 10px;
+            max-width: 800px">
+        Current algorithms in use today for measuring striking accuracy, notably the Kalman filter, do not always give
+        consistent results for an individual ringer who rings with different bands.
+        E.g. a ringer who receives an individual score of 25ms RMSE (root mean square error) when ringing with a
+        good band may get a score of 45ms RMSE when ringing with a less capable band.
+        But the ringer in question may think that he or she rang equally accurately with both bands.
+    </p>
+
+    <p style="margin-left: 10px;
+            max-width: 800px">
+        It would be valuable for ringer training and developement purposes if there is a striking algorithm that
+        gives consisent individual scores that are independent (up to a reasonable level of striking error)
+        of the striking ability of the rest of the band.
+    </p>
+
+    <br />
+    <h2 style="margin-left: 10px">Tests</h2>
+    <br />
 
     <p style="margin-left: 10px;
             max-width: 800px">
         There are three types of test on this website:
     </p>
 
-    <br />
-
     <p style="margin-left: 10px;
             max-width: 800px">
-        <u>Gap Test:</u> In this test, the user is played a sequence of blows that have striking errors,
-        and the user then specifies when they think the last bell should strike.
+        <u>Gap Test:</u> This is the main test for this project.
+        The user is played sequences of blows that have striking errors, and the user then specifies when they think
+        the last bell should strike.
         The purpose of this test is to determine whether ringers generally agree on when a bell should strike
         when there are earlier striking errors.
     </p>
-
-    <br />
 
     <p style="margin-left: 10px;
             max-width: 800px">
@@ -37,8 +66,6 @@
         The purpose of this test is to determine how small a striking error can be detected by ringers.
     </p>
 
-    <br />
-
     <p style="margin-left: 10px;
             max-width: 800px">
         <u>A/V Test:</u> In this test, a bell will be heard to strike, and a visual representation of the strike
@@ -47,8 +74,6 @@
         are occurring at the same time.
         The purpose of this test is to see if ringers respond to audio and visual cues in the same way.
     </p>
-
-    <br />
 
     <p style="margin-left: 10px;
             max-width: 800px">
@@ -61,6 +86,8 @@
     </p>
 
     <br />
+    <h2 style="margin-left: 10px">Data</h2>
+    <br />
 
     <p style="margin-left: 10px;
             max-width: 800px">
@@ -71,20 +98,31 @@
         </i>
     </p>
 
-    <br />
-
     <p style="margin-left: 10px;
             max-width: 800px">
-        <u>Privacy:</u> This page explains how test data submitted to the central server will be used,
-        and how users' privacy will be protected.
-        <i>Not yet implemented.</i>
+        <u>Results:</u> This page will be where results from this striking investigation project will be posted once
+        the data has been compiled and analyzed.
     </p>
 
+    <br />
+    <h2 style="margin-left: 10px">Admin</h2>
     <br />
 
     <p style="margin-left: 10px;
             max-width: 800px">
         <u>Account:</u> This page is where users log in and maintain their accounts.
+        <i>Not yet implemented.</i>
+    </p>
+
+    <p style="margin-left: 10px;
+            max-width: 800px">
+        <u>Settings:</u> Use this page to adjust test settings.
+    </p>
+
+    <p style="margin-left: 10px;
+            max-width: 800px">
+        <u>Privacy:</u> This page explains how test data submitted to the central server will be used,
+        and how users' privacy will be protected.
         <i>Not yet implemented.</i>
     </p>
 </div>

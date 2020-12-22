@@ -31,6 +31,35 @@ namespace StrikingInvestigation.Utilities
             }
         }
 
+        public static double DiameterScaleAV(int browserWidth)
+        {
+            if (browserWidth < 576)
+            {
+                // *4
+                return 1.6;
+            }
+            else if (browserWidth < 768)
+            {
+                // *3.5
+                return 1.92;
+            }
+            else if (browserWidth < 992)
+            {
+                // *3
+                return 2.1;
+            }
+            else if (browserWidth < 1200)
+            {
+                // *2.5
+                return 2.12;
+            }
+            else
+            {
+                // *2
+                return 2;
+            }
+        }
+
         public static double XScale(int browserWidth)
         {
             if (browserWidth < 576)
@@ -162,6 +191,30 @@ namespace StrikingInvestigation.Utilities
             else
             {
                 return 5;
+            }
+        }
+
+        public static int BorderWidthAV(int browserWidth)
+        {
+            if (browserWidth < 576)
+            {
+                return 6;
+            }
+            else if (browserWidth < 768)
+            {
+                return 6;
+            }
+            else if (browserWidth < 992)
+            {
+                return 7;
+            }
+            else if (browserWidth < 1200)
+            {
+                return 7;
+            }
+            else
+            {
+                return 7;
             }
         }
 

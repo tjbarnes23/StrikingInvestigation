@@ -55,10 +55,10 @@ namespace StrikingInvestigation.Pages
 
             testSpec.SaveLabel = "Save";
 
-            testSpec.DiameterScale = ScreenSizing.DiameterScale(testSpec.BrowserWidth) * 1.5;
+            testSpec.DiameterScale = ScreenSizing.DiameterScaleAV(testSpec.BrowserWidth);
             testSpec.XScale = ScreenSizing.XScale(testSpec.BrowserWidth);
             testSpec.YScale = ScreenSizing.YScale(testSpec.BrowserWidth);
-            testSpec.BorderWidth = ScreenSizing.BorderWidth(testSpec.BrowserWidth);
+            testSpec.BorderWidth = ScreenSizing.BorderWidthAV(testSpec.BrowserWidth);
             testSpec.FontSize = ScreenSizing.FontSize(testSpec.BrowserWidth);
             testSpec.FontPaddingTop = ScreenSizing.FontPaddingTop(testSpec.BrowserWidth);
             testSpec.GapMin = 200;
@@ -67,8 +67,8 @@ namespace StrikingInvestigation.Pages
             testSpec.ButtonsCentered = true;
             testSpec.SubmitLabel1 = "Submit";
 
-            screen.XMargin = ScreenSizing.XMargin(testSpec.BrowserWidth);
-            screen.YMargin = ScreenSizing.YMargin(testSpec.BrowserWidth) + 50;
+            screen.XMargin = ScreenSizing.XMargin(testSpec.BrowserWidth) + 100;
+            screen.YMargin = ScreenSizing.YMargin(testSpec.BrowserWidth) + Convert.ToInt32(testSpec.YScale / 2);
             screen.PlayLabel = "Play";
         }
 
